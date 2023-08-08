@@ -1,5 +1,6 @@
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted, computed } from "vue";
+import { useStore } from "vuex";
 
 import AdminLoginForm from "@/components/forms/AdminLoginForm.vue";
 import SelectPhoneModal from "@/components/modals/SelectPhoneModal.vue";
@@ -13,19 +14,36 @@ export default defineComponent({
     SelectPhoneModal,
   },
   setup() {
+    const store = useStore();
+
     const visible = ref(false);
+
+    const countries = computed(() => store.getters.getCountriesList);
 
     const showSelectPhoneModal = () => {
       visible.value = true;
     }
 
-    return { visible, showSelectPhoneModal };
+    console.log(store);
+    onMounted(async () => {
+      await store.dispatch('fetchCountries');
+    })
+
+    return {
+      visible,
+      countries,
+      showSelectPhoneModal
+    };
   }
 });
 </script>
 
 <template>
-  <SelectPhoneModal :visible="visible" />
+  <SelectPhoneModal
+      :countries="countries ?? []"
+      :visible="visible"
+  />
+
   <div class="container">
     <div class="grid">
       <div class="col-lg-12 md:col-7 background-login h-screen">
