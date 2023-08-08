@@ -1,0 +1,7 @@
+@import "../env/colors/primary.css";
+
+.btn-primary {
+    background: var(--color-primary) !important;
+    border: var(--color-primary) !important;
+}
+
