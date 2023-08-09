@@ -31,7 +31,10 @@ const mutations = {
 const getters = {
     getCountriesList(state) {
         return state.countriesList;
-    }
+    },
+    getSelectCountry(state) {
+        return state.selectCountry;
+    },
 };
 
 export default {state, actions, mutations, getters};

@@ -23,7 +23,6 @@ export default defineComponent({
 
     const changeStep = (step) => {
       currentStep.value = step
-      console.log(currentStep.value);
     };
 
     const visible = ref(false);
@@ -33,9 +32,27 @@ export default defineComponent({
     const toggleLoginHandler = async (phone) => {
       try {
         await store.dispatch('fetchAuthorization', phone);
-        currentStep.value = STEP_SMS_REQUEST;
+        changeStep(STEP_SMS_REQUEST);
       } catch (e) {
+        // TODO: Something
+      }
+    }
 
+    const toggleCheckCodeHandler = async (code) => {
+      try {
+        alert('asd')
+        console.log({
+          phone: store.getters.getPhone,
+          phoneCode: store.getters.getSelectCountry.phone_code,
+          code,
+        })
+        await store.dispatch('fetchVerificationCode', {
+          phone: store.getters.getPhone,
+          phoneCode: store.getters.getSelectCountry.phone_code,
+          code,
+        });
+      } catch (e) {
+        console.log(e)
       }
     }
 
@@ -45,11 +62,11 @@ export default defineComponent({
 
     const showSelectPhoneModal = () => {
       visible.value = true;
-    }
+    };
 
     onMounted(async () => {
       await store.dispatch('fetchCountries');
-    })
+    });
 
     return {
       STEP_SMS_CHECK,
@@ -59,6 +76,7 @@ export default defineComponent({
       currentStep,
       showSelectPhoneModal,
       toggleChangeNumberHandler,
+      toggleCheckCodeHandler,
       toggleLoginHandler,
       changeStep,
     };
@@ -92,6 +110,7 @@ export default defineComponent({
               <EnterSmsCodeForm
                   v-if="currentStep === STEP_SMS_REQUEST"
                   @toggleChangeNumber="toggleChangeNumberHandler"
+                  @toggleCheckCode="toggleCheckCodeHandler"
               />
             </div>
           </div>

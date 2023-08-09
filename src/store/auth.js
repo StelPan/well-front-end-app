@@ -9,8 +9,11 @@ const state = () => ({
 
 const actions = {
     async fetchAuthorization({ commit }, phone){
-        console.log('phone', phone);
         const response = await AuthService.fetchAuthorization(phone);
+        commit('updatePhone', phone);
+    },
+    async fetchVerificationCode({ commit }, { phone, code, phoneCode }) {
+        const response = await AuthService.fetchVerifyCode(phone, code, phoneCode);
         console.log(response);
     }
 };

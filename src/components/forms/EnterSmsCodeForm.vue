@@ -29,8 +29,9 @@ export default defineComponent({
 <template>
   <div>
     <div class="mb-4">
-      <span class="p-float-label">
-        <InputText id="code"/>
+      <span class="p-float-label p-input-icon-right">
+        <i class="pi"><span class="m-0 p-0 text-black-alpha-90">01:00</span></i>
+        <InputText v-model="code" id="code"/>
         <label for="code">Код подтверждения</label>
       </span>
     </div>

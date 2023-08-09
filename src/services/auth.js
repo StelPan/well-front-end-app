@@ -5,7 +5,8 @@ const fetchAuthorization = async (phone) => {
     return response.data;
 };
 
-const fetchVerifyCode = async (phoneCode, phone, code) => {
+const fetchVerifyCode = async (phone, code, phoneCode) => {
+    console.log('fetchVerify')
     const response = await http.post('/api/company/v1/auth/verify-code', {
         phone_code: phoneCode,
         phone,
