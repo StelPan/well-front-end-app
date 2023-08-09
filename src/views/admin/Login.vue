@@ -4,17 +4,22 @@ import { useStore } from "vuex";
 
 import AdminLoginForm from "@/components/forms/AdminLoginForm.vue";
 import SelectPhoneModal from "@/components/modals/SelectPhoneModal.vue";
+import EnterSmsCodeForm from "@/components/forms/EnterSmsCodeForm.vue";
 
 export default defineComponent({
-  layout: {
-    name: 'AdminLayout',
-  },
+  layout: { name: 'default'},
   components: {
     AdminLoginForm,
     SelectPhoneModal,
+    EnterSmsCodeForm,
   },
   setup() {
     const store = useStore();
+
+    const currentStep = ref('sms-request');
+
+    const changeStep = (step) => currentStep.value[step];
+
 
     const visible = ref(false);
 
@@ -24,7 +29,6 @@ export default defineComponent({
       visible.value = true;
     }
 
-    console.log(store);
     onMounted(async () => {
       await store.dispatch('fetchCountries');
     })
@@ -32,7 +36,9 @@ export default defineComponent({
     return {
       visible,
       countries,
-      showSelectPhoneModal
+      showSelectPhoneModal,
+      currentStep,
+      changeStep,
     };
   }
 });
@@ -40,8 +46,8 @@ export default defineComponent({
 
 <template>
   <SelectPhoneModal
+      v-model:visible="visible"
       :countries="countries ?? []"
-      :visible="visible"
   />
 
   <div class="container">
@@ -53,10 +59,16 @@ export default defineComponent({
           <div class="flex align-items-center">
             <div class="form">
               <img class="gap-3 w-4rem mb-3" src="../../assets/images/admin/Logo.png" alt="">
-
               <p class="mb-5 text-left text-xl font-bold">Добро пожаловать</p>
+
               <AdminLoginForm
+                  v-if="currentStep === 'sms-request'"
                   @toggleSelectPhone="showSelectPhoneModal"
+                  @toggleLogin=""
+              />
+
+              <EnterSmsCodeForm
+                  v-if="currentStep === 'sms-check'"
               />
             </div>
           </div>

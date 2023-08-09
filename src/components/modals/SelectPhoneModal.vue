@@ -20,8 +20,11 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const visible = ref(false);
+    const visible = ref(props.visible);
+
     const countries = ref([]);
+
+    const closeModal = () => visible.value = false;
 
     watch(() => props.visible, (state) => {
       visible.value = state;
@@ -32,6 +35,7 @@ export default defineComponent({
     });
 
     return {
+      closeModal,
       visible,
       countries,
     };
@@ -40,9 +44,36 @@ export default defineComponent({
 </script>
 
 <template>
-  <Dialog :visible="visible" modal header="Выберите страну" >
-    <div class="flex justify-content-center">
-      <SelectLanguageForm :countries="countries" />
-    </div>
+  <Dialog
+      :visible="visible"
+      modal
+      :close-on-escape="true"
+      :closable="false"
+      :styles="$style['p-dialog-content']"
+      :style="{ width: '50vw', 'border-radius': '20px' }"
+  >
+    <template #default>
+      <div class="flex justify-content-center py-2">
+        <SelectLanguageForm @selectedCountry="closeModal" :countries="countries" />
+      </div>
+    </template>
+
+    <template #header>
+      Выберите страну
+    </template>
   </Dialog>
 </template>
+
+<style module lang="scss">
+.p-dialog-header-icons {
+  display: none;
+}
+
+.p-dialog-content {
+  padding: 0 !important;
+}
+
+.rounded {
+  border-radius: 20px !important;
+}
+</style>

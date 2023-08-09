@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import VueRouterMiddleware from 'vue-router-middleware'
 import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
@@ -14,4 +15,5 @@ createApp(App)
     .use(store)
     .use(router)
     .use(PrimeVue)
+    .use(VueRouterMiddleware, { router })
     .mount('#app');

@@ -15,10 +15,15 @@ export default defineComponent({
       emit('toggleSelectPhone', true);
     }
 
+    const toggleLogin = () => {
+      emit('toggleLogin', { phone });
+    }
+
     return {
       phone,
       isShowSelectPhoneModal,
       toggleSelectPhone,
+      toggleLogin,
     }
   }
 });
@@ -35,7 +40,7 @@ export default defineComponent({
 
     <div class="mb-2">
       <div class="card flex justify-content-center">
-        <Button label="Войти" class="btn-primary w-12"/>
+        <Button label="Войти" class="btn-primary font-light w-12" @click="toggleLogin"/>
       </div>
     </div>
   </div>

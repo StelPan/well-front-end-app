@@ -1,0 +1,5 @@
+@import "../env/env.css";
+
+.hover\:bg-neutral:hover {
+    background-color: var(--color-background);
+}
