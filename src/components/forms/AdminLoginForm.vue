@@ -1,5 +1,5 @@
 <script>
-import {defineComponent, defineEmits, ref} from "vue";
+import {defineComponent, ref} from "vue";
 
 import Button from 'primevue/button';
 import InputMask from "primevue/inputmask";
@@ -16,7 +16,7 @@ export default defineComponent({
     }
 
     const toggleLogin = () => {
-      emit('toggleLogin', { phone });
+      emit('toggleLogin', phone.value);
     }
 
     return {
@@ -31,10 +31,11 @@ export default defineComponent({
 
 <template>
   <div>
-    <div class="mb-2">
-      <span class="p-input-icon-left">
+    <div class="mb-4">
+      <span class="p-input-icon-left p-float-label">
         <i class="pi pi-search cursor-pointer" @click="toggleSelectPhone" />
         <InputMask id="phone" v-model="phone" mask="999-999-9999" placeholder="999-999-9999"/>
+        <label for="phone">Контактный телефон</label>
       </span>
     </div>
 

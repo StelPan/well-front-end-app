@@ -1,0 +1,5 @@
+@import "../env/colors/primary.css";
+
+.color-primary {
+    color: var(--color-primary);
+}

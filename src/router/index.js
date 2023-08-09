@@ -5,7 +5,7 @@ import {middleware} from "vue-router-middleware";
 import "./middleware/require-auth";
 
 import HomeView from '../views/HomeView.vue'
-import Login from "@/views/admin/Login.vue";
+import Login from "@/views/LoginView.vue";
 import AboutView from "@/views/AboutView.vue";
 import UsersView from "@/views/users/UsersView.vue";
 

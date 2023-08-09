@@ -6,6 +6,9 @@ import AdminLoginForm from "@/components/forms/AdminLoginForm.vue";
 import SelectPhoneModal from "@/components/modals/SelectPhoneModal.vue";
 import EnterSmsCodeForm from "@/components/forms/EnterSmsCodeForm.vue";
 
+const STEP_SMS_REQUEST = "STEP_SMS_REQUEST";
+const STEP_SMS_CHECK = "STEP_SMS_CHECK";
+
 export default defineComponent({
   layout: { name: 'default'},
   components: {
@@ -16,14 +19,29 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
-    const currentStep = ref('sms-request');
+    const currentStep = ref(STEP_SMS_CHECK);
 
-    const changeStep = (step) => currentStep.value[step];
-
+    const changeStep = (step) => {
+      currentStep.value = step
+      console.log(currentStep.value);
+    };
 
     const visible = ref(false);
 
     const countries = computed(() => store.getters.getCountriesList);
+
+    const toggleLoginHandler = async (phone) => {
+      try {
+        await store.dispatch('fetchAuthorization', phone);
+        currentStep.value = STEP_SMS_REQUEST;
+      } catch (e) {
+
+      }
+    }
+
+    const toggleChangeNumberHandler = () => {
+      changeStep(STEP_SMS_CHECK);
+    };
 
     const showSelectPhoneModal = () => {
       visible.value = true;
@@ -34,10 +52,14 @@ export default defineComponent({
     })
 
     return {
+      STEP_SMS_CHECK,
+      STEP_SMS_REQUEST,
       visible,
       countries,
-      showSelectPhoneModal,
       currentStep,
+      showSelectPhoneModal,
+      toggleChangeNumberHandler,
+      toggleLoginHandler,
       changeStep,
     };
   }
@@ -52,23 +74,24 @@ export default defineComponent({
 
   <div class="container">
     <div class="grid">
-      <div class="col-lg-12 md:col-7 background-login h-screen">
+      <div class="hidden md:block md:col-7 h-screen background-login">
       </div>
-      <div class="col-lg-12 md:col-5">
+      <div class="col-12 md:col-5">
         <div class="flex justify-content-center h-screen">
           <div class="flex align-items-center">
             <div class="form">
-              <img class="gap-3 w-4rem mb-3" src="../../assets/images/admin/Logo.png" alt="">
+              <img class="gap-3 w-4rem mb-3" src="../assets/images/admin/Logo.png" alt="">
               <p class="mb-5 text-left text-xl font-bold">Добро пожаловать</p>
 
               <AdminLoginForm
-                  v-if="currentStep === 'sms-request'"
+                  v-if="currentStep === STEP_SMS_CHECK"
                   @toggleSelectPhone="showSelectPhoneModal"
-                  @toggleLogin=""
+                  @toggleLogin="toggleLoginHandler"
               />
 
               <EnterSmsCodeForm
-                  v-if="currentStep === 'sms-check'"
+                  v-if="currentStep === STEP_SMS_REQUEST"
+                  @toggleChangeNumber="toggleChangeNumberHandler"
               />
             </div>
           </div>
@@ -80,7 +103,7 @@ export default defineComponent({
 
 <style>
 .background-login {
-  background: url('../../assets/images/admin/Image.png') no-repeat center;
+  background: url('../assets/images/admin/Image.png') no-repeat center;
   background-size: cover;
 }
 </style>

@@ -6,7 +6,7 @@ const http = axios.create({
 
 http.interceptors.response.use(
     (response) => response,
-    (error) => error
+    (error) => Promise.reject(error)
 );
 
 export default http;

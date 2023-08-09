@@ -79,7 +79,7 @@ export default defineComponent({
   </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 .p-inputtext {
   padding: 1rem 2rem;
   border-width: 2px ;

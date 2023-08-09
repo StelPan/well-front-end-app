@@ -49,7 +49,6 @@ export default defineComponent({
       modal
       :close-on-escape="true"
       :closable="false"
-      :styles="$style['p-dialog-content']"
       :style="{ width: '50vw', 'border-radius': '20px' }"
   >
     <template #default>
@@ -64,7 +63,7 @@ export default defineComponent({
   </Dialog>
 </template>
 
-<style module lang="scss">
+<style scoped lang="scss">
 .p-dialog-header-icons {
   display: none;
 }
