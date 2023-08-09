@@ -52,16 +52,29 @@ export default defineComponent({
 </script>
 
 <template>
-<div class="flex flex-column pt-4">
-  <div class="flex justify-content-center mb-2">
-    <div class="mx-3">
+<div
+    :class="{'sidebar-close': !state, 'sidebar-show': state}"
+    class="flex flex-column pb-4"
+>
+  <div class="flex justify-content-center py-5 px-5">
+    <div>
       <img src="../../assets/images/admin/Logotype.png" class="w-full">
     </div>
   </div>
-  <div class="flex flex-column mb-2">
-    <div v-for="(menu, i) in menus" class="flex justify-content-between" :key="i">
-      {{ menu.label }}
+  <div class="flex flex-column mb-2 px-3">
+    <div v-for="(menu, i) in menus" class="flex justify-content-start mb-4" :key="i">
+      <span class="">{{ menu.label }}</span>
     </div>
   </div>
 </div>
 </template>
+
+<style scoped lang="scss">
+.sidebar-close {
+  max-width: 50px;
+}
+
+.sidebar-show {
+  max-width: 300px;
+}
+</style>

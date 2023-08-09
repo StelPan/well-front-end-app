@@ -1,0 +1,5 @@
+@import "../env/colors/neutral.css";
+
+.bg-neutral {
+    background: var(--color-background);
+}

@@ -9,10 +9,10 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="grid">
-    <AdminSidebar />
+  <div class="flex">
+    <AdminSidebar :state="true" />
 
-    <div class="main-content">
+    <div class="main-content bg-neutral">
       <router-view></router-view>
     </div>
   </div>
