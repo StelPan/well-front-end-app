@@ -61,7 +61,7 @@ export default defineComponent({
         <Column field="id" header="ID" class="text-center"/>
         <Column field="first_name" header="ФИО">
           <template #body="slotProps">
-            <router-link to="/users">
+            <router-link to="/users" class="color-black-80 color-primary-hover">
               {{ slotProps.data.last_name }} {{ slotProps.data.first_name }} {{ slotProps.data.patronymic }}
             </router-link>
           </template>
