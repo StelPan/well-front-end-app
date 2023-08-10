@@ -5,4 +5,9 @@ const loadUsers = async (params = {}) => {
     return response.data;
 };
 
-export { loadUsers };
+const loadUser = async (id) => {
+    const response = await http.get('/api/company/v1/user/' + id);
+    return response.data;
+};
+
+export { loadUsers, loadUser };

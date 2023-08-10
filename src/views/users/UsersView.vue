@@ -50,18 +50,18 @@ export default defineComponent({
   </section>
 
   <section class="mb-3 py-2">
-    <div v-if="!users?.data?.length ?? 0" class="flex justify-content-center align-items-center center-text-screen">
+    <div v-if="!users?.data?.length" class="flex justify-content-center align-items-center center-text-screen">
       <span class="color-black-40">
         Здесь пока ничего нет
       </span>
     </div>
 
     <div v-if="users?.data?.length">
-      <DataTable :value="users?.data ?? []" showGridlines tableStyle="min-width: 50rem">
+      <DataTable :value="users?.data ?? []" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
         <Column field="id" header="ID" class="text-center"/>
         <Column field="first_name" header="ФИО">
           <template #body="slotProps">
-            <router-link to="/users" class="color-black-80 color-primary-hover">
+            <router-link :to="{ name: 'user-edit', params: { id: slotProps.data.id }}" class="color-black-80 color-primary-hover">
               {{ slotProps.data.last_name }} {{ slotProps.data.first_name }} {{ slotProps.data.patronymic }}
             </router-link>
           </template>

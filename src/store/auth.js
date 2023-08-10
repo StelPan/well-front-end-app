@@ -15,7 +15,9 @@ const actions = {
     },
     async fetchVerificationCode({ commit }, { phone, code, phoneCode }) {
         const response = await AuthService.fetchVerifyCode(phone, code, phoneCode);
-        const { data: { access_token } } = response;
+        const { data: { access_token }, user } = response;
+
+        commit('updateProfile', user);
         TokenService.setAccessToken(access_token);
     }
 };

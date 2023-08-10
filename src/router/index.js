@@ -4,11 +4,11 @@ import {middleware} from "vue-router-middleware";
 
 import "./middleware/require-auth";
 
-import HomeView from '../views/HomeView.vue'
 import Login from "@/views/LoginView.vue";
 import AboutView from "@/views/AboutView.vue";
 import UsersView from "@/views/users/UsersView.vue";
 import ProfileVIew from "@/views/ProfileVIew.vue";
+import EditUserView from "@/views/users/EditUserView.vue";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -16,14 +16,10 @@ const RouterLayout = createRouterLayout(layout => {
 
 
 const routes = [
-    ...middleware('require-auth', [{
+    {
         path: '/',
         component: RouterLayout,
         children: [{
-            path: 'home',
-            name: 'Home',
-            component: HomeView
-        }, {
             path: 'about',
             name: 'About',
             component: AboutView,
@@ -31,21 +27,28 @@ const routes = [
             path: 'login',
             name: 'login',
             component: Login
-        }, {
-            path: 'users',
-            name: 'users',
-            component: UsersView
-        }, {
-            path: 'profile',
-            name: 'profile',
-            component: ProfileVIew
-        }],
-    }])
+        },
+            ...middleware('require-auth', [{
+                path: 'users',
+                name: 'users',
+                component: UsersView
+            }, {
+                path: 'users/:id/edit',
+                name: 'user-edit',
+                component: EditUserView,
+            },
+                {
+                path: 'profile',
+                name: 'profile',
+                component: ProfileVIew
+            }]),
+        ]
+    },
 ];
 
 const router = createRouter({
     history: createWebHistory(),
     routes,
-})
+});
 
 export default router;

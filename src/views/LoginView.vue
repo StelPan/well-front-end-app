@@ -55,6 +55,10 @@ export default defineComponent({
       }
     }
 
+    const toggleRetrySendCodeHandler = async () => {
+      await toggleLoginHandler(store.getters.getPhone);
+    };
+
     const toggleChangeNumberHandler = () => {
       changeStep(STEP_SMS_CHECK);
     };
@@ -75,6 +79,7 @@ export default defineComponent({
       countries,
       currentStep,
       showSelectPhoneModal,
+      toggleRetrySendCodeHandler,
       toggleChangeNumberHandler,
       toggleCheckCodeHandler,
       toggleLoginHandler,
@@ -112,6 +117,7 @@ export default defineComponent({
                   v-if="currentStep === STEP_SMS_REQUEST"
                   @toggleChangeNumber="toggleChangeNumberHandler"
                   @toggleCheckCode="toggleCheckCodeHandler"
+                  @toggleRetrySendCode="toggleRetrySendCodeHandler"
               />
             </div>
           </div>
