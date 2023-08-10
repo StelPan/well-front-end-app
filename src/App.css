@@ -2,6 +2,8 @@
 @import "./assets/css/modules/primeflex.css";
 @import "./assets/css/modules/primeicons.css";
 
+@import "./assets/css/backgrounds/background.css";
+
 @import "./assets/css/buttons/main.css";
 
 @import "./assets/css/hovers/hovers.css";

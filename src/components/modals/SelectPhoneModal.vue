@@ -19,25 +19,18 @@ export default defineComponent({
       required: true,
     }
   },
-  setup(props) {
-    const visible = ref(props.visible);
-
+  setup(props, { emit }) {
     const countries = ref([]);
-
-    const closeModal = () => visible.value = false;
-
-    watch(() => props.visible, (state) => {
-      visible.value = state;
-    });
 
     watch(() => props.countries, (state) => {
       countries.value = state;
     });
 
+    const closeModalEvent = () => emit('toggleCloseModal', true);
+
     return {
-      closeModal,
-      visible,
       countries,
+      closeModalEvent,
     };
   }
 });
@@ -53,7 +46,10 @@ export default defineComponent({
   >
     <template #default>
       <div class="flex justify-content-center py-2">
-        <SelectLanguageForm @selectedCountry="closeModal" :countries="countries" />
+        <SelectLanguageForm
+            @selectedCountry="closeModalEvent"
+            :countries="countries"
+        />
       </div>
     </template>
 

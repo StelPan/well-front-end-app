@@ -1,5 +1,10 @@
 @import "../env/colors/primary.css";
+@import "../env/colors/grayscale-palette.css";
 
 .color-primary {
     color: var(--color-primary);
+}
+
+.color-black-40 {
+    color: var(--color-black-40);
 }

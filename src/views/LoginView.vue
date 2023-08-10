@@ -1,6 +1,7 @@
 <script>
-import { defineComponent, ref, onMounted, computed } from "vue";
-import { useStore } from "vuex";
+import {defineComponent, ref, onMounted, computed} from "vue";
+import {useRouter} from "vue-router";
+import {useStore} from "vuex";
 
 import AdminLoginForm from "@/components/forms/AdminLoginForm.vue";
 import SelectPhoneModal from "@/components/modals/SelectPhoneModal.vue";
@@ -10,7 +11,7 @@ const STEP_SMS_REQUEST = "STEP_SMS_REQUEST";
 const STEP_SMS_CHECK = "STEP_SMS_CHECK";
 
 export default defineComponent({
-  layout: { name: 'default'},
+  layout: {name: 'default'},
   components: {
     AdminLoginForm,
     SelectPhoneModal,
@@ -18,6 +19,8 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+
+    const router = useRouter();
 
     const currentStep = ref(STEP_SMS_CHECK);
 
@@ -40,17 +43,13 @@ export default defineComponent({
 
     const toggleCheckCodeHandler = async (code) => {
       try {
-        alert('asd')
-        console.log({
-          phone: store.getters.getPhone,
-          phoneCode: store.getters.getSelectCountry.phone_code,
-          code,
-        })
         await store.dispatch('fetchVerificationCode', {
           phone: store.getters.getPhone,
           phoneCode: store.getters.getSelectCountry.phone_code,
           code,
         });
+
+        await router.push('/users');
       } catch (e) {
         console.log(e)
       }
@@ -66,6 +65,7 @@ export default defineComponent({
 
     onMounted(async () => {
       await store.dispatch('fetchCountries');
+      store.commit('selectCountryByCountryName', 'Russia');
     });
 
     return {
@@ -88,6 +88,7 @@ export default defineComponent({
   <SelectPhoneModal
       v-model:visible="visible"
       :countries="countries ?? []"
+      @toggleCloseModal="visible = false"
   />
 
   <div class="container">

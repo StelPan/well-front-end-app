@@ -8,6 +8,7 @@ import HomeView from '../views/HomeView.vue'
 import Login from "@/views/LoginView.vue";
 import AboutView from "@/views/AboutView.vue";
 import UsersView from "@/views/users/UsersView.vue";
+import ProfileVIew from "@/views/ProfileVIew.vue";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -34,6 +35,10 @@ const routes = [
             path: 'users',
             name: 'users',
             component: UsersView
+        }, {
+            path: 'profile',
+            name: 'profile',
+            component: ProfileVIew
         }],
     }])
 ];

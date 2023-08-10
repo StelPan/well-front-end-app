@@ -11,39 +11,40 @@ export default defineComponent({
   setup() {
     const menus = [{
       label: "Пользователи",
-      to: "login"
+      route: { name: "users" }
     }, {
       label: "Состояния",
-      to: "login"
+      route: { name: "login" }
     }, {
       label: "Структура",
-      to: "login"
+      route: { name: "login" }
     }, {
       label: "Объекты",
-      to: "login"
+      route: { name: "login" }
     }, {
-      label: "Тарифы"
+      label: "Тарифы",
+      route: { name: "login" }
     }, {
       label: "Услуги",
-      to: "login"
+      route: { name: "login" }
     }, {
       label: "Контрагенты",
-      to: "login"
+      route: { name: "login" }
     }, {
       label: "Отзывы",
-      to: "login"
+      route: { name: "login" }
     }, {
       label: "Партнеры",
-      to: "login"
+      route: { name: "login" }
     }, {
       label: "Уведомления",
-      to: "login"
+      route: { name: "login" }
     }, {
       label: "Реквизиты",
-      to: "login"
+      route: { name: "login" }
     }, {
       label: "Поддержка",
-      to: "login"
+      route: { name: "login" }
     }];
 
     return { menus };
@@ -54,7 +55,7 @@ export default defineComponent({
 <template>
 <div
     :class="{'sidebar-close': !state, 'sidebar-show': state}"
-    class="flex flex-column pb-4"
+    class="flex flex-column pb-4 bg-white"
 >
   <div class="flex justify-content-center py-5 px-5">
     <div>
@@ -62,9 +63,9 @@ export default defineComponent({
     </div>
   </div>
   <div class="flex flex-column mb-2 px-3">
-    <div v-for="(menu, i) in menus" class="flex justify-content-start mb-4" :key="i">
+    <router-link :to="{ ...menu.route }" v-for="(menu, i) in menus" class="flex justify-content-start mb-4" :key="i">
       <span class="">{{ menu.label }}</span>
-    </div>
+    </router-link>
   </div>
 </div>
 </template>

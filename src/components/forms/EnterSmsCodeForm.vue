@@ -3,11 +3,14 @@ import {defineComponent, ref} from "vue";
 
 import Button from 'primevue/button';
 import InputText from "primevue/inputtext";
+import Timer from "../timers/Timer.vue";
 
 export default defineComponent({
-  components: {InputText, Button},
-  setup(props, { emit }) {
+  components: {InputText, Button, Timer},
+  setup(props, {emit}) {
     const code = ref('');
+
+    const timeVisible = ref(true);
 
     const toggleCheckCode = () => {
       emit('toggleCheckCode', code.value);
@@ -17,10 +20,20 @@ export default defineComponent({
       emit('toggleChangeNumber', true);
     }
 
+    const toggleRetrySendCode = () => {
+      emit('toggleRetrySendCode', true);
+      timeVisible.value = true;
+    }
+
+    const expiredTimeEventHandler = () => timeVisible.value = false;
+
     return {
       code,
+      timeVisible,
       toggleCheckCode,
-      toggleChangeNumber
+      toggleChangeNumber,
+      toggleRetrySendCode,
+      expiredTimeEventHandler,
     };
   }
 });
@@ -30,8 +43,24 @@ export default defineComponent({
   <div>
     <div class="mb-4">
       <span class="p-float-label p-input-icon-right">
-        <i class="pi"><span class="m-0 p-0 text-black-alpha-90">01:00</span></i>
+        <Timer
+            :minutes="1"
+            v-if="timeVisible"
+            @expiredTimeEvent="expiredTimeEventHandler"
+        />
+
+        <i
+            @click="toggleRetrySendCode"
+            v-if="!timeVisible"
+            class="pi cursor-pointer"
+        >
+          <span class="m-0 p-0 color-primary underline">
+            Отправить повторно
+          </span>
+        </i>
+
         <InputText v-model="code" id="code"/>
+
         <label for="code">Код подтверждения</label>
       </span>
     </div>

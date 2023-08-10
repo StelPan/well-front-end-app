@@ -1,9 +1,19 @@
+const ACCESS_TOKEN = 'access_token';
+
 const getRefreshToken = () => {};
 
-const getAccessToken = () => {};
+const getAccessToken = () => {
+    return localStorage.getItem(ACCESS_TOKEN);
+};
 
 const removeRefreshToken = () => {};
 
-const removeAccessToken = () => {};
+const removeAccessToken = () => {
+    localStorage.removeItem(ACCESS_TOKEN);
+};
 
-export { getAccessToken, getRefreshToken, removeAccessToken, removeRefreshToken };
+const setAccessToken = (token) => {
+    localStorage.setItem(ACCESS_TOKEN, token);
+};
+
+export default { getAccessToken, getRefreshToken, removeAccessToken, removeRefreshToken, setAccessToken };

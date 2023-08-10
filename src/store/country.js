@@ -25,6 +25,9 @@ const mutations = {
     },
     selectCountry(state, id) {
         state.selectCountry = state.countriesListCp.find(country => country.id === id);
+    },
+    selectCountryByCountryName(state, name) {
+        state.selectCountry = state.countriesListCp.find(country => country.name === name);
     }
 };
 

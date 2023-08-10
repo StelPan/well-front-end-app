@@ -1,4 +1,5 @@
 import AuthService from "../services/auth";
+import TokenService from "../services/token";
 
 const state = () => ({
     code: null,
@@ -14,7 +15,8 @@ const actions = {
     },
     async fetchVerificationCode({ commit }, { phone, code, phoneCode }) {
         const response = await AuthService.fetchVerifyCode(phone, code, phoneCode);
-        console.log(response);
+        const { data: { access_token } } = response;
+        TokenService.setAccessToken(access_token);
     }
 };
 
