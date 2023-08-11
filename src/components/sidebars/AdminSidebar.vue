@@ -14,7 +14,7 @@ export default defineComponent({
       route: { name: "users" }
     }, {
       label: "Состояния",
-      route: { name: "login" }
+      route: { name: "state-constructor" }
     }, {
       label: "Структура",
       route: { name: "login" }

@@ -9,6 +9,8 @@ import AboutView from "@/views/AboutView.vue";
 import UsersView from "@/views/users/UsersView.vue";
 import ProfileVIew from "@/views/ProfileVIew.vue";
 import EditUserView from "@/views/users/EditUserView.vue";
+import CreateUserView from "@/views/users/CreateUserView.vue";
+import StateConstructorView from "@/views/state-constructor/StateConstructorView.vue";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -36,6 +38,14 @@ const routes = [
                 path: 'users/:id/edit',
                 name: 'user-edit',
                 component: EditUserView,
+            }, {
+                path: 'users/create',
+                name: 'user-create',
+                component: CreateUserView,
+            }, {
+                path: 'state-constructor',
+                name: 'state-constructor',
+                component: StateConstructorView
             },
                 {
                 path: 'profile',

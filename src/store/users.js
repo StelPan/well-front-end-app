@@ -1,4 +1,4 @@
-import {loadUsers, loadUser, sa, saveUserData} from "@/services/users";
+import {loadUsers, loadUser, createUser, saveUserData} from "@/services/users";
 
 const state = () => ({
     usersList: [],
@@ -16,6 +16,9 @@ const actions = {
     },
     async fetchSaveUserData({commit}, { id, data }) {
         await saveUserData(id, data);
+    },
+    async fetchCreateUser({commit}, data) {
+        await createUser(data);
     }
 };
 

@@ -97,7 +97,7 @@ export default defineComponent({
     <div class="grid mb-3">
       <div class="col-12 md:col-4">
         <MainCard title="Основные регистрационные сведения">
-          <div class="flex flex-column">
+          <div class="flex flex-column gap-3 ">
             <span class="p-float-label mb-3 w-full">
               <InputText id="last_name" class="w-full" v-model="formReactive.last_name"/>
               <label for="last_name">Фамилия</label>
@@ -117,15 +117,17 @@ export default defineComponent({
       </div>
       <div class="col-12 md:col-4">
         <MainCard title="Контактные данные">
+          <div class="flex flex-column gap-3">
             <span class="p-float-label mb-3 w-full">
-              <InputText id="phone" class="w-full" :value="`${user?.phone_code + user?.phone}`"/>
-              <label for="phone">Контактный номер *</label>
-            </span>
+            <InputText id="phone" class="w-full" :value="`${user?.phone_code + user?.phone}`"/>
+            <label for="phone">Контактный номер *</label>
+          </span>
 
-          <span class="p-float-label mb-3 w-full">
-              <InputText id="phone" class="w-full" :value="formReactive.email"/>
-              <label for="phone">E-mail (для уведомлений) *</label>
-            </span>
+            <span class="p-float-label mb-3 w-full">
+            <InputText id="phone" class="w-full" :value="formReactive.email"/>
+            <label for="phone">E-mail (для уведомлений) *</label>
+          </span>
+          </div>
         </MainCard>
       </div>
       <div class="col-12 md:col-4">

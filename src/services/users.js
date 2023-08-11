@@ -15,4 +15,9 @@ const saveUserData = async (id, data) => {
     return response.data;
 };
 
-export { loadUsers, loadUser, saveUserData };
+const createUser = async (data) => {
+    const response = await http.post('/api/company/v1/user', data);
+    return response.data;
+}
+
+export { loadUsers, loadUser, saveUserData, createUser };

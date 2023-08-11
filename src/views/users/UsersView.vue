@@ -1,6 +1,7 @@
 <script>
 import {defineComponent, reactive, ref, computed, onMounted} from "vue";
 import {useStore} from "vuex";
+import {useRouter} from "vue-router";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import DataTable from "primevue/datatable";
@@ -11,6 +12,7 @@ export default defineComponent({
   components: {Dropdown, Button, DataTable, Column},
   setup() {
     const store = useStore();
+    const router = useRouter();
 
     const filter = reactive({
       roles: [],
@@ -18,17 +20,18 @@ export default defineComponent({
 
     onMounted(async () => {
       await store.dispatch('fetchRoles');
-
       await store.dispatch('fetchUsers');
     });
 
+    const toCreateUsers = () => {
+      router.push({ name: 'user-create' });
+    };
+
     const selectedRole = ref('');
-
     const users = computed(() => store.getters.getUsersList);
-
     const roles = computed(() => store.getters.getRolesList);
 
-    return {selectedRole, roles, users};
+    return {selectedRole, roles, users, toCreateUsers};
   }
 });
 </script>
@@ -44,7 +47,7 @@ export default defineComponent({
             optionLabel="name_ru"
             placeholder="Роли" class="w-full md:w-14rem border-radius-15"/>
 
-        <Button label="Создать пользователя" class="btn-primary font-light w-12"/>
+        <Button label="Создать пользователя" class="btn-primary font-light w-12" @click="toCreateUsers"/>
       </div>
     </div>
   </section>
