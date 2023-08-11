@@ -20,9 +20,21 @@ export default defineComponent({
 
 <template>
   <div class="flex">
-    <span v-for="(item, i) in data">
+    <template v-for="(item, i) in data" :key="i">
+      <router-link class="color-primary" v-if="item?.router" :to="item.router">
+        {{ item.label }}
+        <template v-if="i !== data.length - 1">
+          {{ separator }}&nbsp;
+        </template>
+      </router-link>
 
-    </span>
+      <span v-else>
+        {{ item.label }}
+        <template v-if="i !== data.length - 1">
+          {{ separator }}&nbsp;
+        </template>
+      </span>
+    </template>
   </div>
 </template>
 

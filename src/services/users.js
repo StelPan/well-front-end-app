@@ -10,4 +10,9 @@ const loadUser = async (id) => {
     return response.data;
 };
 
-export { loadUsers, loadUser };
+const saveUserData = async (id, data) => {
+    const response = await http.post('/api/company/v1/user/' + id, data);
+    return response.data;
+};
+
+export { loadUsers, loadUser, saveUserData };

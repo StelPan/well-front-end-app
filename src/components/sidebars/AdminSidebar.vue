@@ -63,7 +63,7 @@ export default defineComponent({
     </div>
   </div>
   <div class="flex flex-column mb-2 px-3">
-    <router-link :to="{ ...menu.route }" v-for="(menu, i) in menus" class="flex justify-content-start mb-4" :key="i">
+    <router-link :to="{ ...menu.route }" v-for="(menu, i) in menus" class="flex justify-content-start mb-4 color-black-80 no-underline" :key="i">
       <span class="">{{ menu.label }}</span>
     </router-link>
   </div>

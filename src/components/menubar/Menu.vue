@@ -75,3 +75,9 @@ export default defineComponent({
     </Menubar>
   </div>
 </template>
+
+<style>
+.p-menubar {
+  border-radius: 0 !important;
+}
+</style>

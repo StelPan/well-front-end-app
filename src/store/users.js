@@ -1,4 +1,4 @@
-import {loadUsers, loadUser} from "@/services/users";
+import {loadUsers, loadUser, sa, saveUserData} from "@/services/users";
 
 const state = () => ({
     usersList: [],
@@ -11,8 +11,11 @@ const actions = {
         commit('updateUsersList', data);
     },
     async fetchUser({commit}, id) {
-        const data = await loadUser(id);
-        console.log(data);
+        const { data } = await loadUser(id);
+        commit('updateCurrentUser', data);
+    },
+    async fetchSaveUserData({commit}, { id, data }) {
+        await saveUserData(id, data);
     }
 };
 
@@ -21,7 +24,7 @@ const mutations = {
         state.usersList = users;
     },
     updateCurrentUser(state, user) {
-        state.usersList = user;
+        state.currentUser = user;
     }
 };
 
