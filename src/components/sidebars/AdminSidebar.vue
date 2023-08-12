@@ -23,7 +23,7 @@ export default defineComponent({
       route: { name: "login" }
     }, {
       label: "Тарифы",
-      route: { name: "login" }
+      route: { name: "tariffs" }
     }, {
       label: "Услуги",
       route: { name: "login" }
@@ -38,10 +38,10 @@ export default defineComponent({
       route: { name: "login" }
     }, {
       label: "Уведомления",
-      route: { name: "login" }
+      route: { name: "notices" }
     }, {
       label: "Реквизиты",
-      route: { name: "login" }
+      route: { name: "vendors" }
     }, {
       label: "Поддержка",
       route: { name: "login" }

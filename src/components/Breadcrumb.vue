@@ -1,5 +1,5 @@
 <script>
-import {defineComponent} from "vue";
+import {defineComponent, ref} from "vue";
 
 export default defineComponent({
   props: {
@@ -13,7 +13,8 @@ export default defineComponent({
     } // { label: '', route: {} }
   },
   setup() {
-
+    const style = ref({ textStyles: 'text-3xl' });
+    return {style};
   }
 })
 </script>
@@ -21,14 +22,16 @@ export default defineComponent({
 <template>
   <div class="flex">
     <template v-for="(item, i) in data" :key="i">
-      <router-link class="color-primary" v-if="item?.router" :to="item.router">
-        {{ item.label }}
+      <template v-if="item?.router">
+        <router-link class="color-primary" :class="{ [style.textStyles]: true }" v-if="item?.router" :to="item.router">
+          {{ item.label }}
+        </router-link>
         <template v-if="i !== data.length - 1">
-          {{ separator }}&nbsp;
+          <span :class="{ [style.textStyles]: true }">&nbsp;{{ separator }}&nbsp;</span>
         </template>
-      </router-link>
+      </template>
 
-      <span v-else>
+      <span v-else :class="{ [style.textStyles]: true }">
         {{ item.label }}
         <template v-if="i !== data.length - 1">
           {{ separator }}&nbsp;

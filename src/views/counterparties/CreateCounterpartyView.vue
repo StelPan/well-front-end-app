@@ -82,7 +82,7 @@ export default defineComponent({
 
   <section class="py-2 mb-3">
     <div class="grid mb-2">
-      <div class="col-12 md:col-3 sm:col-6">
+      <div class="col-12 md:col-3 sm:col-12">
         <MainCard title="Выберите тип контрагента">
           <Tab @toggleTab="toggleTabHandler" :default-tab-switch="{ type: currentStep }" :tabs="tabs" />
         </MainCard>

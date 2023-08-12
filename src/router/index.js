@@ -13,11 +13,15 @@ import CreateUserView from "@/views/users/CreateUserView.vue";
 import StateConstructorView from "@/views/state-constructor/StateConstructorView.vue";
 import CounterpartiesView from "@/views/counterparties/CounterpartiesView";
 import CreateCounterpartyView from "@/views/counterparties/CreateCounterpartyView";
+import NotificationsView from "@/views/notifications/NotificationsView";
+import NotificationView from "@/views/notifications/NotificationView";
+import NoticesView from "@/views/notices/NoticesView";
+import TariffsView from "@/views/tariffs/TariffsView";
+import VendorsView from "@/views/vendors/VendorsView";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
 });
-
 
 const routes = [
     {
@@ -33,6 +37,18 @@ const routes = [
             component: Login
         },
             ...middleware('require-auth', [{
+                path: 'notifications',
+                name: 'notifications',
+                component: NotificationsView,
+            }, {
+                path: 'notifications/:id',
+                name: 'notification-view',
+                component: NotificationView,
+            }, {
+                path: 'notices',
+                name: 'notices',
+                component: NoticesView
+            }, {
                 path: 'users',
                 name: 'users',
                 component: UsersView
@@ -40,6 +56,14 @@ const routes = [
                 path: 'users/:id/edit',
                 name: 'user-edit',
                 component: EditUserView,
+            }, {
+                path: 'tariffs',
+                name: 'tariffs',
+                component: TariffsView
+            }, {
+                path: 'vendors',
+                name: 'vendors',
+                component: VendorsView
             }, {
                 path: 'users/create',
                 name: 'user-create',
@@ -56,8 +80,7 @@ const routes = [
                 path: 'counterparties/create',
                 name: 'counterparty-create',
                 component: CreateCounterpartyView
-            },
-                {
+            }, {
                 path: 'profile',
                 name: 'profile',
                 component: ProfileVIew

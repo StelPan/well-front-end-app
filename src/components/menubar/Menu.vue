@@ -1,5 +1,6 @@
 <script>
 import {defineComponent, ref} from "vue";
+import {useRouter} from "vue-router";
 import Menubar from "primevue/menubar";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
@@ -9,6 +10,8 @@ import Menu from "primevue/menu";
 export default defineComponent({
   components: {Menubar, InputText, Button, Avatar, Menu},
   setup() {
+    const router = useRouter();
+
     const items = ref([
       {
         label: 'Options',
@@ -41,13 +44,17 @@ export default defineComponent({
       }
     ]);
 
-    const menu = ref()
+    const menu = ref();
+
+    const redirect = async (route) => {
+      await router.push(route);
+    }
 
     const toggle = (event) => {
       menu.value.toggle(event);
     };
 
-    return {items, toggle}
+    return {items, toggle, redirect};
   }
 })
 
@@ -60,7 +67,14 @@ export default defineComponent({
         <Button icon="pi pi-bars" severity="secondary" text rounded aria-label="Cancel"/>
       </template>
       <template #end>
-        <Button icon="pi pi-bell" severity="secondary" text rounded aria-label="Cancel"/>
+        <Button
+            @click="redirect({name: 'notifications'})"
+            severity="secondary"
+            aria-label="Cancel"
+            icon="pi pi-bell"
+            rounded
+            text
+        />
 
         <router-link :to="{ name: 'profile' }">
           <Avatar

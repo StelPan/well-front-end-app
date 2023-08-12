@@ -49,7 +49,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="grid justify-content-between">
+  <div class="grid justify-content-start gap-2 m-0">
     <Button
         v-for="(item, i) in switcher"
         @click="toggleSwitch(item)"
