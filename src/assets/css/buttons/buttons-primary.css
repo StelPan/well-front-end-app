@@ -3,5 +3,15 @@
 .btn-primary {
     background: var(--color-primary) !important;
     border: var(--color-primary) !important;
+    color: white;
 }
 
+.btn-primary-outlined {
+    background-color: transparent !important;
+    border: 1px solid var(--color-primary) !important;
+    color: var(--color-primary)
+}
+
+.btn-primary-outlined:hover {
+    color: var(--color-primary)
+}

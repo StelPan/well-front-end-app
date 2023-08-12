@@ -11,6 +11,8 @@ import ProfileVIew from "@/views/ProfileVIew.vue";
 import EditUserView from "@/views/users/EditUserView.vue";
 import CreateUserView from "@/views/users/CreateUserView.vue";
 import StateConstructorView from "@/views/state-constructor/StateConstructorView.vue";
+import CounterpartiesView from "@/views/counterparties/CounterpartiesView";
+import CreateCounterpartyView from "@/views/counterparties/CreateCounterpartyView";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -46,6 +48,14 @@ const routes = [
                 path: 'state-constructor',
                 name: 'state-constructor',
                 component: StateConstructorView
+            }, {
+                path: 'counterparties',
+                name: 'counterparties',
+                component: CounterpartiesView
+            }, {
+                path: 'counterparties/create',
+                name: 'counterparty-create',
+                component: CreateCounterpartyView
             },
                 {
                 path: 'profile',

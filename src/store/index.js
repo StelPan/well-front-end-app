@@ -4,6 +4,7 @@ import country from "./country";
 import auth from "./auth";
 import roles from "./roles";
 import users from "./users";
+import counterparties from "./counterparties";
 
 export default createStore({
   state: {
@@ -18,6 +19,7 @@ export default createStore({
     country,
     auth,
     roles,
-    users
+    users,
+    counterparties,
   }
 });

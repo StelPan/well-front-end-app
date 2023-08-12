@@ -29,7 +29,7 @@ export default defineComponent({
       route: { name: "login" }
     }, {
       label: "Контрагенты",
-      route: { name: "login" }
+      route: { name: "counterparties" }
     }, {
       label: "Отзывы",
       route: { name: "login" }
