@@ -8,9 +8,10 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Avatar from "primevue/avatar";
 import Menu from "primevue/menu";
+import TieredMenu from "primevue/tieredmenu"
 
 export default defineComponent({
-  components: {Menubar, InputText, Button, Avatar, Menu},
+  components: {Menubar, InputText, Button, Avatar, Menu, TieredMenu},
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -20,35 +21,9 @@ export default defineComponent({
     }
 
     const items = ref([
-      {
-        label: 'Options',
-        items: [
-          {
-            label: 'Update',
-            icon: 'pi pi-refresh',
-
-          },
-          {
-            label: 'Delete',
-            icon: 'pi pi-times',
-          }
-        ]
-      },
-      {
-        label: 'Navigate',
-        items: [
-          {
-            label: 'Vue Website',
-            icon: 'pi pi-external-link',
-            url: 'https://vuejs.org/'
-          },
-          {
-            label: 'Router',
-            icon: 'pi pi-upload',
-            to: '/fileupload'
-          }
-        ]
-      }
+      { label: 'Настройки', route: { name: 'profile' } },
+      { separator: true },
+      { label: 'Выйти', class: ['color-error'] }
     ]);
 
     const menu = ref();
@@ -61,7 +36,7 @@ export default defineComponent({
       menu.value.toggle(event);
     };
 
-    return {items, toggle, redirect, changeToggleState};
+    return {items, toggle, redirect, changeToggleState, menu};
   }
 })
 
@@ -83,15 +58,32 @@ export default defineComponent({
             text
         />
 
-        <router-link :to="{ name: 'profile' }">
-          <Avatar
-              image="https://primefaces.org/cdn/primevue/images/organization/walter.jpg" class="mr-2 ml-2"
-              shape="circle"
-              aria-haspopup="true"
-              aria-controls="overlay_menu"
-          />
-        </router-link>
-        <Menu ref="menu" id="overlay_menu" :model="items" :popup="true"/>
+<!--        <router-link :to="{ name: 'profile' }"></router-link>-->
+        <Avatar
+            image="https://primefaces.org/cdn/primevue/images/organization/walter.jpg" class="mr-2 ml-2"
+            shape="circle"
+            aria-haspopup="true"
+            aria-controls="overlay_menu"
+            @click="toggle"
+        />
+
+        <TieredMenu ref="menu" id="overlay_tmenu" :model="items" popup>
+          <template #item="{ item }">
+            <div class="p-menuitem-content" data-pc-section="content">
+              <router-link
+                  class="p-menuitem-link"
+                  :to="item?.route ? item.route : {}"
+                  :class="item?.class ? item.class : []"
+                  tabindex="-1"
+                  aria-hidden="true"
+                  data-pc-section="action"
+                  data-pd-ripple="true"
+              >
+                <span data-pc-section="label">{{ item.label }}</span>
+              </router-link>
+            </div>
+          </template>
+        </TieredMenu>
       </template>
     </Menubar>
   </div>
@@ -100,5 +92,9 @@ export default defineComponent({
 <style>
 .p-menubar {
   border-radius: 0 !important;
+}
+
+.p-tieredmenu {
+  border-radius: 10px;
 }
 </style>

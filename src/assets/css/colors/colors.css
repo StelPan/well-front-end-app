@@ -1,16 +1,25 @@
 @import "../env/colors/primary.css";
 @import "../env/colors/grayscale-palette.css";
+@import "../env/colors/neutral.css";
 
 .color-primary {
-    color: var(--color-primary);
+    color: var(--color-primary) !important;
 }
 
 .color-black-40 {
-    color: var(--color-black-40);
+    color: var(--color-black-40) !important;
 }
 
 .color-black-80 {
-    color: var(--color-black-80);
+    color: var(--color-black-80) !important;
+}
+
+.color-red {
+    color: var(--color-red) !important;
+}
+
+.color-error {
+    color: var(--color-error) !important;
 }
 
 .color-primary-hover:hover {

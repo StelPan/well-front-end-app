@@ -20,7 +20,7 @@ export default defineComponent({
     }, {
       label: "Структура",
       svg: 'images/icons/Structure.svg',
-      route: {name: "login"}
+      route: {name: "buildings"}
     }, {
       label: "Объекты",
       svg: 'images/icons/Objects.svg',
@@ -105,12 +105,12 @@ export default defineComponent({
 
 .sidebar-show {
   min-width: 300px;
-  transition: min-width 1s;
+  //transition: min-width 1s;
 }
 
 .sidebar-close {
   min-width: 126px;
-  transition: min-width 1s;
+  //transition: min-width 1s;
 }
 
 .link {

@@ -12,6 +12,8 @@ import typeTariffs from "./type-tariffs";
 import vendors from "./vendors";
 import sidebar from "@/store/sidebar";
 import reviews from "@/store/reviews";
+import buildings from "@/store/buildings";
+import typeLocations from "@/store/type-locations";
 
 export default createStore({
   state: {
@@ -32,8 +34,10 @@ export default createStore({
     typeNotices,
     tariffs,
     typeTariffs,
+    typeLocations,
     vendors,
     sidebar,
     reviews,
+    buildings,
   }
 });
