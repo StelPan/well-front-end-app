@@ -14,6 +14,9 @@ import sidebar from "@/store/sidebar";
 import reviews from "@/store/reviews";
 import buildings from "@/store/buildings";
 import typeLocations from "@/store/type-locations";
+import modals from "@/store/modals";
+import serviceCategory from "@/store/service-category";
+import services from "@/store/services";
 
 export default createStore({
   state: {
@@ -39,5 +42,8 @@ export default createStore({
     sidebar,
     reviews,
     buildings,
+    modals,
+    serviceCategory,
+    services
   }
 });

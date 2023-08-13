@@ -19,6 +19,14 @@ const actions = {
 
         commit('updateProfile', user);
         TokenService.setAccessToken(access_token);
+    },
+    async fetchProfile({commit}) {
+        const { data } = await AuthService.fetchProfile();
+        commit('updateProfile', data);
+    },
+    async fetchUpdateProfile({commit}, {id, body}) {
+        const profile = await AuthService.fetchUpdateProfile(id, body);
+        console.log(profile);
     }
 };
 

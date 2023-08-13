@@ -6,7 +6,6 @@ const fetchAuthorization = async (phone) => {
 };
 
 const fetchVerifyCode = async (phone, code, phoneCode) => {
-    console.log('fetchVerify')
     const response = await http.post('/api/company/v1/auth/verify-code', {
         phone_code: phoneCode,
         phone,
@@ -26,9 +25,14 @@ const fetchLogout = async (phone, code) => {
     return response.data;
 };
 
-const fetchProfile = async (phone, code) => {
-    const response = await http.post('/api/company/v1/auth/me', { phone, code });
+const fetchProfile = async () => {
+    const response = await http.get('/api/company/v1/auth/me');
     return response.data;
 };
 
-export default { fetchProfile, fetchAuthorization, fetchLogout, fetchRefreshToken, fetchVerifyCode}
+const fetchUpdateProfile = async (id, body) => {
+    const response = await http.post('/api/company/v1/user/' + id, body);
+    return response.data;
+}
+
+export default { fetchProfile, fetchAuthorization, fetchLogout, fetchRefreshToken, fetchVerifyCode, fetchUpdateProfile}

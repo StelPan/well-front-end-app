@@ -1,5 +1,5 @@
 <script>
-import {defineComponent, ref} from "vue";
+import {computed, defineComponent, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 
@@ -20,23 +20,39 @@ export default defineComponent({
       store.dispatch('changeToggle');
     }
 
-    const items = ref([
-      { label: 'Настройки', route: { name: 'profile' } },
-      { separator: true },
-      { label: 'Выйти', class: ['color-error'] }
-    ]);
-
     const menu = ref();
 
     const redirect = async (route) => {
       await router.push(route);
     }
-
     const toggle = (event) => {
       menu.value.toggle(event);
     };
 
-    return {items, toggle, redirect, changeToggleState, menu};
+    const visibleConfirmationModal = computed(() => store.getters.getConfirmationStateModal);
+
+    const changeConfirmationStateModal = () => {
+      store.dispatch('changeStateModal', {
+        type: 'confirmationStateModal',
+        bool: !visibleConfirmationModal.value
+      })
+    }
+
+    const items = ref([
+      { label: 'Настройки', route: { name: 'profile' } },
+      { separator: true },
+      { label: 'Выйти', class: ['color-error'], action: changeConfirmationStateModal }
+    ]);
+
+    return {
+      menu,
+      items,
+      toggle,
+      redirect,
+      changeToggleState,
+      visibleConfirmationModal,
+      changeConfirmationStateModal
+    };
   }
 })
 
@@ -58,7 +74,6 @@ export default defineComponent({
             text
         />
 
-<!--        <router-link :to="{ name: 'profile' }"></router-link>-->
         <Avatar
             image="https://primefaces.org/cdn/primevue/images/organization/walter.jpg" class="mr-2 ml-2"
             shape="circle"
@@ -74,6 +89,7 @@ export default defineComponent({
                   class="p-menuitem-link"
                   :to="item?.route ? item.route : {}"
                   :class="item?.class ? item.class : []"
+                  @click="item.action"
                   tabindex="-1"
                   aria-hidden="true"
                   data-pc-section="action"
