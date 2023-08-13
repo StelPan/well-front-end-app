@@ -1,6 +1,8 @@
 <script>
 import {defineComponent, ref} from "vue";
 import {useRouter} from "vue-router";
+import {useStore} from "vuex";
+
 import Menubar from "primevue/menubar";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
@@ -10,7 +12,12 @@ import Menu from "primevue/menu";
 export default defineComponent({
   components: {Menubar, InputText, Button, Avatar, Menu},
   setup() {
+    const store = useStore();
     const router = useRouter();
+
+    const changeToggleState = () => {
+      store.dispatch('changeToggle');
+    }
 
     const items = ref([
       {
@@ -54,7 +61,7 @@ export default defineComponent({
       menu.value.toggle(event);
     };
 
-    return {items, toggle, redirect};
+    return {items, toggle, redirect, changeToggleState};
   }
 })
 
@@ -64,7 +71,7 @@ export default defineComponent({
   <div class="card relative z-2">
     <Menubar class="bg-neutral border-top-none border-left-none border-right-none px-5">
       <template #start>
-        <Button icon="pi pi-bars" severity="secondary" text rounded aria-label="Cancel"/>
+        <Button icon="pi pi-bars" severity="secondary" text rounded aria-label="Cancel" @click="changeToggleState"/>
       </template>
       <template #end>
         <Button

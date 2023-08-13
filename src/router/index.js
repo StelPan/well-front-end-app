@@ -18,6 +18,7 @@ import NotificationView from "@/views/notifications/NotificationView";
 import NoticesView from "@/views/notices/NoticesView";
 import TariffsView from "@/views/tariffs/TariffsView";
 import VendorsView from "@/views/vendors/VendorsView";
+import ReviewsView from "@/views/reviews/ReviewsView";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -48,6 +49,10 @@ const routes = [
                 path: 'notices',
                 name: 'notices',
                 component: NoticesView
+            }, {
+                path: 'reviews',
+                name: 'reviews',
+                component: ReviewsView,
             }, {
                 path: 'users',
                 name: 'users',
