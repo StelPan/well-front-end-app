@@ -8,6 +8,7 @@ import Rating from "primevue/rating";
 import Editor from "primevue/editor";
 import Breadcrumb from "@/components/Breadcrumb";
 import MainCard from "@/components/cards/MainCard";
+import ButtonSuccess from "@/components/buttons/ButtonSuccess";
 
 const STATUS_PENDING = 'pending';
 const STATUS_CONFIRMED = 'confirmed';
@@ -15,7 +16,7 @@ const STATUS_DECLINED = 'declined';
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {Breadcrumb, Button, MainCard, Rating, Editor},
+  components: {Breadcrumb, Button, MainCard, Rating, Editor, ButtonSuccess},
   setup() {
     const store = useStore();
     const route = useRoute();
@@ -84,7 +85,7 @@ export default defineComponent({
       </template>
 
       <template v-if="review?.status === STATUS_CONFIRMED">
-        <Button label="Отзыв утвержден" class="btn-primary font-light ml-3" />
+        <ButtonSuccess label="Отзыв утвержден" />
       </template>
 
       <template v-if="review?.status === STATUS_DECLINED">

@@ -20,4 +20,9 @@ const declineReview = async (id, body) => {
     return response.data;
 };
 
+const destroyPhotoReview = async (id, uuid) => {
+    const response = await http.post(`/api/company/v1/review/${id}/photo/delete`, { uuid });
+    return response.data;
+}
+
 export {loadReview, loadReviews, declineReview, confirmReview};

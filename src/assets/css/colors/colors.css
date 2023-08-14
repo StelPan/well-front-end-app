@@ -1,6 +1,7 @@
 @import "../env/colors/primary.css";
 @import "../env/colors/grayscale-palette.css";
 @import "../env/colors/neutral.css";
+@import "../env/colors/system.css";
 
 .color-primary {
     color: var(--color-primary) !important;
@@ -20,6 +21,10 @@
 
 .color-error {
     color: var(--color-error) !important;
+}
+
+.color-success {
+    color: var(--color-success) !important;
 }
 
 .color-primary-hover:hover {
