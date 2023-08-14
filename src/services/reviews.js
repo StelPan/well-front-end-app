@@ -10,4 +10,14 @@ const loadReview = async (id) => {
     return response.data;
 };
 
-export {loadReview, loadReviews};
+const confirmReview = async (id, body) => {
+    const response = await http.post(`/api/company/v1/review/${id}/confirm`, body);
+    return response.data;
+}
+
+const declineReview = async (id, body) => {
+    const response = await http.post(`/api/company/v1/review/${id}/decline`, body);
+    return response.data;
+};
+
+export {loadReview, loadReviews, declineReview, confirmReview};

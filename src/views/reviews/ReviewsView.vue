@@ -87,57 +87,59 @@ export default defineComponent({
         <DataView :value="reviews?.data?.data ?? []">
           <template #list="slotProps">
             <div class="col-12">
-              <div class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4">
-                <img
-                    class="w-9 sm:w-16rem xl:w-14rem shadow-2 block xl:block mx-auto border-round"
-                    src="https://aiparquitectos.com/wp-content/uploads/2022/06/placeholder-600x400-1.png"
-                    :alt="slotProps.data.service_name"
-                />
-                <div class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
-                  <div class="flex flex-column align-items-center sm:align-items-start gap-3">
-                    <div class="text-2xl font-bold text-900">{{ slotProps.data.service_name }}</div>
-                    <div class="flex align-items-center xl:w-5 gap-3">
-                      <span class="flex align-items-center gap-2">
-                                <span class="font-semibold">{{ slotProps.data.text }}</span>
-                            </span>
+              <router-link class="no-underline" :to="{ name: 'review-view', params: {id: slotProps.data.id} }">
+                <div class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4">
+                  <img
+                      class="w-9 sm:w-16rem xl:w-14rem shadow-2 block xl:block mx-auto border-round"
+                      src="https://aiparquitectos.com/wp-content/uploads/2022/06/placeholder-600x400-1.png"
+                      :alt="slotProps.data.service_name"
+                  />
+                  <div class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
+                    <div class="flex flex-column align-items-center sm:align-items-start gap-3">
+                      <div class="text-2xl font-bold text-900">{{ slotProps.data.service_name }}</div>
+                      <div class="flex align-items-center xl:w-5 gap-3">
+                      <span class="flex align-items-center color-black-40 gap-2">
+                        <span class="font-semibold">{{ slotProps.data.text }}</span>
+                      </span>
+                      </div>
+                      <Rating :modelValue="slotProps.data.rating" readonly :cancel="false"></Rating>
                     </div>
-                    <Rating :modelValue="slotProps.data.rating" readonly :cancel="false"></Rating>
-                  </div>
-                  <div class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2">
-                    <Button
-                        v-if="slotProps.data.status === STATUS_PENDING"
-                        label="Требует подтверждения"
-                        rounded
-                        class="btn-primary font-light mb-3"
-                    />
+                    <div class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2">
+                      <Button
+                          v-if="slotProps.data.status === STATUS_PENDING"
+                          label="Требует подтверждения"
+                          rounded
+                          class="btn-primary font-light mb-3"
+                      />
 
-                    <Button
-                        v-if="slotProps.data.status === STATUS_CONFIRMED"
-                        label="Подтвержден"
-                        rounded
-                        class="btn-success font-light mb-3"
-                    />
+                      <Button
+                          v-if="slotProps.data.status === STATUS_CONFIRMED"
+                          label="Подтвержден"
+                          rounded
+                          class="btn-success font-light mb-3"
+                      />
 
-                    <Button
-                        v-if="slotProps.data.status === STATUS_DECLINED"
-                        label="Отклонен"
-                        rounded
-                        class="btn-error font-light mb-3"
-                    />
+                      <Button
+                          v-if="slotProps.data.status === STATUS_DECLINED"
+                          label="Отклонен"
+                          rounded
+                          class="btn-error font-light mb-3"
+                      />
 
-                    <span class="color-black-40 text-sm">Пользователь</span>
+                      <span class="color-black-40 text-sm">Пользователь</span>
 
-                    <router-link
-                        :to="{ name: 'user-edit', params: {id: slotProps.data.user.id } }"
-                        class="color-black-80 text-lg"
-                    >
-                      {{ slotProps.data.user.last_name ?? 'Не указан' }}
-                      {{ slotProps.data.user.fist_name ?? 'Не указан' }}
-                      {{ slotProps.data.user.patronymic ?? 'Не указан' }}
-                    </router-link>
+                      <router-link
+                          :to="{ name: 'user-edit', params: {id: slotProps.data.user.id } }"
+                          class="color-black-80 text-lg"
+                      >
+                        {{ slotProps.data.user.last_name ?? 'Не указан' }}
+                        {{ slotProps.data.user.fist_name ?? 'Не указан' }}
+                        {{ slotProps.data.user.patronymic ?? 'Не указан' }}
+                      </router-link>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </router-link>
             </div>
           </template>
         </DataView>

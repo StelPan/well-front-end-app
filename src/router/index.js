@@ -23,6 +23,7 @@ import BuildingsView from "@/views/buildings/BuildingsView";
 import ServicesVIew from "@/views/services/ServicesVIew";
 import ServicesListView from "@/views/services/ServicesListView";
 import ServiceCategoriesView from "@/views/services/ServiceCategoriesView";
+import UpdateReviewView from "@/views/reviews/UpdateReviewView";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -57,6 +58,10 @@ const routes = [
                 path: 'reviews',
                 name: 'reviews',
                 component: ReviewsView,
+            }, {
+                path: 'reviews/:id',
+                name: 'review-view',
+                component: UpdateReviewView
             }, {
                 path: 'services',
                 name: 'services',

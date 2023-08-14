@@ -33,7 +33,6 @@ export default defineComponent({
       phone_code: ''
     });
 
-
     const languages = [{
       label: 'Русский',
       value: 'ru'

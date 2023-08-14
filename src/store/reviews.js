@@ -1,4 +1,4 @@
-import {loadReviews, loadReview} from "@/services/reviews";
+import {loadReviews, loadReview, confirmReview, declineReview} from "@/services/reviews";
 
 const state = () => ({
     listReviews: [],
@@ -11,9 +11,15 @@ const actions = {
         commit('updateListReviews', reviews);
     },
     async fetchReview({commit}, id) {
-        const review = await loadReview(id);
+        const {data: review} = await loadReview(id);
         commit('updateCurrentReview', review);
     },
+    async fetchConfirmReview(_, {id, body}) {
+        await confirmReview(id, body);
+    },
+    async fetchDeclineReview(_, {id, body}) {
+        await declineReview(id, body);
+    }
 };
 
 const mutations = {
