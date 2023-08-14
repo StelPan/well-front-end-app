@@ -1,19 +1,40 @@
 <script>
-import {defineComponent, computed, onMounted} from "vue";
+import {defineComponent, computed, onMounted, ref} from "vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 
 import Button from "primevue/button";
+import DataView from "primevue/dataview";
+import TabMenu from "primevue/tabmenu";
 
 export default defineComponent({
-  components: {Button},
+  layout: { name: 'AdminLayout' },
+  components: {Button, DataView, TabMenu},
   setup() {
-    const store = useStore();
-    const router = useRouter();
+    const items = ref([
+      {
+        label: 'Штучные',
+        icon: 'pi pi-fw pi-home',
+        to: '/services/list'
+      },
+      {
+        label: 'Пакеты услуг',
+        icon: 'pi pi-fw pi-calendar',
+        to: '/services/categories'
+      },
+      {
+        label: 'Разовые платежи',
+        icon: 'pi pi-fw pi-calendar',
+        to: '/services/categories'
+      },
+      {
+        label: 'Категории услуг',
+        icon: 'pi pi-fw pi-calendar',
+        to: '/services/categories'
+      }
+    ]);
 
-    const services = computed(() => store.getters.getListServices);
-
-    return {services};
+    return {items};
   }
 });
 
@@ -24,9 +45,15 @@ export default defineComponent({
     <div class="flex justify-content-between">
       <h1>Услуги</h1>
 
-      <Button label="Создать услугу" class="btn-primary font-light ml-3 w-12" />
+      <Button label="Создать услугу" class="btn-primary font-light ml-3" />
+    </div>
+
+    <div class="flex">
+      <TabMenu :model="items" />
     </div>
   </section>
+
+  <router-view></router-view>
 </template>
 
 <style scoped>

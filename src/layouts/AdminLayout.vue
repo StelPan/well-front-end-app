@@ -37,7 +37,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="flex bg-neutral h-screen">
+    <div class="flex bg-neutral h-screen">
     <ConfirmationModal v-model:visible="visibleConfirmationModal">
       <template #header>
         Выйти из профиля

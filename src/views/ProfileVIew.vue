@@ -1,5 +1,5 @@
 <script>
-import {computed, defineComponent, onMounted, ref, reactive} from "vue";
+import {computed, defineComponent, onMounted, ref, reactive, watch} from "vue";
 import {useStore} from "vuex";
 import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
 
@@ -22,6 +22,7 @@ export default defineComponent({
     };
 
     const profile = computed(() => store.getters.getProfile);
+    watch(profile, (data) => useCreateReactiveCopy(reactiveForm, data));
 
     const reactiveForm = reactive({
       first_name: '',
@@ -32,7 +33,6 @@ export default defineComponent({
       phone_code: ''
     });
 
-    useCreateReactiveCopy(reactiveForm, profile.value);
 
     const languages = [{
       label: 'Русский',

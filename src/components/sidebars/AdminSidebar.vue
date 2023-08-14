@@ -32,7 +32,7 @@ export default defineComponent({
     }, {
       label: "Услуги",
       svg: 'images/icons/Services.svg',
-      route: {name: "login"}
+      route: {name: "services"},
     }, {
       label: "Контрагенты",
       svg: 'images/icons/Counterparties.svg',
