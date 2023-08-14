@@ -1,7 +1,7 @@
 import http from "../plugins/axios";
 
-const loadReviews = async () => {
-    const response = await http.get('/api/company/v1/review');
+const loadReviews = async (params = {}) => {
+    const response = await http.get('/api/company/v1/review', { params });
     return response.data;
 };
 

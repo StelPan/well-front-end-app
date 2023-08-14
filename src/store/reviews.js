@@ -6,8 +6,8 @@ const state = () => ({
 });
 
 const actions = {
-    async fetchReviews({commit}) {
-        const reviews = await loadReviews();
+    async fetchReviews({commit}, params = {}) {
+        const reviews = await loadReviews(params);
         commit('updateListReviews', reviews);
     },
     async fetchReview({commit}, id) {

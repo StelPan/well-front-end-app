@@ -83,6 +83,10 @@ const routes = [
                 name: 'user-edit',
                 component: EditUserView,
             }, {
+                path: 'users/create',
+                name: 'user-create',
+                component: CreateUserView,
+            }, {
                 path: 'tariffs',
                 name: 'tariffs',
                 component: TariffsView
@@ -90,10 +94,6 @@ const routes = [
                 path: 'vendors',
                 name: 'vendors',
                 component: VendorsView
-            }, {
-                path: 'users/create',
-                name: 'user-create',
-                component: CreateUserView,
             }, {
                 path: 'state-constructor',
                 name: 'state-constructor',
