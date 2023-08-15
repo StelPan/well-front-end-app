@@ -140,16 +140,16 @@ export default defineComponent({
         </div>
       </div>
     </div>
-    <div class="grid">
-      <div class="col-12">
-        <MainCard title="Файлы">
-          <div class="grid">
-            <div class="col-12 md:col-3">
-              <Button label="Добавить файл" class="btn-primary font-light"/>
-            </div>
-          </div>
-        </MainCard>
-      </div>
-    </div>
+<!--    <div class="grid">-->
+<!--      <div class="col-12">-->
+<!--        <MainCard title="Файлы">-->
+<!--          <div class="grid">-->
+<!--            <div class="col-12 md:col-3">-->
+<!--              <Button label="Добавить файл" class="btn-primary font-light"/>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </MainCard>-->
+<!--      </div>-->
+<!--    </div>-->
   </section>
 </template>

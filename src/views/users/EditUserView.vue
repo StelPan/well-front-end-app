@@ -109,7 +109,7 @@ export default defineComponent({
             </span>
 
             <span class="p-float-label mb-3 w-full">
-              <InputText id="patronymic" class="w-full" :value="formReactive.patronymic"/>
+              <InputText id="patronymic" class="w-full" v-model="formReactive.patronymic"/>
               <label for="patronymic">Отчество</label>
             </span>
           </div>
@@ -119,12 +119,12 @@ export default defineComponent({
         <MainCard title="Контактные данные">
           <div class="flex flex-column gap-3">
             <span class="p-float-label mb-3 w-full">
-            <InputText id="phone" class="w-full" :value="`${user?.phone_code + user?.phone}`"/>
+            <InputText id="phone" class="w-full" v-model="formReactive.phone"/>
             <label for="phone">Контактный номер *</label>
           </span>
 
             <span class="p-float-label mb-3 w-full">
-            <InputText id="phone" class="w-full" :value="formReactive.email"/>
+            <InputText id="phone" class="w-full" v-model="formReactive.email"/>
             <label for="phone">E-mail (для уведомлений) *</label>
           </span>
           </div>
@@ -147,17 +147,17 @@ export default defineComponent({
       </div>
     </div>
 
-    <div class="grid">
-      <div class="col-12">
-        <MainCard title="Файлы">
-          <div class="grid">
-            <div class="col-12 md:col-3">
-              <Button label="Добавить файл" class="btn-primary font-light"/>
-            </div>
-          </div>
-        </MainCard>
-      </div>
-    </div>
+<!--    <div class="grid">-->
+<!--      <div class="col-12">-->
+<!--        <MainCard title="Файлы">-->
+<!--          <div class="grid">-->
+<!--            <div class="col-12 md:col-3">-->
+<!--              <Button label="Добавить файл" class="btn-primary font-light"/>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </MainCard>-->
+<!--      </div>-->
+<!--    </div>-->
   </section>
 </template>
 

@@ -24,6 +24,8 @@ import ServicesVIew from "@/views/services/ServicesVIew";
 import ServicesListView from "@/views/services/ServicesListView";
 import ServiceCategoriesView from "@/views/services/ServiceCategoriesView";
 import UpdateReviewView from "@/views/reviews/UpdateReviewView";
+import EditTariffView from "@/views/tariffs/EditTariffView";
+import TariffsListView from "@/views/tariffs/TariffsListView";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -94,7 +96,16 @@ const routes = [
             }, {
                 path: 'tariffs',
                 name: 'tariffs',
-                component: TariffsView
+                component: TariffsView,
+                children: [{
+                    path: 'list/:period/',
+                    name: 'tariffs-periods-list',
+                    component: TariffsListView
+                }, ]
+            }, {
+                path: '/tariffs/:id',
+                name: 'tariff-view',
+                component: EditTariffView
             }, {
                 path: 'vendors',
                 name: 'vendors',

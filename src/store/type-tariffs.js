@@ -7,6 +7,7 @@ const state = () => ({
 const actions = {
     async fetchTypeTariffs({commit}) {
         const tariffs = await TypeTariffsService.loadTypeTariffs();
+        commit('updateTypeTariffs', tariffs.data);
     }
 };
 

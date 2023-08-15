@@ -4,32 +4,54 @@ import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 
 import Button from "primevue/button";
+import TabMenu from "primevue/tabmenu";
 import TariffsTable from "@/components/tables/TariffsTable";
 
 export default defineComponent({
   layout: {name: "AdminLayout"},
-  components: {TariffsTable, Button},
+  components: {TariffsTable, Button, TabMenu},
   setup() {
     const store = useStore();
 
-    const tariffs = ref(store.getters.getListTariffs);
+    const typesTariffItems = ref([]);
+    const fillTypeTariffItems = () => {
+      let tariffs = [];
+      for (let period of store.getters.getListTypeTariffs) {
+        tariffs.push({
+          label: period.name,
+          to: `/tariffs/list/${period.name}`
+        });
+      }
+
+      typesTariffItems.value = tariffs;
+    };
 
     onMounted(async () => {
       await store.dispatch('fetchTypeTariffs');
+      fillTypeTariffItems();
     });
 
-    return {tariffs};
+    return {typesTariffItems};
   }
 });
 </script>
 
 <template>
   <section class="py-2 mb-3">
-    <div class="flex">
+    <div class="flex justify-content-between">
       <h1>Тарифы</h1>
-      <Button label="Создать тариф" class="btn-primary font-light w-12" />
+      <Button label="Создать тариф" class="btn-primary font-light" />
     </div>
   </section>
+  <section class="py-2 mb-3">
+    <div class="grid">
+      <div class="col-12">
+        <TabMenu :model="typesTariffItems" />
+      </div>
+    </div>
+  </section>
+
+  <router-view></router-view>
 </template>
 
 <style scoped>

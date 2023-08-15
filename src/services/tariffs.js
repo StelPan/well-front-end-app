@@ -1,7 +1,7 @@
 import http from '../plugins/axios';
 
 const loadTariffs = async (params = {}) => {
-  const response = await http.get('/api/app/v1/tariff', { params });
+  const response = await http.get('/api/company/v1/tariff', { params });
   return response.data;
 };
 

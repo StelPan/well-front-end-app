@@ -17,16 +17,10 @@ import typeLocations from "@/store/type-locations";
 import modals from "@/store/modals";
 import serviceCategory from "@/store/service-category";
 import services from "@/store/services";
+import statePermission from "@/store/state-permission";
+import stateList from "@/store/state-list";
 
 export default createStore({
-  state: {
-  },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
   modules: {
     country,
     auth,
@@ -44,6 +38,8 @@ export default createStore({
     buildings,
     modals,
     serviceCategory,
-    services
+    services,
+    stateList,
+    statePermission
   }
 });

@@ -16,7 +16,10 @@ export default defineComponent({
 </script>
 
 <template>
-  <DataTable :value="tariffs" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
+  <DataTable :value="tariffs ?? []" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
+    <Column field="id" header="ID"></Column>
+    <Column field="name_ru" header="Наименование тарифа"></Column>
+    <Column field="cost" header="Стоимость, руб."></Column>
   </DataTable>
 </template>
 
