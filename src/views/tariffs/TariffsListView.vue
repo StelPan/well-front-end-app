@@ -1,5 +1,5 @@
 <script>
-import {computed, defineComponent, watch} from "vue";
+import {computed, defineComponent, onMounted, watch} from "vue";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router"
 
@@ -15,12 +15,22 @@ export default defineComponent({
 
     const tariffs = computed(() => store.getters.getListTariffs);
 
+    const loadTariffs = async () => {
+      console.log({ period: route.params.period });
+      await store.dispatch('fetchTariffs', { period: route.params.period });
+    }
+
     watch(
         () => route.params.period,
         async (period) => {
-          await store.dispatch('fetchTariffs', { period })
+          if (!period) return;
+          await loadTariffs()
         }
     );
+
+    onMounted(async () => {
+      await loadTariffs();
+    });
 
     return {tariffs};
   }

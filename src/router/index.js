@@ -26,6 +26,7 @@ import ServiceCategoriesView from "@/views/services/ServiceCategoriesView";
 import UpdateReviewView from "@/views/reviews/UpdateReviewView";
 import EditTariffView from "@/views/tariffs/EditTariffView";
 import TariffsListView from "@/views/tariffs/TariffsListView";
+import CreateTariffView from "@/views/tariffs/CreateTariffView.vue";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -101,7 +102,11 @@ const routes = [
                     path: 'list/:period/',
                     name: 'tariffs-periods-list',
                     component: TariffsListView
-                }, ]
+                }]
+            }, {
+                path: 'tariffs/create',
+                name: 'tariff-create',
+                component: CreateTariffView,
             }, {
                 path: '/tariffs/:id',
                 name: 'tariff-view',

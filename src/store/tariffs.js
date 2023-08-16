@@ -15,7 +15,13 @@ const actions = {
         commit('updateCurrentTariff', tariff)
     },
     async fetchUpdateTariff({commit}, {id, body}) {
-        const update = TariffsService.editTariff(id, body);
+        const update = await TariffsService.editTariff(id, body);
+    },
+    async fetchCreateTariff({commit}, body) {
+        await TariffsService.createTariff(body);
+    },
+    async fetchDestroyTariff({commit}, id) {
+        // await TariffsService.
     }
 };
 

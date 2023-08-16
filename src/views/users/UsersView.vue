@@ -24,11 +24,6 @@ export default defineComponent({
       roles: [],
     });
 
-    onMounted(async () => {
-      await store.dispatch('fetchRoles');
-      await store.dispatch('fetchUsers');
-    });
-
     const toCreateUsers = () => {
       router.push({ name: 'user-create' });
     };
@@ -36,6 +31,11 @@ export default defineComponent({
     const selectedRole = ref('');
     const users = computed(() => store.getters.getUsersList);
     const roles = computed(() => store.getters.getRolesList);
+
+    onMounted(async () => {
+      await store.dispatch('fetchRoles');
+      await store.dispatch('fetchUsers');
+    });
 
     return {selectedRole, roles, users, toCreateUsers};
   }
@@ -59,14 +59,14 @@ export default defineComponent({
   </section>
 
   <section class="mb-3 py-2">
-    <div v-if="!users?.data?.length" class="flex justify-content-center align-items-center center-text-screen">
+    <div v-if="Array.isArray(users?.data?.data) ? !users.data.data.length : false" class="flex justify-content-center align-items-center center-text-screen">
       <span class="color-black-40">
         Здесь пока ничего нет
       </span>
     </div>
 
-    <div v-if="users?.data?.length">
-      <DataTable :value="users?.data ?? []" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
+    <div v-if="Array.isArray(users?.data?.data) ? users.data.data.length : false">
+      <DataTable :value="users.data.data" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
         <Column field="id" header="ID" class="text-center"/>
         <Column field="first_name" header="ФИО">
           <template #body="slotProps">

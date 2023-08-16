@@ -20,4 +20,8 @@ const editTariff = async (id, data) => {
   return response.data;
 }
 
+const destroyTariff = async (id) => {
+  const response = await http.post(`/api/com`)
+}
+
 export default {loadTariffs, loadTariff, editTariff, createTariff};
