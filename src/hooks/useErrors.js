@@ -1,7 +1,7 @@
 import {ref} from "vue";
 
 export function useError(e = {}) {
-    const errors = ref([]);
+    const errors = ref(e);
 
     function clearErrors () {
         errors.value = [];
