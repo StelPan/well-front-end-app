@@ -1,6 +1,7 @@
 <script>
-import {defineComponent, onMounted, computed, ref, reactive} from "vue";
+import {defineComponent, onMounted, computed, ref, reactive, watch} from "vue";
 import { useStore } from "vuex";
+import {useError} from "@/hooks/useErrors";
 
 import Breadcrumb from "@/components/Breadcrumb.vue";
 import MainCard from "@/components/cards/MainCard.vue";
@@ -16,6 +17,7 @@ export default defineComponent({
   components: {Breadcrumb, MainCard, MultiSelect, InputText, Button, Dropdown},
   setup() {
     const store = useStore();
+    const errors = useError();
 
     const languages = [{
       label: 'Русский',
@@ -45,7 +47,7 @@ export default defineComponent({
       try {
         await store.dispatch('fetchCreateUser', formReactive);
       } catch (e) {
-        console.error(e);
+        errors.setErrors(e.response.data.errors);
       }
     }
 
@@ -57,9 +59,21 @@ export default defineComponent({
       phone: '',
       roles: [],
       language: '',
-    })
+    });
 
-    return { breadcrumbs, roles, formReactive, toCreateUser, languages };
+    watch(
+        formReactive,
+        () => errors.clearErrors()
+    )
+
+    return {
+      breadcrumbs,
+      roles,
+      formReactive,
+      toCreateUser,
+      languages,
+      errors: errors.errors,
+    };
   }
 });
 </script>
@@ -101,8 +115,13 @@ export default defineComponent({
         <MainCard title="Контактные данные">
             <div class="flex flex-column gap-3">
                 <span class="p-float-label mb-3 w-full">
-                  <InputText id="phone" class="w-full" v-model="formReactive.phone"/>
+                  <InputText id="phone" class="w-full" :class="{'p-invalid': !!errors?.phone}" v-model="formReactive.phone"/>
                   <label for="phone">Контактный номер *</label>
+                  <span class="color-red" v-if="errors?.phone">
+                    <template v-for="(error, i) in errors.phone" :key="i">
+                      {{ error }} <br>
+                    </template>
+                  </span>
               </span>
 
                 <span class="p-float-label mb-3 w-full">

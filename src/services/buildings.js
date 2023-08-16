@@ -1,7 +1,7 @@
 import http from "../plugins/axios";
 
 const loadBuildings = async () => {
-    const response = http.get('/api/v1/company/building');
+    const response = http.get('/api/company/v1/building');
     return response.data;
 };
 
@@ -10,4 +10,4 @@ const loadBuilding = async (id) => {
     return response.data;
 };
 
-export {loadBuildings, loadBuilding}
+export {loadBuildings, loadBuilding};
