@@ -87,7 +87,7 @@ export default defineComponent({
            <span class="p-float-label w-full">
                     <InputText v-model="reactiveForm.first_name" id="first_name" class="w-full"/>
                     <label for="first_name">Имя *</label>
-             </span>
+           </span>
          </div>
         </div>
         <div class="col-12 md:col-4">

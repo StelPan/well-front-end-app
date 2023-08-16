@@ -7,6 +7,16 @@ import Button from "primevue/button";
 import TabMenu from "primevue/tabmenu";
 import TariffsTable from "@/components/tables/TariffsTable";
 
+const DAILY_TYPE = 'daily';
+const HOURLY_TYPE = 'hourly';
+const MONTHLY_TYPE = 'monthly';
+
+const TARIFF_NAMES = {
+  [DAILY_TYPE]: 'Краткосрочные (суточные)',
+  [HOURLY_TYPE]: 'Краткосрочные (часовые)',
+  [MONTHLY_TYPE]: 'Долгосрочные',
+};
+
 export default defineComponent({
   layout: {name: "AdminLayout"},
   components: {TariffsTable, Button, TabMenu},
@@ -18,7 +28,7 @@ export default defineComponent({
       let tariffs = [];
       for (let period of store.getters.getListTypeTariffs) {
         tariffs.push({
-          label: period.name,
+          label: TARIFF_NAMES[period.name],
           to: `/tariffs/list/${period.name}`
         });
       }
