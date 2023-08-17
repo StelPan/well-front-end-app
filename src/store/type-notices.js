@@ -1,4 +1,4 @@
-import {loadTypeNotices} from "@/services/type-notices";
+import {loadTypeNotices, createTypeNotice} from "@/services/type-notices";
 
 const state = () => ({
    listTypeNotices: [],
@@ -8,6 +8,9 @@ const actions = {
     async fetchTypeNotices({commit}) {
         const {data} = await loadTypeNotices();
         commit('updateListTypeNotices', data);
+    },
+    async fetchCreateTypeNotice({commit}, body = {}) {
+        await createTypeNotice(body);
     }
 };
 

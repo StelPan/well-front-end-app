@@ -19,11 +19,15 @@ export default defineComponent({
       await store.dispatch('fetchNotices');
     });
 
-    const selectType  = ref('');
-    const notices     = computed(() => store.getters.getListNotices);
-    const types       = computed(() => store.getters.getListTypeNotices);
+    const selectType = ref('');
+    const notices = computed(() => store.getters.getListNotices);
+    const types = computed(() => store.getters.getListTypeNotices);
 
-    return {types, selectType, notices};
+    const toNoticeCreate = async () => {
+      await router.push({name: 'notice-create'});
+    };
+
+    return {types, selectType, notices, toNoticeCreate};
   }
 });
 </script>
@@ -40,7 +44,7 @@ export default defineComponent({
             placeholder="Тип уведомления"
             class="w-full md:w-14rem border-radius-15"
         />
-        <Button label="Создать уведомление" class="btn-primary font-light w-12" />
+        <Button label="Создать уведомление" @click="toNoticeCreate" class="btn-primary font-light w-12"/>
       </div>
     </div>
   </section>

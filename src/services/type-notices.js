@@ -5,4 +5,9 @@ const loadTypeNotices = async () => {
     return response.data;
 };
 
-export {loadTypeNotices};
+const createTypeNotice = async (body = {}) => {
+    const response = await http.post('/api/company/v1/push/type', body);
+    return response.data;
+}
+
+export {loadTypeNotices, createTypeNotice};
