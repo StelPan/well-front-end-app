@@ -3,11 +3,16 @@ import {defineComponent, ref} from "vue";
 
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import Button from "primevue/button";
 
 export default defineComponent({
-  components: {DataTable, Column},
+  components: {DataTable, Column, Button},
   props: {
     notices: {
+      type: Array,
+      required: true,
+    },
+    typeNotices: {
       type: Array,
       required: true,
     }
@@ -20,7 +25,37 @@ export default defineComponent({
 </script>
 
 <template>
-  <DataTable :value="[{}]" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
+  <DataTable :value="notices" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
+    <Column field="id" header="ID"></Column>
+
+    <Column field="text" header="Текст сообщения">
+      <template #body="slotProps">
+        <router-link :to="{ name: 'notice-view', params: {id: slotProps.data.id }}" class="color-primary-hover">
+          <span class="color-black-80">{{ slotProps.data.text }}</span>
+        </router-link>
+      </template>
+    </Column>
+
+    <Column field="text" header="Тип уведомления">
+      <template #body="slotProps">
+        {{ typeNotices[0]?.name }}
+      </template>
+    </Column>
+
+    <Column field="text" header="Статус">
+      <template #body="slotProps">
+        <Button rounded class="btn-success">
+          {{ slotProps.data.state.name }}
+        </Button>
+      </template>
+    </Column>
+
+    <Column field="text" header="Дата рассылки">
+      <template #body="slotProps">
+        {{ slotProps.data.send_date }}
+        {{ slotProps.data.send_time }}
+      </template>
+    </Column>
   </DataTable>
 </template>
 

@@ -16,13 +16,12 @@ export default defineComponent({
 
     onMounted(async () => {
       await store.dispatch('fetchTypeNotices');
+      await store.dispatch('fetchNotices');
     });
 
-    const notices = ref([]);
-
-    const types = computed(() => store.getters.getListTypeNotices);
-
-    const selectType = ref('');
+    const selectType  = ref('');
+    const notices     = computed(() => store.getters.getListNotices);
+    const types       = computed(() => store.getters.getListTypeNotices);
 
     return {types, selectType, notices};
   }
@@ -37,7 +36,7 @@ export default defineComponent({
       <div class="flex gap-3">
         <Dropdown
             v-model="selectType" :options="types"
-            optionLabel="name_ru"
+            optionLabel="name"
             placeholder="Тип уведомления"
             class="w-full md:w-14rem border-radius-15"
         />
@@ -49,7 +48,11 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="grid">
       <div class="col-12">
-        <NoticesTable :notices="[]" />
+        <NoticesTable
+            v-if="notices?.data?.data"
+            :notices="notices?.data?.data"
+            :type-notices="types"
+        />
       </div>
     </div>
   </section>

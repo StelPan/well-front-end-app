@@ -19,6 +19,7 @@ import serviceCategory from "@/store/service-category";
 import services from "@/store/services";
 import statePermission from "@/store/state-permission";
 import stateList from "@/store/state-list";
+import notices from "@/store/notices";
 
 export default createStore({
   modules: {
@@ -40,6 +41,7 @@ export default createStore({
     serviceCategory,
     services,
     stateList,
-    statePermission
+    statePermission,
+    notices,
   }
 });

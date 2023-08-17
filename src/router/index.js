@@ -27,6 +27,8 @@ import UpdateReviewView from "@/views/reviews/UpdateReviewView";
 import EditTariffView from "@/views/tariffs/EditTariffView";
 import TariffsListView from "@/views/tariffs/TariffsListView";
 import CreateTariffView from "@/views/tariffs/CreateTariffView.vue";
+import EditNoticeVIew from "@/views/notices/EditNoticeVIew.vue";
+import CreateNoticeView from "@/views/notices/CreateNoticeView.vue";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -57,6 +59,14 @@ const routes = [
                 path: 'notices',
                 name: 'notices',
                 component: NoticesView
+            }, {
+                path: 'notices/:id',
+                name: 'notice-view',
+                component: EditNoticeVIew,
+            }, {
+                path: 'notices/create',
+                name: 'notice-create',
+                component: CreateNoticeView,
             }, {
                 path: 'reviews',
                 name: 'reviews',
