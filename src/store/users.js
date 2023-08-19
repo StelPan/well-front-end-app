@@ -7,7 +7,7 @@ const state = () => ({
 
 const actions = {
     async fetchUsers({commit}, params = {}) {
-        const data = await loadUsers();
+        const data = await loadUsers(params);
         commit('updateUsersList', data);
     },
     async fetchUser({commit}, id) {

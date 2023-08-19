@@ -3,6 +3,7 @@ import {createRouterLayout} from 'vue-router-layout'
 import {middleware} from "vue-router-middleware";
 
 import "./middleware/require-auth";
+import "./middleware/redirect-to-home";
 
 import Login from "@/views/LoginView.vue";
 import AboutView from "@/views/AboutView.vue";
@@ -29,6 +30,7 @@ import TariffsListView from "@/views/tariffs/TariffsListView";
 import CreateTariffView from "@/views/tariffs/CreateTariffView.vue";
 import EditNoticeVIew from "@/views/notices/EditNoticeVIew.vue";
 import CreateNoticeView from "@/views/notices/CreateNoticeView.vue";
+import ObjectsView from "@/views/objects/ObjectsView";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -37,12 +39,9 @@ const RouterLayout = createRouterLayout(layout => {
 const routes = [
     {
         path: '/',
+        name: 'base',
         component: RouterLayout,
         children: [{
-            path: 'about',
-            name: 'About',
-            component: AboutView,
-        }, {
             path: 'login',
             name: 'login',
             component: Login
@@ -79,15 +78,15 @@ const routes = [
                 path: 'services',
                 name: 'services',
                 component: ServicesVIew,
-                children: [{
-                    path: 'list',
-                    name: 'services-list',
-                    component: ServicesListView
-                }, {
+                children: [ {
                     path: 'categories',
                     name: 'service-categories',
                     component: ServiceCategoriesView,
-                }]
+                }, {
+                    path: ':type',
+                    name: 'services-list',
+                    component: ServicesListView
+                },]
             }, {
                 path: 'buildings',
                 name: 'buildings',
@@ -137,6 +136,10 @@ const routes = [
                 path: 'counterparties/create',
                 name: 'counterparty-create',
                 component: CreateCounterpartyView
+            }, {
+                path: 'objects',
+                name: 'objects',
+                component: ObjectsView
             }, {
                 path: 'profile',
                 name: 'profile',

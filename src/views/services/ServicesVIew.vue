@@ -14,22 +14,18 @@ export default defineComponent({
     const items = ref([
       {
         label: 'Штучные',
-        icon: 'pi pi-fw pi-home',
-        to: '/services/list'
+        to: '/services/single'
       },
       {
         label: 'Пакеты услуг',
-        icon: 'pi pi-fw pi-calendar',
-        to: '/services/categories'
+        to: '/services/single1'
       },
       {
         label: 'Разовые платежи',
-        icon: 'pi pi-fw pi-calendar',
-        to: '/services/categories'
+        to: '/services/single2'
       },
       {
         label: 'Категории услуг',
-        icon: 'pi pi-fw pi-calendar',
         to: '/services/categories'
       }
     ]);

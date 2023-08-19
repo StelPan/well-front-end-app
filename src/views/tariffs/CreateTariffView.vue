@@ -1,6 +1,7 @@
 <script>
-import {computed, defineComponent, onMounted, ref} from "vue";
+import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
+import {useError} from "@/hooks/useErrors";
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -9,6 +10,7 @@ import Editor from "primevue/editor";
 import Breadcrumb from "@/components/Breadcrumb.vue";
 import MainCard from "@/components/cards/MainCard.vue";
 import ConfirmationModal from "@/components/modals/ConfirmationModal.vue";
+import ButtonSuccess from "@/components/buttons/ButtonSuccess";
 
 const DAILY_TYPE = 'daily';
 const HOURLY_TYPE = 'hourly';
@@ -22,11 +24,12 @@ const TARIFF_NAMES = {
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {Button, InputText, Dropdown, Editor, Breadcrumb, MainCard, ConfirmationModal},
+  components: {Button, InputText, Dropdown, Editor, Breadcrumb, MainCard, ConfirmationModal, ButtonSuccess},
   setup() {
     const store = useStore();
+    const errors = useError();
 
-    const form = ref({
+    const form = reactive({
       name_ru: '',
       description_ru: '',
       short_description_ru: '',
@@ -34,19 +37,31 @@ export default defineComponent({
       cost: '',
     });
 
+    const isCreated = ref(false);
+
+    watch(
+        form,
+        () => errors.clearErrors()
+    )
+
     const typeTariffs = computed(() => store.getters.getListTypeTariffs);
 
     const breadcrumbs = [{label: 'Тарифы', router: {name: 'tariffs'}}, {label: 'Создание тарифа'}];
 
     const toggleCreateTariff = async () => {
-      await store.dispatch('fetchCreateTariff', form.value);
+      try {
+        await store.dispatch('fetchCreateTariff', form);
+        isCreated.value = true;
+      } catch (e) {
+        errors.setErrors(e.response.data.errors);
+      }
     }
 
     onMounted(async () => {
       await store.dispatch('fetchTypeTariffs');
-    })
+    });
 
-    return {TARIFF_NAMES, form, typeTariffs, breadcrumbs, toggleCreateTariff};
+    return {TARIFF_NAMES, form, typeTariffs, breadcrumbs, toggleCreateTariff, errors: errors.errors, isCreated};
   }
 });
 </script>
@@ -55,7 +70,8 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
-      <Button label="Создать тариф" @click="toggleCreateTariff" class="btn-primary font-light"/>
+      <Button v-if="!isCreated" label="Создать тариф" @click="toggleCreateTariff" class="btn-primary font-light"/>
+      <ButtonSuccess v-if="isCreated" label="Тариф создан" />
     </div>
   </section>
 
@@ -66,8 +82,13 @@ export default defineComponent({
           <div class="grid">
             <div class="col-12">
              <span class="p-float-label w-full">
-              <InputText v-model="form.name_ru" id="name" class="w-full"/>
+              <InputText v-model="form.name_ru" id="name" class="w-full" :class="{'p-invalid': !!errors?.name_ru}"/>
               <label for="name">Имя *</label>
+              <span class="color-error" v-if="errors?.name_ru">
+              <template v-for="(error, i) in errors.name_ru" :key="i">
+                {{ error }} <br>
+              </template>
+            </span>
              </span>
             </div>
           </div>

@@ -1,14 +1,19 @@
 <script>
-import {defineComponent, ref} from "vue";
+import {defineComponent, ref, computed} from "vue";
+import {useStore} from "vuex";
 
 import Button from 'primevue/button';
 import InputMask from "primevue/inputmask";
+import InputText from "primevue/inputtext";
+import InputNumberPhone from "@/components/inputs/InputNumberPhone";
 
 export default defineComponent({
-  components: {Button, InputMask},
+  components: {Button, InputMask, InputText, InputNumberPhone},
   setup(props, { emit }) {
-    const phone = ref('');
+    const store = useStore();
+    const country = computed(() => store.getters.getSelectCountry);
 
+    const phone = ref('');
     const isShowSelectPhoneModal = ref(false);
 
     const toggleSelectPhone = () => {
@@ -21,6 +26,7 @@ export default defineComponent({
 
     return {
       phone,
+      country,
       isShowSelectPhoneModal,
       toggleSelectPhone,
       toggleLogin,
@@ -32,11 +38,12 @@ export default defineComponent({
 <template>
   <div>
     <div class="mb-4">
-      <span class="p-input-icon-left p-float-label">
-        <i class="pi pi-search cursor-pointer" @click="toggleSelectPhone" />
-        <InputMask id="phone" v-model="phone" mask="999-999-9999" placeholder="999-999-9999"/>
-        <label for="phone">Контактный телефон</label>
-      </span>
+      <InputNumberPhone
+          @toggleChangePhoneCode="toggleSelectPhone"
+          v-model="phone"
+          :phone-code="country?.phone_code ? country.phone_code : '+7'"
+          :country="country?.name"
+      />
     </div>
 
     <div class="mb-2">
@@ -46,3 +53,9 @@ export default defineComponent({
     </div>
   </div>
 </template>
+
+<style>
+.icon-number {
+
+}
+</style>

@@ -6,7 +6,7 @@ const loadBuildings = async () => {
 };
 
 const loadBuilding = async (id) => {
-    const response = http.get('/api/app/v1/building/' + id);
+    const response = http.get('/api/company/v1/building/' + id);
     return response.data;
 };
 

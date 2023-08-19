@@ -24,7 +24,7 @@ export default defineComponent({
     }, {
       label: "Объекты",
       svg: 'images/icons/Objects.svg',
-      route: {name: "login"}
+      route: {name: "objects"}
     }, {
       label: "Тарифы",
       svg: 'images/icons/Tariffs.svg',

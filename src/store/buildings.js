@@ -8,6 +8,7 @@ const state = () => ({
 const actions = {
     async fetchBuildings({commit}) {
         const buildings = await loadBuildings();
+        commit('updateListBuildings', buildings);
     }
 };
 

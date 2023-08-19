@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import uuid from "vue3-uuid"
 import VueRouterMiddleware from 'vue-router-middleware'
 import { createMetaManager} from "vue-meta"
 import App from './App.vue'
@@ -11,6 +12,7 @@ import "./App.css";
 import PrimeVue from 'primevue/config';
 
 createApp(App)
+    .use(uuid)
     .use(store)
     .use(router)
     .use(PrimeVue)

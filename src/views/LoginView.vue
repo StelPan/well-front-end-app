@@ -101,24 +101,26 @@ export default defineComponent({
       <div class="hidden md:block md:col-7 h-screen background-login">
       </div>
       <div class="col-12 md:col-5">
-        <div class="flex justify-content-center h-screen">
-          <div class="flex align-items-center">
-            <div class="form">
-              <img class="gap-3 w-4rem mb-3" src="../assets/images/admin/Logo.png" alt="">
-              <p class="mb-5 text-left text-xl font-bold">Добро пожаловать</p>
+        <div class="grid justify-content-center h-screen">
+          <div class="col-12">
+            <div class="flex align-items-center h-screen">
+              <div class="form w-full">
+                <img class="gap-3 w-4rem mb-3" src="../assets/images/admin/Logo.png" alt="">
+                <p class="mb-5 text-left text-xl font-bold">Добро пожаловать</p>
 
-              <AdminLoginForm
-                  v-if="currentStep === STEP_SMS_CHECK"
-                  @toggleSelectPhone="showSelectPhoneModal"
-                  @toggleLogin="toggleLoginHandler"
-              />
+                <AdminLoginForm
+                    v-if="currentStep === STEP_SMS_CHECK"
+                    @toggleSelectPhone="showSelectPhoneModal"
+                    @toggleLogin="toggleLoginHandler"
+                />
 
-              <EnterSmsCodeForm
-                  v-if="currentStep === STEP_SMS_REQUEST"
-                  @toggleChangeNumber="toggleChangeNumberHandler"
-                  @toggleCheckCode="toggleCheckCodeHandler"
-                  @toggleRetrySendCode="toggleRetrySendCodeHandler"
-              />
+                <EnterSmsCodeForm
+                    v-if="currentStep === STEP_SMS_REQUEST"
+                    @toggleChangeNumber="toggleChangeNumberHandler"
+                    @toggleCheckCode="toggleCheckCodeHandler"
+                    @toggleRetrySendCode="toggleRetrySendCodeHandler"
+                />
+              </div>
             </div>
           </div>
         </div>

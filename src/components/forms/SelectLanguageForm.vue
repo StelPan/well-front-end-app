@@ -2,6 +2,8 @@
 import {defineComponent, ref, watch} from "vue";
 import {useStore} from "vuex";
 
+import CountryFlagsImage from "@/plugins/country-flags-image";
+
 import InputText from "primevue/inputtext";
 import DataView from "primevue/dataview";
 
@@ -43,6 +45,7 @@ export default defineComponent({
       selectedCountry,
       countries,
       writeCountry,
+      CountryFlagsImage,
     }
   }
 })
@@ -64,6 +67,9 @@ export default defineComponent({
             <div class="col-12 cursor-pointer" @click="toSelectedCountry(slotProps.data.id)">
               <div class="hover:bg-neutral flex justify-content-start xl:flex-row xl:align-items-start p-4 gap-4">
                 <div class="w-9 sm:w-4rem xl:w-5rem border-round">
+                  <img :src="CountryFlagsImage(slotProps.data.name)" alt="">
+                </div>
+                <div class="w-9 sm:w-4rem xl:w-5rem border-round flex justify-content-start align-items-center">
                   {{ slotProps.data.phone_code }}
                 </div>
 

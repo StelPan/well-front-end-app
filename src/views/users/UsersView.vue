@@ -1,5 +1,5 @@
 <script>
-import {defineComponent, reactive, ref, computed, onMounted} from "vue";
+import {defineComponent, reactive, ref, computed, onMounted, watch} from "vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {useMeta} from "vue-meta"
@@ -8,10 +8,11 @@ import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import Paginator from "primevue/paginator";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {Dropdown, Button, DataTable, Column},
+  components: {Dropdown, Button, DataTable, Column, Paginator},
   setup() {
     useMeta({
       title: 'Пользователи'
@@ -19,6 +20,23 @@ export default defineComponent({
 
     const store = useStore();
     const router = useRouter();
+
+    const selectedRole = ref('');
+    const users = computed(() => store.getters.getUsersList);
+    const roles = computed(() => store.getters.getRolesList);
+
+    const first = ref(0);
+    const findUsers = async () => {
+      await store.dispatch('fetchUsers', {
+        page: ((first.value / (users.value?.data?.pagination?.per_page ?? 1)) + 1)
+      });
+
+      window.scrollTo(0,0);
+    }
+
+    watch((first), async (index) => {
+      await findUsers();
+    });
 
     const filter = reactive({
       roles: [],
@@ -28,16 +46,12 @@ export default defineComponent({
       router.push({ name: 'user-create' });
     };
 
-    const selectedRole = ref('');
-    const users = computed(() => store.getters.getUsersList);
-    const roles = computed(() => store.getters.getRolesList);
-
     onMounted(async () => {
       await store.dispatch('fetchRoles');
       await store.dispatch('fetchUsers');
     });
 
-    return {selectedRole, roles, users, toCreateUsers};
+    return {selectedRole, roles, users, toCreateUsers, first};
   }
 });
 </script>
@@ -47,19 +61,21 @@ export default defineComponent({
     <div class="flex justify-content-between">
       <h1 class="font-normal">Пользователи</h1>
 
-      <div class="flex gap-3">
+      <div class="flex gap-2">
         <Dropdown
             v-model="selectedRole" :options="roles"
             optionLabel="name_ru"
             placeholder="Роли" class="w-full md:w-14rem border-radius-15"/>
 
-        <Button label="Создать пользователя" class="btn-primary font-light w-12" @click="toCreateUsers"/>
+        <Button label="Создать пользователя" class="btn-primary font-light" @click="toCreateUsers"/>
+
+        <Button icon="pi pi-filter" aria-label="Submit" class="btn-primary font-light" @click="toCreateUsers" />
       </div>
     </div>
   </section>
 
   <section class="mb-3 py-2">
-    <div v-if="Array.isArray(users?.data?.data) ? !users.data.data.length : false" class="flex justify-content-center align-items-center center-text-screen">
+    <div v-if="!users?.data?.data" class="flex justify-content-center align-items-center center-text-screen">
       <span class="color-black-40">
         Здесь пока ничего нет
       </span>
@@ -77,7 +93,7 @@ export default defineComponent({
         </Column>
         <Column field="role" header="Роль">
           <template #body="slotProps">
-            Администратор
+            {{ slotProps.data.roles[0].name_ru }}
           </template>
         </Column>
         <Column field="phone" header="Контактный номер">
@@ -86,6 +102,13 @@ export default defineComponent({
           </template>
         </Column>
       </DataTable>
+
+      <Paginator
+          v-model:first="first"
+          :rows="users?.data?.pagination?.per_page ?? 0"
+          :totalRecords="users?.data?.pagination?.total ?? 0"
+          class="justify-content-start"
+      ></Paginator>
     </div>
   </section>
 </template>
