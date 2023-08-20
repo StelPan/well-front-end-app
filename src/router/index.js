@@ -18,7 +18,6 @@ import NotificationsView from "@/views/notifications/NotificationsView";
 import NotificationView from "@/views/notifications/NotificationView";
 import NoticesView from "@/views/notices/NoticesView";
 import TariffsView from "@/views/tariffs/TariffsView";
-import VendorsView from "@/views/vendors/VendorsView";
 import ReviewsView from "@/views/reviews/ReviewsView";
 import BuildingsView from "@/views/buildings/BuildingsView";
 import ServicesVIew from "@/views/services/ServicesVIew";
@@ -31,6 +30,15 @@ import CreateTariffView from "@/views/tariffs/CreateTariffView.vue";
 import EditNoticeVIew from "@/views/notices/EditNoticeVIew.vue";
 import CreateNoticeView from "@/views/notices/CreateNoticeView.vue";
 import ObjectsView from "@/views/objects/ObjectsView";
+import SupportView from "@/views/SupportView";
+import VendorsView from "@/views/vendors/VendorsView";
+import VendorsListView from "@/views/vendors/VendorsListView";
+import BanksListView from "@/views/vendors/BanksListView";
+import VendorView from "@/views/vendors/VendorView";
+import CreateAcquiringView from "@/views/vendors/CreateAcquiringView";
+import PartnersView from "@/views/partners/PartnersView";
+import PartnersListView from "@/views/partners/PartnersListView";
+import PartnerCategoriesView from "@/views/partners/PartnerCategoriesView";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -78,7 +86,7 @@ const routes = [
                 path: 'services',
                 name: 'services',
                 component: ServicesVIew,
-                children: [ {
+                children: [{
                     path: 'categories',
                     name: 'service-categories',
                     component: ServiceCategoriesView,
@@ -123,7 +131,24 @@ const routes = [
             }, {
                 path: 'vendors',
                 name: 'vendors',
-                component: VendorsView
+                component: VendorsView,
+                children: [{
+                    path: 'list',
+                    name: 'vendors-list',
+                    component: VendorsListView
+                }, {
+                    path: 'banks',
+                    name: 'vendors-banks',
+                    component: BanksListView
+                }]
+            }, {
+                path: 'vendors/:id',
+                name: 'vendor-view',
+                component: VendorView
+            }, {
+                path: '/banks/:id/acquiring/create',
+                name: 'acquiring-create',
+                component: CreateAcquiringView
             }, {
                 path: 'state-constructor',
                 name: 'state-constructor',
@@ -141,9 +166,26 @@ const routes = [
                 name: 'objects',
                 component: ObjectsView
             }, {
+                path: 'partners',
+                name: 'partners',
+                component: PartnersView,
+                children: [{
+                    path: 'list',
+                    name: 'partners-list',
+                    component: PartnersListView
+                }, {
+                    path: 'categories',
+                    name: 'partners-categories',
+                    component: PartnerCategoriesView,
+                }]
+            },{
                 path: 'profile',
                 name: 'profile',
                 component: ProfileVIew
+            }, {
+                path: 'support',
+                name: 'support',
+                component: SupportView
             }]),
         ]
     },

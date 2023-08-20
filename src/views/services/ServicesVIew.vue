@@ -1,7 +1,6 @@
 <script>
-import {defineComponent, computed, onMounted, ref} from "vue";
+import {defineComponent, ref} from "vue";
 import {useStore} from "vuex";
-import {useRouter} from "vue-router";
 
 import Button from "primevue/button";
 import DataView from "primevue/dataview";

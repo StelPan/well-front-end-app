@@ -35,7 +35,6 @@ export default defineComponent({
 
     const activeIndex = ref(0);
 
-
     const first = ref(0);
 
     const findReviews = async () => {

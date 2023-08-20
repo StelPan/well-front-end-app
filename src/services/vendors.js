@@ -1,12 +1,12 @@
 import http from '../plugins/axios';
 
-const loadVendors = async () => {
-    const response = await http.get('/api/company/v1/vendor');
+const loadVendors = async (params) => {
+    const response = await http.get('/api/company/v1/vendor', {params});
     return response.data;
 };
 
 const loadVendor = async (id) => {
-    const response = await http.get('/api/company/v1/' + id);
+    const response = await http.get('/api/company/v1/vendor/' + id);
     return response.data;
 };
 

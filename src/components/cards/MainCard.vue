@@ -9,7 +9,7 @@ export default defineComponent({
   props: {
     title: {
       type: String,
-      required: true,
+      required: false,
     }
   }
 });
@@ -17,7 +17,7 @@ export default defineComponent({
 
 <template>
   <Card>
-    <template #title>
+    <template #title v-if="title">
       {{ title }}
     </template>
     <template #content>

@@ -1,26 +1,27 @@
 <script>
-import {computed, defineComponent, onMounted} from "vue";
+import {computed, defineComponent, onMounted, ref} from "vue";
 import {useStore} from "vuex";
-import {useRouter} from "vue-router";
 
 import Button from "primevue/button";
+import TabMenu from "primevue/tabmenu";
 import VendorsTable from "@/components/tables/VendorsTable";
 
 export default defineComponent({
   layout: {name: "AdminLayout"},
-  components: {Button, VendorsTable},
+  components: {Button, VendorsTable, TabMenu},
   setup() {
-    const store = useStore();
-    const router = useRouter();
+    const items = ref([
+      {
+        label: 'Реквизиты',
+        to: '/vendors/list'
+      },
+      {
+        label: 'Эквайринг',
+        to: '/vendors/banks'
+      }
+    ]);
 
-    const vendors = computed(() => store.getters.getListVendors);
-    console.log(vendors);
-
-    onMounted(async () => {
-      await store.dispatch('fetchVendors');
-    });
-
-    return {vendors};
+    return {items};
   }
 });
 </script>
@@ -34,12 +35,10 @@ export default defineComponent({
   </section>
 
   <section class="py-2 mb-3">
-    <div class="grid">
-      <div class="col-12">
-        <VendorsTable :vendors="vendors?.data?.data ?? []" />
-      </div>
-    </div>
+    <TabMenu :model="items" />
   </section>
+
+  <router-view></router-view>
 </template>
 
 <style scoped>

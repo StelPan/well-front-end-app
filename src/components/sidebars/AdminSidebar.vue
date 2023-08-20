@@ -44,7 +44,7 @@ export default defineComponent({
     }, {
       label: "Партнеры",
       svg: 'images/icons/Partners.svg',
-      route: {name: "login"}
+      route: {name: "partners-list"}
     }, {
       label: "Уведомления",
       svg: 'images/icons/Notices.svg',
@@ -52,11 +52,11 @@ export default defineComponent({
     }, {
       label: "Реквизиты",
       svg: 'images/icons/Requests.svg',
-      route: {name: "vendors"}
+      route: {name: "vendors-list"}
     }, {
       label: "Поддержка",
       svg: 'images/icons/Supports.svg',
-      route: {name: "login"}
+      route: {name: "support"}
     }];
 
     function getImgUrl(pet) {
@@ -105,12 +105,10 @@ export default defineComponent({
 
 .sidebar-show {
   min-width: 300px;
-  //transition: min-width 1s;
 }
 
 .sidebar-close {
   min-width: 126px;
-  //transition: min-width 1s;
 }
 
 .link {
