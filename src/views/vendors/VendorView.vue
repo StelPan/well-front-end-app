@@ -1,7 +1,8 @@
 <script>
-import {computed, defineComponent, onMounted, ref} from "vue";
+import {computed, defineComponent, onMounted, reactive, ref} from "vue";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
+import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
 
 import Button from "primevue/button"
 import Dropdown from "primevue/dropdown";
@@ -24,6 +25,23 @@ export default defineComponent({
     const countries = computed(() => store.getters.getCountriesList);
     const selectCountry = computed(() => store.getters.getSelectCountry);
 
+    const formData = reactive({
+      inn: '', email: '',
+      phone: '', type: '', postcode: '',
+      region: '', city: '', street: '',
+      house: '', building: '', corps: '',
+      floor: '', postcode_fact: '', region_fact: '',
+      city_fact: '', street_fact: '', house_fact: '',
+      building_fact: '', corps_fact: '', floor_fact: '',
+      room_fact: '', account: '', corr_account: '',
+      bic: '', bank: '', payment_details: '',
+      data: {
+        short_name: '', full_name: '', legal_form: '', kpp: '', ogrn: '', ogrn_date: '', ogrn_place: '',
+        reg_date: '', oktmo: '', org_name: '', snils: '', ogrnip_date: '', ogrnip_place: '', ogrnip: '',
+        first_name: '', last_name: '', patronymic: '',
+      }
+    });
+
     const breadcrumbs = ref([]);
     const visible = ref(false);
 
@@ -35,29 +53,34 @@ export default defineComponent({
       await store.dispatch('fetchVendor', route.params.id);
       await store.dispatch('fetchCountries');
 
+      const label = vendor.value.type === 'ul' ?
+          vendor.value.data.full_name :
+          vendor.value.data.org_name;
+
       breadcrumbs.value = [
         {label: 'Обслуживающие компании', router: {name: 'vendors-list'}},
-        {label: vendor.value.data.org_name}
+        {label: label}
       ];
     }
 
     onMounted(async () => {
       await loadVendor();
+      useCreateReactiveCopy(formData, vendor.value);
     });
 
-    return {vendor, breadcrumbs, visible, changeVisible, countries, selectCountry};
+    return {vendor, breadcrumbs, visible, changeVisible, countries, selectCountry, formData};
   }
 });
 </script>
 
 <template>
-  <SelectPhoneModal :countries="countries" :visible="visible" @toggleCloseModal="changeVisible" />
+  <SelectPhoneModal :countries="countries" :visible="visible" @toggleCloseModal="changeVisible"/>
 
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
 
-      <Button label="Сохранить реквизиты" class="btn-primary font-light" @click="toCreateUsers"/>
+      <Button label="Сохранить реквизиты" class="btn-primary font-light"/>
     </div>
   </section>
 
@@ -124,27 +147,33 @@ export default defineComponent({
             <div class="col-12 md:col-4">
               <div class="grid gap-4 m-0 flex-column">
                   <span class="p-float-label w-full">
-                      <InputText id="index" class="w-full"/>
-                      <label for="index">Индекс</label>
+                      <InputText v-model="formData.postcode" id="postcode" class="w-full"/>
+                      <label for="postcode">Индекс</label>
                   </span>
 
-                <Dropdown :options="[]" optionLabel="name" placeholder="Регион *" class="w-full"/>
+                <span class="p-float-label w-full">
+                      <InputText v-model="formData.region" id="region" class="w-full"/>
+                      <label for="region">Регион</label>
+                  </span>
 
-                <Dropdown :options="[]" optionLabel="name" placeholder="Город *" class="w-full"/>
+                <span class="p-float-label w-full">
+                      <InputText v-model="formData.city" id="city" class="w-full"/>
+                      <label for="city">Город</label>
+                  </span>
               </div>
             </div>
             <div class="col-12 md:col-4">
               <div class="grid gap-4 m-0 flex-column">
                 <span class="p-float-label w-full">
-                  <InputText id="street" class="w-full"/>
+                  <InputText v-model="formData.street" id="street" class="w-full"/>
                   <label for="street">Улица *</label>
               </span>
                 <span class="p-float-label w-full">
-                  <InputText id="house" class="w-full"/>
+                  <InputText v-model="formData.house" id="house" class="w-full"/>
                   <label for="house">Дом *</label>
               </span>
                 <span class="p-float-label w-full">
-                  <InputText id="street" class="w-full"/>
+                  <InputText v-model="formData.building" id="street" class="w-full"/>
                   <label for="street">Номер здания, строение и т.д...</label>
               </span>
               </div>
@@ -152,15 +181,15 @@ export default defineComponent({
             <div class="col-12 md:col-4">
               <div class="grid gap-4 m-0 flex-column">
                 <span class="p-float-label w-full">
-                    <InputText id="frame" class="w-full"/>
+                    <InputText v-model="formData.corps" id="frame" class="w-full"/>
                     <label for="frame">Корпус</label>
                 </span>
                 <span class="p-float-label w-full">
-                  <InputText id="floor" class="w-full"/>
+                  <InputText v-model="formData.floor" id="floor" class="w-full"/>
                   <label for="floor">Этаж</label>
                 </span>
                 <span class="p-float-label w-full">
-                  <InputText id="number_office" class="w-full"/>
+                  <InputText v-model="formData.floor" id="number_office" class="w-full"/>
                   <label for="number_office">Номер офиса</label>
                 </span>
               </div>
@@ -177,27 +206,33 @@ export default defineComponent({
             <div class="col-12 md:col-4">
               <div class="grid gap-4 m-0 flex-column">
                   <span class="p-float-label w-full">
-                      <InputText id="index" class="w-full"/>
-                      <label for="index">Индекс</label>
+                      <InputText v-model="formData.postcode_fact" id="postcode" class="w-full"/>
+                      <label for="postcode">Индекс</label>
                   </span>
 
-                <Dropdown :options="[]" optionLabel="name" placeholder="Регион *" class="w-full"/>
+                <span class="p-float-label w-full">
+                      <InputText v-model="formData.region_fact" id="region" class="w-full"/>
+                      <label for="region">Регион</label>
+                  </span>
 
-                <Dropdown :options="[]" optionLabel="name" placeholder="Город *" class="w-full"/>
+                <span class="p-float-label w-full">
+                      <InputText v-model="formData.city_fact" id="city" class="w-full"/>
+                      <label for="city">Город</label>
+                  </span>
               </div>
             </div>
             <div class="col-12 md:col-4">
               <div class="grid gap-4 m-0 flex-column">
                 <span class="p-float-label w-full">
-                  <InputText id="street" class="w-full"/>
+                  <InputText v-model="formData.street_fact" id="street" class="w-full"/>
                   <label for="street">Улица *</label>
               </span>
                 <span class="p-float-label w-full">
-                  <InputText id="house" class="w-full"/>
+                  <InputText v-model="formData.house_fact" id="house" class="w-full"/>
                   <label for="house">Дом *</label>
               </span>
                 <span class="p-float-label w-full">
-                  <InputText id="street" class="w-full"/>
+                  <InputText v-model="formData.building_fact" id="street" class="w-full"/>
                   <label for="street">Номер здания, строение и т.д...</label>
               </span>
               </div>
@@ -205,15 +240,15 @@ export default defineComponent({
             <div class="col-12 md:col-4">
               <div class="grid gap-4 m-0 flex-column">
                 <span class="p-float-label w-full">
-                    <InputText id="frame" class="w-full"/>
+                    <InputText v-model="formData.corps_fact" id="frame" class="w-full"/>
                     <label for="frame">Корпус</label>
                 </span>
                 <span class="p-float-label w-full">
-                  <InputText id="floor" class="w-full"/>
+                  <InputText v-model="formData.floor_fact" id="floor" class="w-full"/>
                   <label for="floor">Этаж</label>
                 </span>
                 <span class="p-float-label w-full">
-                  <InputText id="number_office" class="w-full"/>
+                  <InputText v-model="formData.floor_fact" id="number_office" class="w-full"/>
                   <label for="number_office">Номер офиса</label>
                 </span>
               </div>

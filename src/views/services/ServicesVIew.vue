@@ -13,19 +13,19 @@ export default defineComponent({
     const items = ref([
       {
         label: 'Штучные',
-        to: '/services/single'
+        to: '/services/list/single'
       },
       {
         label: 'Пакеты услуг',
-        to: '/services/single1'
+        to: '/services/list/single1'
       },
       {
         label: 'Разовые платежи',
-        to: '/services/single2'
+        to: '/services/list/single2'
       },
       {
         label: 'Категории услуг',
-        to: '/services/categories'
+        to: '/services/list/categories'
       }
     ]);
 

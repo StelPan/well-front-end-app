@@ -10,4 +10,9 @@ const loadNotice = async (id) => {
     return response.data;
 };
 
-export {loadNotices, loadNotice};
+const createNotice = async (body) => {
+    const response = await http.post('/api/company/v1/push', body);
+    return response.data;
+}
+
+export {loadNotices, loadNotice, createNotice};

@@ -1,5 +1,5 @@
 <script>
-import {computed, defineComponent, onMounted, reactive, ref} from "vue";
+import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 
 import Button from "primevue/button";
@@ -34,12 +34,12 @@ export default defineComponent({
     const typeNotices = computed(() => store.getters.getListTypeNotices);
 
     const form = reactive({
-      type: '',
+      push_type_id: '',
       send_date: '',
       send_time: '',
-      send_now: '',
-      senders_all_roles: '',
-      decription: '',
+      send_now: 0,
+      senders_all_roles: 0,
+      text: '',
       roles: []
     });
 
@@ -59,6 +59,29 @@ export default defineComponent({
       await changeVisible();
     };
 
+    const createNotice = async () => {
+      try {
+        const date = new Date(form.send_date);
+        const formatterForm = {
+          ...form,
+          send_date: `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`,
+        }
+        await store.dispatch('fetchCreateNotice', formatterForm);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    watch(
+        () => form.senders_all_roles,
+        (val) => {
+          if (val) {
+            form.roles = roles.value.map(role => role.id);
+          } else {
+            form.roles = [];
+          }
+        })
+
     onMounted(async () => {
       await store.dispatch('fetchRoles');
       await store.dispatch('fetchTypeNotices');
@@ -72,7 +95,8 @@ export default defineComponent({
       noticeTypeForm,
       visibleConfirmationModal,
       changeVisible,
-      createTypeNotice
+      createTypeNotice,
+      createNotice,
     };
   },
 });
@@ -105,7 +129,7 @@ export default defineComponent({
 
       <div class="flex">
         <Button label="Сохранить как черновик" class="btn-error-outlined font-light"/>
-        <Button label="Запланировать отправку" class="btn-primary font-light ml-3"/>
+        <Button @click="createNotice" label="Запланировать отправку" class="btn-primary font-light ml-3"/>
       </div>
     </div>
   </section>
@@ -115,7 +139,7 @@ export default defineComponent({
       <div class="col-12 md:col-4">
         <MainCard title="Выберите или создайте тип уведомления">
           <Dropdown
-              v-model="form.type"
+              v-model="form.push_type_id"
               :options="typeNotices"
               optionLabel="name"
               option-value="id"
@@ -132,19 +156,19 @@ export default defineComponent({
         <MainCard title="Дата и время отправки">
           <div class="grid">
             <div class="col-12 md:col-6">
-              <Calendar v-model="form.send_date" placeholder="Дата" showIcon class="w-full"/>
+              <Calendar v-model="form.send_date" date-format="d.m.yy" placeholder="Дата" showIcon class="w-full"/>
             </div>
             <div class="col-12 md:col-6">
             <span class="p-input-icon-left p-float-label w-full">
-              <i class="pi pi-search" />
+              <i class="pi pi-search"/>
               <InputMask id="time" v-model="form.send_time" class="w-full" mask="99:99" placeholder="12:00"/>
               <label for="time">Время</label>
             </span>
             </div>
           </div>
 
-          <Checkbox v-model="form.send_now" name="send_now" id="send_now" />
-          <label for="send_now">Отправить немедленно</label>
+          <Checkbox v-model="form.send_now" :binary="true" name="send_now" id="send_now"/>
+          <label for="send_now" class="ml-1">Отправить немедленно</label>
         </MainCard>
       </div>
 
@@ -157,10 +181,12 @@ export default defineComponent({
               optionLabel="name_ru"
               option-value="id"
               placeholder="Выберите получателя"
-              class="w-full mb-2" />
+              class="w-full mb-2"
+              :disabled="!!form.senders_all_roles"
+          />
 
-          <Checkbox v-model="form.senders_all_roles" name="senders_all_roles" id="senders_all_roles" />
-          <label for="senders_all_roles">Получатели - все роли</label>
+          <Checkbox v-model="form.senders_all_roles" :binary="true" name="senders_all_roles" id="senders_all_roles"/>
+          <label for="senders_all_roles" class="ml-1">Получатели - все роли</label>
         </MainCard>
       </div>
     </div>
@@ -170,7 +196,7 @@ export default defineComponent({
     <div class="grid">
       <div class="col-12">
         <MainCard title="Текст уведомления">
-          <Editor v-model="form.decription" class="w-full" />
+          <Editor v-model="form.text" class="w-full"/>
         </MainCard>
       </div>
     </div>

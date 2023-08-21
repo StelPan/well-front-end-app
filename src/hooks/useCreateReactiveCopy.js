@@ -6,6 +6,10 @@ export function useCreateReactiveCopy (structure, mergeOptions, handlerOptions =
             mergeOptions[key] = handlerOptions[key](mergeOptions[key]);
         }
 
+        if (typeof structure[key] === 'object' && structure.hasOwnProperty(key)) {
+            useCreateReactiveCopy(structure[key], mergeOptions[key]);
+        }
+
         structure[key] = ref(mergeOptions[key]);
     }
 }

@@ -49,7 +49,7 @@ export default defineComponent({
             class="icon-number flex align-items-center left-0 cursor-pointer color-black-80"
         >
           <img :src="source" alt="">
-          {{ phoneCode }}
+          <span>{{ phoneCode }}</span>
         </i>
         <InputText
             id="phone"

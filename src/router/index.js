@@ -39,6 +39,7 @@ import CreateAcquiringView from "@/views/vendors/CreateAcquiringView";
 import PartnersView from "@/views/partners/PartnersView";
 import PartnersListView from "@/views/partners/PartnersListView";
 import PartnerCategoriesView from "@/views/partners/PartnerCategoriesView";
+import ServiceView from "@/views/services/ServiceView.vue";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -91,10 +92,14 @@ const routes = [
                     name: 'service-categories',
                     component: ServiceCategoriesView,
                 }, {
-                    path: ':type',
+                    path: 'list/:type',
                     name: 'services-list',
                     component: ServicesListView
                 },]
+            }, {
+                path: 'services/:id',
+                name: 'service-view',
+                component: ServiceView
             }, {
                 path: 'buildings',
                 name: 'buildings',

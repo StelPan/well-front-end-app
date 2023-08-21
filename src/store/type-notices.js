@@ -11,7 +11,7 @@ const actions = {
     },
     async fetchCreateTypeNotice({commit}, body = {}) {
         await createTypeNotice(body);
-    }
+    },
 };
 
 const mutations = {

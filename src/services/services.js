@@ -6,7 +6,7 @@ const loadServices = async (params) => {
 };
 
 const loadService = async (id) => {
-    const response = await http.get('/api/v1/company/v1/service/' + id);
+    const response = await http.get('/api/company/v1/service/' + id);
     return response.data;
 };
 
