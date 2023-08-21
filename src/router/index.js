@@ -3,7 +3,7 @@ import {createRouterLayout} from 'vue-router-layout'
 import {middleware} from "vue-router-middleware";
 
 import "./middleware/require-auth";
-import "./middleware/redirect-to-home";
+import "./middleware/redirect-to-login";
 
 import Login from "@/views/LoginView.vue";
 import AboutView from "@/views/AboutView.vue";
@@ -50,11 +50,12 @@ const routes = [
         path: '/',
         name: 'base',
         component: RouterLayout,
-        children: [{
-            path: 'login',
-            name: 'login',
-            component: Login
-        },
+        children: [
+            {
+                path: 'login',
+                name: 'login',
+                component: Login
+            },
             ...middleware('require-auth', [{
                 path: 'notifications',
                 name: 'notifications',
@@ -183,7 +184,7 @@ const routes = [
                     name: 'partners-categories',
                     component: PartnerCategoriesView,
                 }]
-            },{
+            }, {
                 path: 'profile',
                 name: 'profile',
                 component: ProfileVIew

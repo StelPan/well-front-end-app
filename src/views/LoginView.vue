@@ -11,7 +11,7 @@ const STEP_SMS_REQUEST = "STEP_SMS_REQUEST";
 const STEP_SMS_CHECK = "STEP_SMS_CHECK";
 
 export default defineComponent({
-  layout: {name: 'default'},
+  layout: {name: 'LoginLayout'},
   components: {
     AdminLoginForm,
     SelectPhoneModal,

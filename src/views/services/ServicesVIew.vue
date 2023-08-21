@@ -1,15 +1,19 @@
 <script>
 import {defineComponent, ref} from "vue";
 import {useStore} from "vuex";
+import {useRouter, useRoute} from "vue-router";
 
 import Button from "primevue/button";
 import DataView from "primevue/dataview";
 import TabMenu from "primevue/tabmenu";
 
+
 export default defineComponent({
   layout: { name: 'AdminLayout' },
   components: {Button, DataView, TabMenu},
   setup() {
+    const router = useRouter();
+    const route = useRoute();
     const items = ref([
       {
         label: 'Штучные',
@@ -28,6 +32,10 @@ export default defineComponent({
         to: '/services/list/categories'
       }
     ]);
+
+    if (route.path === '/services') {
+      router.push('/services/list/single');
+    }
 
     return {items};
   }
