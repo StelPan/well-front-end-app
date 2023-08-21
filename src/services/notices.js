@@ -1,7 +1,7 @@
 import http from "../plugins/axios";
 
-const loadNotices = async () => {
-    const response = await http.get('/api/company/v1/push');
+const loadNotices = async (params = {}) => {
+    const response = await http.get('/api/company/v1/push', {params});
     return response.data;
 };
 

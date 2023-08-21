@@ -7,7 +7,7 @@ const store = () => ({
 
 const actions = {
     async fetchNotices({commit}, params = {}) {
-        const notices = await loadNotices();
+        const notices = await loadNotices(params);
         commit('updateListNotices', notices);
     },
     async fetchNotice({commit}, id) {

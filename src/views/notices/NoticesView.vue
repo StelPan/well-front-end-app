@@ -1,33 +1,56 @@
 <script>
-import {defineComponent, ref, onMounted, computed} from "vue";
+import {defineComponent, ref, onMounted, computed, watch} from "vue";
 import {useStore} from "vuex";
 import {useRouter} from 'vue-router';
 
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
+import Paginator from "primevue/paginator";
 import NoticesTable from "@/components/tables/NoticesTable";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {Button, Dropdown, NoticesTable},
+  components: {Button, Dropdown, NoticesTable, Paginator},
   setup() {
     const store = useStore();
     const router = useRouter();
 
-    onMounted(async () => {
-      await store.dispatch('fetchTypeNotices');
-      await store.dispatch('fetchNotices');
-    });
+    const first = ref(0);
 
     const selectType = ref('');
     const notices = computed(() => store.getters.getListNotices);
     const types = computed(() => store.getters.getListTypeNotices);
 
+    const loadNotices = async () => {
+      const filterObject = {
+        page: ((first.value / (notices.value?.data?.pagination?.per_page ?? 1)) + 1),
+      };
+
+      if (selectType.value) {
+        filterObject['type'] = selectType.value.id;
+      }
+
+      await store.dispatch('fetchNotices', filterObject);
+    };
+
+    onMounted(async () => {
+      await store.dispatch('fetchTypeNotices');
+      await loadNotices();
+    });
+
     const toNoticeCreate = async () => {
       await router.push({name: 'notice-create'});
     };
 
-    return {types, selectType, notices, toNoticeCreate};
+    watch((first), async () => {
+      await loadNotices();
+    });
+
+    watch((selectType), async () => {
+      await loadNotices();
+    });
+
+    return {types, selectType, notices, toNoticeCreate, first};
   }
 });
 </script>
@@ -39,7 +62,8 @@ export default defineComponent({
 
       <div class="flex gap-3">
         <Dropdown
-            v-model="selectType" :options="types"
+            v-model="selectType"
+            :options="types"
             optionLabel="name"
             placeholder="Тип уведомления"
             class="w-full md:w-14rem border-radius-15"
@@ -57,11 +81,14 @@ export default defineComponent({
             :notices="notices?.data?.data"
             :type-notices="types"
         />
+
+        <Paginator
+            v-model:first="first"
+            :rows="notices?.data?.pagination?.per_page ?? 0"
+            :totalRecords="notices?.data?.pagination?.total ?? 0"
+            class="justify-content-start"
+        ></Paginator>
       </div>
     </div>
   </section>
 </template>
-
-<style scoped>
-
-</style>

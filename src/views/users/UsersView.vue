@@ -21,18 +21,32 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
 
-    const selectedRole = ref('');
     const users = computed(() => store.getters.getUsersList);
     const roles = computed(() => store.getters.getRolesList);
 
     const first = ref(0);
+    const selectedRole = ref('');
+
     const findUsers = async () => {
-      await store.dispatch('fetchUsers', {
-        page: ((first.value / (users.value?.data?.pagination?.per_page ?? 1)) + 1)
-      });
+      const filterObject = {
+        page: ((first.value / (users.value?.data?.pagination?.per_page ?? 1)) + 1),
+      };
+
+      if (selectedRole.value) {
+        filterObject['role'] = selectedRole.value.id;
+      }
+
+      await store.dispatch(
+          'fetchUsers',
+          filterObject
+      );
 
       window.scrollTo(0,0);
     }
+
+    watch(selectedRole, async () => {
+      await findUsers();
+    })
 
     watch((first), async (index) => {
       await findUsers();
@@ -63,9 +77,12 @@ export default defineComponent({
 
       <div class="flex gap-2">
         <Dropdown
-            v-model="selectedRole" :options="roles"
+            v-model="selectedRole"
+            :options="roles"
             optionLabel="name_ru"
-            placeholder="Роли" class="w-full md:w-14rem border-radius-15"/>
+            placeholder="Роли"
+            class="w-full md:w-14rem border-radius-15"
+        />
 
         <Button label="Создать пользователя" class="btn-primary font-light" @click="toCreateUsers"/>
 

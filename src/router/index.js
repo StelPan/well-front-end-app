@@ -40,6 +40,8 @@ import PartnersView from "@/views/partners/PartnersView";
 import PartnersListView from "@/views/partners/PartnersListView";
 import PartnerCategoriesView from "@/views/partners/PartnerCategoriesView";
 import ServiceView from "@/views/services/ServiceView.vue";
+import PartnerView from "@/views/partners/PartnerView";
+import PartnerCategoryView from "@/views/partners/PartnerCategoryView";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -184,6 +186,14 @@ const routes = [
                     name: 'partners-categories',
                     component: PartnerCategoriesView,
                 }]
+            }, {
+                path: 'partners/:id',
+                name: 'partner-view',
+                component: PartnerView,
+            }, {
+                path: 'partners/categories/:id',
+                name: 'partner-category-view',
+                component: PartnerCategoryView
             }, {
                 path: 'profile',
                 name: 'profile',
