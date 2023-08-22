@@ -29,7 +29,7 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="grid">
       <div class="col-12">
-        <ServiceCategoriesTable :categories="categories?.data?.data" />
+        <ServiceCategoriesTable :categories="categories?.data?.data ?? []" />
       </div>
     </div>
   </section>

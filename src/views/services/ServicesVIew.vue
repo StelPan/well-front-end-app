@@ -7,7 +7,6 @@ import Button from "primevue/button";
 import DataView from "primevue/dataview";
 import TabMenu from "primevue/tabmenu";
 
-
 export default defineComponent({
   layout: { name: 'AdminLayout' },
   components: {Button, DataView, TabMenu},
@@ -29,7 +28,7 @@ export default defineComponent({
       },
       {
         label: 'Категории услуг',
-        to: '/services/list/categories'
+        to: '/services/categories'
       }
     ]);
 
@@ -45,7 +44,7 @@ export default defineComponent({
 
 <template>
   <section class="py-2 mb-3">
-    <div class="flex justify-content-between">
+    <div class="flex justify-content-between mb-3">
       <h1>Услуги</h1>
 
       <Button label="Создать услугу" class="btn-primary font-light ml-3" />
