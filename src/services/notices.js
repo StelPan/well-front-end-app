@@ -6,7 +6,7 @@ const loadNotices = async (params = {}) => {
 };
 
 const loadNotice = async (id) => {
-    const response = await http.get('/api/company/v1/push' + id);
+    const response = await http.get('/api/company/v1/push/' + id);
     return response.data;
 };
 

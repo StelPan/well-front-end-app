@@ -27,7 +27,7 @@ export default defineComponent({
 
       breadcrumbs.value = [
         {label: 'Уведомления', router: {name: 'notices'}},
-        {label: 'f'}
+        {label: notice.value.title}
       ];
     })
 

@@ -26,6 +26,9 @@ const actions = {
     async fetchPartner({commit}, id) {
         const partner = await PartnerService.loadPartner(id);
         commit('updateCurrentPartner', partner);
+    },
+    async fetchUpdatePartner({commit}, {id, body}) {
+        await PartnerService.updatePartner(id, body);
     }
 };
 

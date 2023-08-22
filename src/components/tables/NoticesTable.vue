@@ -38,13 +38,16 @@ export default defineComponent({
 
     <Column field="text" header="Тип уведомления">
       <template #body="slotProps">
-        {{ typeNotices[0]?.name }}
+        {{ slotProps.data?.type ? slotProps.data?.type.name : 'Не задан' }}
       </template>
     </Column>
 
     <Column field="text" header="Статус">
       <template #body="slotProps">
-        <Button rounded class="btn-success">
+        <Button
+            rounded
+            :class="{'btn-success': slotProps.data.state.code === 'sent', 'btn-black-20': slotProps.data.state.code === 'draft'}"
+        >
           {{ slotProps.data.state.name }}
         </Button>
       </template>

@@ -20,6 +20,10 @@ const updatePartnerCategory = async (id, body) => {
     return response.data;
 };
 
+const updatePartner = async (id, body) => {
+    await http.post('/api/company/v1/partner/' + id, body);
+};
+
 const destroyPartnerCategory = async (id) => {
     // TODO: DELETE PARTNER CATEGORY
 }
@@ -34,5 +38,6 @@ export default {
     loadPartners,
     loadPartnerCategories,
     loadPartnerCategory,
-    updatePartnerCategory
+    updatePartnerCategory,
+    updatePartner,
 };
