@@ -4,6 +4,7 @@ const state = () => ({
     listPartners: [],
     listPartnerCategories: [],
     currentPartner: {},
+    currentPartnerCategory: {}
 });
 
 const actions = {
@@ -14,6 +15,13 @@ const actions = {
     async fetchPartnerCategories({commit}) {
         const categories = await PartnerService.loadPartnerCategories();
         commit('updateListPartnerCategories', categories);
+    },
+    async fetchPartnerCategory({commit}, id) {
+        const {data: category} = await PartnerService.loadPartnerCategory(id);
+        commit('updateCurrentPartnerCategory', category);
+    },
+    async fetchUpdatePartnerCategory({commit}, {id, body}) {
+        await PartnerService.updatePartnerCategory(id, body);
     },
     async fetchPartner({commit}, id) {
         const partner = await PartnerService.loadPartner(id);
@@ -30,6 +38,9 @@ const mutations = {
     },
     updateCurrentPartner(state, partner) {
         state.currentPartner = partner
+    },
+    updateCurrentPartnerCategory(state, category) {
+        state.currentPartnerCategory = category;
     }
 };
 
@@ -42,6 +53,9 @@ const getters = {
     },
     getCurrentPartner(state) {
         return state.currentPartner;
+    },
+    getCurrentPartnerCategory(state) {
+        return state.currentPartnerCategory;
     }
 };
 

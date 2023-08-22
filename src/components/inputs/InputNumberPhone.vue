@@ -57,7 +57,11 @@ export default defineComponent({
             :style="`padding-left:${2.5   + (phoneCode.length) / 2}em !important`"
             v-model="phone"
         />
-        <label class="left-number-label" for="phone">Контактный телефон</label>
+        <label
+            :style="`padding-left:${1.5   + (phoneCode.length) / 2}em !important`"
+            class="left-number-label"
+            for="phone"
+        >Контактный телефон</label>
       </span>
 </template>
 

@@ -11,7 +11,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
-    const categories = computed(() => store.getters.getListPartners);
+    const categories = computed(() => store.getters.getListPartnerCategories);
     const first = ref(0);
 
     const loadPartnerCategories = async () => {

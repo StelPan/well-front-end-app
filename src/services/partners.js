@@ -15,9 +15,24 @@ const loadPartnerCategories = async () => {
     return response.data;
 };
 
+const updatePartnerCategory = async (id, body) => {
+    const response = await http.post('/api/company/v1/partner-category/' + id, body);
+    return response.data;
+};
+
+const destroyPartnerCategory = async (id) => {
+    // TODO: DELETE PARTNER CATEGORY
+}
+
 const loadPartnerCategory = async (id) => {
     const response = await http.get('/api/company/v1/partner-category/' + id);
     return response.data;
 };
 
-export default {loadPartner, loadPartners, loadPartnerCategories, loadPartnerCategory};
+export default {
+    loadPartner,
+    loadPartners,
+    loadPartnerCategories,
+    loadPartnerCategory,
+    updatePartnerCategory
+};

@@ -1,6 +1,7 @@
 <script>
 import {computed, defineComponent, ref, watch} from "vue";
 import {useRoute} from "vue-router";
+import {useRouter} from "vue-router";
 
 import TabMenu from "primevue/tabmenu";
 import Button from "primevue/button";
@@ -10,6 +11,7 @@ export default defineComponent({
   components: {TabMenu, Button},
   setup() {
     const route = useRoute();
+    const router = useRouter();
 
     const items = ref([
       {
@@ -27,6 +29,11 @@ export default defineComponent({
     watch(
         () => route.path,
         (val) => uri.value = route.path
+    );
+
+    watch(
+        () => route.path,
+        async (val) => uri.value = route.path
     );
 
     const label = computed(() => {
