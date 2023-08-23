@@ -10,6 +10,8 @@ export function useCreateReactiveCopy (structure, mergeOptions, handlerOptions =
             useCreateReactiveCopy(structure[key], mergeOptions[key]);
         }
 
-        structure[key] = ref(mergeOptions[key]);
+        if (structure.hasOwnProperty(key)) {
+            structure[key] = ref(mergeOptions[key]);
+        }
     }
 }

@@ -1,5 +1,9 @@
-@import "../env/colors/neutral.css";
+@import "../env/env.css";
 
 .bg-neutral {
     background: var(--color-background);
+}
+
+.bg-black-40 {
+    background: var(--color-black-40);
 }

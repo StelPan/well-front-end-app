@@ -40,6 +40,7 @@ export default defineComponent({
       send_now: 0,
       senders_all_roles: 0,
       text: '',
+      title: '',
       roles: []
     });
 
@@ -61,10 +62,10 @@ export default defineComponent({
 
     const createNotice = async () => {
       try {
-        const date = new Date(form.send_date);
+        const date = form.send_date.length ? new Date(form.send_date) : false;
         const formatterForm = {
           ...form,
-          send_date: `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`,
+          send_date: date ? `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}` : '',
         }
         await store.dispatch('fetchCreateNotice', formatterForm);
       } catch (e) {
@@ -136,6 +137,14 @@ export default defineComponent({
 
   <section class="py-2 mb-3">
     <div class="grid">
+      <div class="col-12">
+        <MainCard title="Наименование уведомления">
+          <span class="p-float-label w-full">
+              <InputText v-model="form.title" id="name" class="w-full"/>
+              <label for="name">Наименование</label>
+          </span>
+        </MainCard>
+      </div>
       <div class="col-12 md:col-4">
         <MainCard title="Выберите или создайте тип уведомления">
           <Dropdown
