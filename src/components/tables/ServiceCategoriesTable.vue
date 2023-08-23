@@ -19,11 +19,18 @@ export default defineComponent({
     const fillCheckboxes = (data) => {
       data.forEach(category => {
         checkboxes[category.id] = ref(!!category.quick_access);
+
+        watch(() => checkboxes[category.id], (val) => {
+          console.log(category.id, val);
+        })
       });
     };
 
     fillCheckboxes(props.categories);
-    watch(props.categories, fillCheckboxes);
+    watch(
+        () => props.categories,
+        fillCheckboxes
+    );
 
     return {checkboxes};
   }
