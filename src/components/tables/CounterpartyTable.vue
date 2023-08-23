@@ -12,16 +12,25 @@ export default defineComponent({
       required: true
     }
   },
-  setup(props) {
-    const reactiveCounterparties = ref(props.counterparties);
-
-    return {reactiveCounterparties};
-  },
 });
 </script>
 
 <template>
-
+<DataTable :value="counterparties">
+  <Column field="id" header="ID"></Column>
+  <Column field="name" header="ФИО"></Column>
+  <Column field="type" header="Тип">
+    <template #body="slotProps">
+      <template v-if="slotProps.data.type === 'ul'">
+        Юр. лицо
+      </template>
+      <template v-else>
+        Физ. лицо
+      </template>
+    </template>
+  </Column>
+  <Column field="phone" header="Контактный телефон"></Column>
+</DataTable>
 </template>
 
 <style scoped>
