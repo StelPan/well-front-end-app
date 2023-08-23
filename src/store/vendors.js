@@ -13,6 +13,9 @@ const actions = {
     async fetchVendor({commit}, id) {
         const {data: vendor} = await VendorService.loadVendor(id);
         commit('updateCurrentVendor', vendor);
+    },
+    async fetchUpdateVendor({commit}, {id, form}) {
+        await VendorService.updateVendor(id, form);
     }
 };
 

@@ -10,4 +10,9 @@ const loadVendor = async (id) => {
     return response.data;
 };
 
-export default { loadVendors, loadVendor};
+const updateVendor = async (id, form) => {
+    const response = await http.post('/api/company/v1/vendor/' + id, form);
+    return response.data;
+};
+
+export default { loadVendors, loadVendor, updateVendor};
