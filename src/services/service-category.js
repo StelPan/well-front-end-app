@@ -16,7 +16,7 @@ const createServiceCategory = async (data) => {
 }
 
 const updateServiceCategory = async (id, data) => {
-    const response = await http.post('/api/company/v1/service-category' + id, data);
+    const response = await http.post('/api/company/v1/service-category/' + id, data);
     return response.data;
 }
 

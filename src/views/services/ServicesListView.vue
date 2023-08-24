@@ -62,18 +62,19 @@ export default defineComponent({
                   </router-link>
                 </div>
                 <div class="flex align-items-center xl:w-5 gap-3">
-                      <span class="flex align-items-center color-black-40 gap-2">
-                        <span class="font-semibold" v-html="slotProps.data.description_ru"></span>
-                      </span>
+                  <span class="flex align-items-center color-black-40 gap-2">
+                    <span class="font-semibold" v-html="slotProps.data.description_ru"></span>
+                  </span>
                 </div>
               </div>
               <div class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2">
-                  <span v-if="slotProps.data.cost" class="color-black-80 text-xl font-bold">
-                    {{ slotProps.data.cost }} Р.
-                  </span>
-                <span v-else class="color-black-80 text-xl font-bold">
-                    Стоимость, Р
-                  </span>
+                <template v-if="slotProps.data.cost">
+                  <span class="color-black-80 text-xl font-bold">{{ slotProps.data.cost }} Р.</span>
+                </template>
+                <template v-else>
+                  <span class="color-black-80 text-xl font-bold">Стоимость, Р</span>
+                  <span>Указывается в категории</span>
+                </template>
               </div>
             </div>
           </div>

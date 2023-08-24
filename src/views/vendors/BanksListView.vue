@@ -25,7 +25,7 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="grid gap-2">
       <div class="col-12">
-        <BanksTable :banks="banks.data ?? []" />
+        <BanksTable :banks="banks" />
       </div>
     </div>
   </section>

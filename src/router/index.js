@@ -86,6 +86,10 @@ const routes = [
                 path: 'reviews/:id',
                 name: 'review-view',
                 component: UpdateReviewView
+            },  {
+                path: 'services/:id',
+                name: 'service-view',
+                component: ServiceView
             }, {
                 path: 'services',
                 name: 'services',
@@ -99,10 +103,6 @@ const routes = [
                     name: 'services-list',
                     component: ServicesListView
                 },]
-            }, {
-                path: 'services/:id',
-                name: 'service-view',
-                component: ServiceView
             }, {
                 path: 'buildings',
                 name: 'buildings',

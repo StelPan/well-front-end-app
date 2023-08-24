@@ -27,29 +27,10 @@ export default defineComponent({
 
     const legalForms = ref([{label: 'ООО'}, {label: 'ИП'}]);
 
-    const formData = reactive({
-      inn: '', email: '',
-      phone: '', type: '', postcode: '',
-      region: '', city: '', street: '',
-      house: '', building: '', corps: '',
-      floor: '', postcode_fact: '', region_fact: '',
-      city_fact: '', street_fact: '', house_fact: '',
-      building_fact: '', corps_fact: '', floor_fact: '',
-      room_fact: '', account: '', corr_account: '',
-      bic: '', bank: '', payment_details: '',
-      data: {
-        short_name: '', full_name: '', legal_form: '', kpp: '', ogrn: '', ogrn_date: '', ogrn_place: '',
-        reg_date: '', oktmo: '', org_name: '', snils: '', ogrnip_date: '', ogrnip_place: '', ogrnip: '',
-        first_name: '', last_name: '', patronymic: '',
-      }
-    });
-
-    watch(() => props.form, (value) => {
-      useCreateReactiveCopy(formData, value);
-    });
+    const formData = ref(props.form);
 
     watch(formData, () => {
-      emit('formChange', formData);
+      emit('formChange', formData.value);
     });
 
     const changeVisible = (data) => {
@@ -62,20 +43,35 @@ export default defineComponent({
 </script>
 
 <template>
-  <section className="py-2 mb-3">
-    <div className="grid mb-2">
-      <div className="col-12">
+  <section class="py-2 mb-3">
+    <div class="grid mb-2">
+      <div class="col-12">
         <MainCard title="Основные регистрационные сведения">
-          <div className="grid mb-4">
-            <div className="col-12 md:col-4">
-              <div className="grid gap-4 m-0 flex-column">
-                <span className="p-float-label w-full">
-                  <InputText v-model="formData.data.full_name" id="last_name" class="w-full"/>
-                  <label htmlFor="last_name">Полное наименование  *</label>
+          <div class="grid mb-4">
+            <div class="col-12 md:col-4">
+              <div class="grid gap-4 m-0 flex-column">
+                <span class="p-float-label w-full">
+                  <InputText v-model="formData.data.last_name" id="last_name" class="w-full"/>
+                  <label for="last_name">Фамилия *</label>
                 </span>
-                <span className="p-float-label w-full">
+
+                <span class="p-float-label w-full">
+                  <InputText v-model="formData.data.first_name" id="first_name" class="w-full"/>
+                  <label for="first_name">Имя  *</label>
+                </span>
+
+                <span class="p-float-label w-full">
+                  <InputText v-model="formData.data.patronymic" id="patronymic" class="w-full"/>
+                  <label for="patronymic">Отчество  *</label>
+                </span>
+
+                <span class="p-float-label w-full">
+                  <InputText v-model="formData.data.org_name" id="last_name" class="w-full"/>
+                  <label for="last_name">Полное наименование  *</label>
+                </span>
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.data.short_name" id="first_name" class="w-full"/>
-                  <label htmlFor="first_name">Краткое наименование *</label>
+                  <label for="first_name">Краткое наименование *</label>
                 </span>
 
                 <Dropdown
@@ -87,16 +83,16 @@ export default defineComponent({
                     class="w-full"/>
               </div>
             </div>
-            <div className="col-12 md:col-4">
-              <div className="grid m-0 gap-4">
-                <span className="p-float-label w-full">
+            <div class="col-12 md:col-4">
+              <div class="grid m-0 gap-4">
+                <span class="p-float-label w-full">
                     <InputText v-model="formData.inn" id="snils" class="w-full"/>
-                    <label htmlFor="snils">ИНН *</label>
+                    <label for="snils">ИНН *</label>
                 </span>
 
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                     <InputText v-model="formData.data.ogrn" id="ogrn" class="w-full"/>
-                    <label htmlFor="ogrn">ОГРН *</label>
+                    <label for="ogrn">ОГРН *</label>
                 </span>
 
                 <Calendar
@@ -108,19 +104,18 @@ export default defineComponent({
               </div>
             </div>
 
-            <div className="col-12 md:col-4">
-              <div className="grid m-0 gap-4">
-                <Calendar v-model="formData.data.reg_date" placeholder="Дата регистрации организации (до 2002 года) *"
-                          showIcon class="w-full"/>
+            <div class="col-12 md:col-4">
+              <div class="grid m-0 gap-4">
+                <Calendar v-model="formData.data.reg_date" placeholder="Дата регистрации организации (до 2002 года) *" showIcon class="w-full"/>
 
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.data.kpp" id="kpp" class="w-full"/>
-                  <label htmlFor="kpp">КПП</label>
+                  <label for="kpp">КПП</label>
                 </span>
 
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                     <InputText v-model="formData.data.oktmo" id="oktmo" class="w-full"/>
-                    <label htmlFor="oktmo">ОКТМО *</label>
+                    <label for="oktmo">ОКТМО *</label>
                 </span>
               </div>
             </div>
@@ -129,57 +124,57 @@ export default defineComponent({
       </div>
     </div>
 
-    <div className="grid m-0 mb-2">
-      <div className="col-12">
+    <div class="grid m-0 mb-2">
+      <div class="col-12">
         <MainCard title="Юридический адрес">
-          <div className="grid">
-            <div className="col-12 md:col-4">
-              <div className="grid gap-4 m-0 flex-column">
-                  <span className="p-float-label w-full">
+          <div class="grid">
+            <div class="col-12 md:col-4">
+              <div class="grid gap-4 m-0 flex-column">
+                  <span class="p-float-label w-full">
                       <InputText v-model="formData.postcode" id="postcode" class="w-full"/>
-                      <label htmlFor="postcode">Индекс</label>
+                      <label for="postcode">Индекс</label>
                   </span>
 
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                       <InputText v-model="formData.region" id="region" class="w-full"/>
-                      <label htmlFor="region">Регион</label>
+                      <label for="region">Регион</label>
                   </span>
 
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                       <InputText v-model="formData.city" id="city" class="w-full"/>
-                      <label htmlFor="city">Город</label>
+                      <label for="city">Город</label>
                   </span>
               </div>
             </div>
-            <div className="col-12 md:col-4">
-              <div className="grid gap-4 m-0 flex-column">
-                <span className="p-float-label w-full">
+            <div class="col-12 md:col-4">
+              <div class="grid gap-4 m-0 flex-column">
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.street" id="street" class="w-full"/>
-                  <label htmlFor="street">Улица *</label>
+                  <label for="street">Улица *</label>
               </span>
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.house" id="house" class="w-full"/>
-                  <label htmlFor="house">Дом *</label>
+                  <label for="house">Дом *</label>
               </span>
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.building" id="street" class="w-full"/>
-                  <label htmlFor="street">Номер здания, строение и т.д...</label>
+                  <label for="street">Номер здания, строение и т.д...</label>
               </span>
               </div>
             </div>
-            <div className="col-12 md:col-4">
-              <div className="grid gap-4 m-0 flex-column">
-                <span className="p-float-label w-full">
+            <div class="col-12 md:col-4">
+              <div class="grid gap-4 m-0 flex-column">
+                <span class="p-float-label w-full">
                     <InputText v-model="formData.corps" id="frame" class="w-full"/>
-                    <label htmlFor="frame">Корпус</label>
+                    <label for="frame">Корпус</label>
                 </span>
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.floor" id="floor" class="w-full"/>
-                  <label htmlFor="floor">Этаж</label>
+                  <label for="floor">Этаж</label>
                 </span>
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.floor" id="number_office" class="w-full"/>
-                  <label htmlFor="number_office">Номер офиса</label>
+                  <label for="number_office">Номер офиса</label>
                 </span>
               </div>
             </div>
@@ -188,57 +183,57 @@ export default defineComponent({
       </div>
     </div>
 
-    <div className="grid mb-2">
-      <div className="col-12">
+    <div class="grid mb-2">
+      <div class="col-12">
         <MainCard title="Фактический адрес">
-          <div className="grid">
-            <div className="col-12 md:col-4">
-              <div className="grid gap-4 m-0 flex-column">
-                  <span className="p-float-label w-full">
+          <div class="grid">
+            <div class="col-12 md:col-4">
+              <div class="grid gap-4 m-0 flex-column">
+                  <span class="p-float-label w-full">
                       <InputText v-model="formData.postcode_fact" id="postcode" class="w-full"/>
-                      <label htmlFor="postcode">Индекс</label>
+                      <label for="postcode">Индекс</label>
                   </span>
 
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                       <InputText v-model="formData.region_fact" id="region" class="w-full"/>
-                      <label htmlFor="region">Регион</label>
+                      <label for="region">Регион</label>
                   </span>
 
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                       <InputText v-model="formData.city_fact" id="city" class="w-full"/>
-                      <label htmlFor="city">Город</label>
+                      <label for="city">Город</label>
                   </span>
               </div>
             </div>
-            <div className="col-12 md:col-4">
-              <div className="grid gap-4 m-0 flex-column">
-                <span className="p-float-label w-full">
+            <div class="col-12 md:col-4">
+              <div class="grid gap-4 m-0 flex-column">
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.street_fact" id="street" class="w-full"/>
-                  <label htmlFor="street">Улица *</label>
+                  <label for="street">Улица *</label>
               </span>
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.house_fact" id="house" class="w-full"/>
-                  <label htmlFor="house">Дом *</label>
+                  <label for="house">Дом *</label>
               </span>
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.building_fact" id="street" class="w-full"/>
-                  <label htmlFor="street">Номер здания, строение и т.д...</label>
+                  <label for="street">Номер здания, строение и т.д...</label>
               </span>
               </div>
             </div>
-            <div className="col-12 md:col-4">
-              <div className="grid gap-4 m-0 flex-column">
-                <span className="p-float-label w-full">
+            <div class="col-12 md:col-4">
+              <div class="grid gap-4 m-0 flex-column">
+                <span class="p-float-label w-full">
                     <InputText v-model="formData.corps_fact" id="frame" class="w-full"/>
-                    <label htmlFor="frame">Корпус</label>
+                    <label for="frame">Корпус</label>
                 </span>
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.floor_fact" id="floor" class="w-full"/>
-                  <label htmlFor="floor">Этаж</label>
+                  <label for="floor">Этаж</label>
                 </span>
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.floor_fact" id="number_office" class="w-full"/>
-                  <label htmlFor="number_office">Номер офиса</label>
+                  <label for="number_office">Номер офиса</label>
                 </span>
               </div>
             </div>
@@ -247,31 +242,31 @@ export default defineComponent({
       </div>
     </div>
 
-    <div className="grid mb-2">
-      <div className="col-12 md:col-8">
+    <div class="grid mb-2">
+      <div class="col-12 md:col-8">
         <MainCard title="Банковские реквизиты">
-          <div className="grid">
-            <div className="col-12 md:col-6">
-              <div className="grid gap-4 m-0 flex-column">
-                  <span className="p-float-label w-full">
+          <div class="grid">
+            <div class="col-12 md:col-6">
+              <div class="grid gap-4 m-0 flex-column">
+                  <span class="p-float-label w-full">
                       <InputText v-model="formData.account" id="checking_account" class="w-full"/>
-                      <label htmlFor="checking_account">Расчетный счет *</label>
+                      <label for="checking_account">Расчетный счет *</label>
                   </span>
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                         <InputText v-model="formData.bic" id="bik" class="w-full"/>
-                        <label htmlFor="bik">БИК *</label>
+                        <label for="bik">БИК *</label>
                   </span>
               </div>
             </div>
-            <div className="col-12 md:col-6">
-              <div className="grid gap-4 m-0 flex-column">
-                <span className="p-float-label w-full">
+            <div class="col-12 md:col-6">
+              <div class="grid gap-4 m-0 flex-column">
+                <span class="p-float-label w-full">
                         <InputText v-model="formData.bank" id="bik" class="w-full"/>
-                        <label htmlFor="bik">Наименования банка *</label>
+                        <label for="bik">Наименования банка *</label>
                   </span>
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                       <InputText v-model="formData.corr_account" id="correspondent_account" class="w-full"/>
-                      <label htmlFor="correspondent_account">Корр. счет *</label>
+                      <label for="correspondent_account">Корр. счет *</label>
                   </span>
               </div>
             </div>
@@ -279,20 +274,20 @@ export default defineComponent({
         </MainCard>
       </div>
 
-      <div className="col-12 md:col-4">
+      <div class="col-12 md:col-4">
         <MainCard title="Контактные данные">
-          <div className="grid">
-            <div className="col-12">
-              <div className="grid gap-4 m-0 flex-column">
+          <div class="grid">
+            <div class="col-12">
+              <div class="grid gap-4 m-0 flex-column">
                 <InputNumberPhone
                     v-model="formData.phone"
                     :country="selectCountry?.name"
                     :phone-code="selectCountry?.phone_code ? selectCountry.phone_code : '+7'"
                     @toggleChangePhoneCode="changeVisible"
                 />
-                <span className="p-float-label w-full">
+                <span class="p-float-label w-full">
                   <InputText v-model="formData.email" id="email" class="w-full"/>
-                  <label htmlFor="email">Электронная почта (для уведомлений бенефициару) *</label>
+                  <label for="email">Электронная почта (для уведомлений бенефициару) *</label>
                 </span>
               </div>
             </div>
@@ -300,9 +295,9 @@ export default defineComponent({
         </MainCard>
       </div>
 
-      <div className="col-12">
+      <div class="col-12">
         <MainCard title="Банковские реквизиты">
-          <div className="flex justify-content-start">
+          <div class="flex justify-content-start">
             <Button class="btn-primary">Загрузить реквизиты</Button>
           </div>
         </MainCard>

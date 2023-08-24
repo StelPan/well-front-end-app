@@ -11,8 +11,11 @@ const actions = {
         commit('updateListServices', services);
     },
     async fetchService({commit}, id) {
-        const service = await ServiceService.loadService(id);
+        const {data: service} = await ServiceService.loadService(id);
         commit('updateCurrentService', service);
+    },
+    async fetchUpdateService({commit}, {id, body}) {
+        await ServiceService.updateService(id, body);
     }
 };
 

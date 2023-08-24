@@ -13,15 +13,15 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
+  setup(props, {emit}) {
     const checkboxes = reactive({});
 
     const fillCheckboxes = (data) => {
       data.forEach(category => {
         checkboxes[category.id] = ref(!!category.quick_access);
 
-        watch(() => checkboxes[category.id], (val) => {
-          console.log(category.id, val);
+        watch(() => checkboxes[category.id], (value) => {
+          emit('toggleChangeView', { category, quick_access: value });
         })
       });
     };

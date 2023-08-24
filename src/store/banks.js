@@ -8,7 +8,7 @@ const state = () => ({
 
 const actions = {
     async fetchBanks({commit}) {
-        const banks = await BankService.loadBanks();
+        const {data: banks} = await BankService.loadBanks();
         commit('updateListBanks', banks);
     },
     async fetchBank({commit}, id) {
@@ -17,7 +17,7 @@ const actions = {
         commit('updateCurrentBank', bank);
     },
     async fetchAcquiring({commit}, bankId) { // return []
-        const acquiring = await BankService.loadAcquiring(bankId);
+        const {data: acquiring} = await BankService.loadAcquiring(bankId);
         commit('updateListAcquiring', acquiring);
     },
     async fetchCreateAcquiring({commit}, {bankId, body}) {

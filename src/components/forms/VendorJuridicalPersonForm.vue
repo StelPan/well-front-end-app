@@ -2,6 +2,7 @@
 import {computed, defineComponent, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
+import _ from "loadsh";
 
 import Breadcrumb from "@/components/Breadcrumb";
 import Button from "primevue/button";
@@ -24,32 +25,12 @@ export default defineComponent({
     const store = useStore();
 
     const selectCountry = computed(() => store.getters.getSelectCountry);
-
     const legalForms = ref([{label: 'ООО'}, {label: 'ИП'}]);
 
-    const formData = reactive({
-      inn: '', email: '',
-      phone: '', type: '', postcode: '',
-      region: '', city: '', street: '',
-      house: '', building: '', corps: '',
-      floor: '', postcode_fact: '', region_fact: '',
-      city_fact: '', street_fact: '', house_fact: '',
-      building_fact: '', corps_fact: '', floor_fact: '',
-      room_fact: '', account: '', corr_account: '',
-      bic: '', bank: '', payment_details: '',
-      data: {
-        short_name: '', full_name: '', legal_form: '', kpp: '', ogrn: '', ogrn_date: '', ogrn_place: '',
-        reg_date: '', oktmo: '', org_name: '', snils: '', ogrnip_date: '', ogrnip_place: '', ogrnip: '',
-        first_name: '', last_name: '', patronymic: '',
-      }
-    });
-
-    watch(() => props.form, (value) => {
-      useCreateReactiveCopy(formData, value);
-    });
+    const formData = ref(props.form);
 
     watch(formData, () => {
-      emit('formChange', formData);
+      emit('formChange', formData.value);
     });
 
     const changeVisible = (data) => {

@@ -12,6 +12,9 @@ const actions = {
     async fetchServiceCategory({commit}, id) {
         const service = await ServiceCategory.loadServiceCategory(id);
         commit('updateCurrentServiceCategory', service);
+    },
+    async fetchUpdateServiceCategory({commit}, {id, body}) {
+        await ServiceCategory.updateServiceCategory(id, body);
     }
 };
 

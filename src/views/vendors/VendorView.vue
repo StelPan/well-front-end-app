@@ -7,21 +7,27 @@ import {useFlat} from "@/hooks/flat";
 
 import Button from "primevue/button";
 import VendorJuridicalPersonForm from "@/components/forms/VendorJuridicalPersonForm";
+import VendorIndividualPersonForm from "@/components/forms/VendorIndividualPersonForm.vue";
 import SelectPhoneModal from "@/components/modals/SelectPhoneModal";
 import Breadcrumb from "@/components/Breadcrumb";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {VendorJuridicalPersonForm, SelectPhoneModal, Breadcrumb, Button},
+  components: {VendorJuridicalPersonForm, VendorIndividualPersonForm, SelectPhoneModal, Breadcrumb, Button},
   setup() {
     const store = useStore();
     const route = useRoute();
+
+    const formVendorTypes = {
+      'ul': 'VendorJuridicalPersonForm',
+      'ip': 'VendorIndividualPersonForm'
+    }
 
     const vendor = computed(() => store.getters.getCurrentVendor);
     const countries = computed(() => store.getters.getCountriesList);
     const selectCountry = computed(() => store.getters.getSelectCountry);
 
-    const formData = ref({
+    const formData = reactive({
       inn: '', email: '',
       phone: '', type: '', postcode: '',
       region: '', city: '', street: '',
@@ -62,12 +68,12 @@ export default defineComponent({
     const updateVendor = async () => {
       await store.dispatch('fetchUpdateVendor', {
         id: route.params.id,
-        form: useFlat(formData.value)
+        form: useFlat(formData)
       });
     };
 
     const updateForm = (form) => {
-      formData.value = form;
+      useCreateReactiveCopy(formData, form);
     };
 
     onMounted(async () => {
@@ -84,7 +90,8 @@ export default defineComponent({
       selectCountry,
       formData,
       updateForm,
-      updateVendor
+      updateVendor,
+      formVendorTypes
     };
   }
 });
@@ -101,11 +108,21 @@ export default defineComponent({
     </div>
   </section>
 
-  <VendorJuridicalPersonForm
-      :form="vendor"
-      @formChange="updateForm"
-      @changeVisible="changeVisible"
-  />
+  <template v-if="vendor?.type === 'ul'">
+    <VendorJuridicalPersonForm
+        :form="vendor"
+        @formChange="updateForm"
+        @changeVisible="changeVisible"
+    />
+  </template>
+
+  <template v-if="vendor?.type === 'ip'">
+    <VendorIndividualPersonForm
+        :form="vendor"
+        @formChange="updateForm"
+        @changeVisible="changeVisible"
+    />
+  </template>
 </template>
 
 <style scoped>
