@@ -21,7 +21,7 @@ const actions = {
         await TariffsService.createTariff(body);
     },
     async fetchDestroyTariff({commit}, id) {
-        // await TariffsService.
+        await TariffsService.destroyTariff(id);
     }
 };
 

@@ -65,6 +65,7 @@ export default defineComponent({
     const toggleDestroyTariff = async () => {
       try {
         // TODO: DELETE TARIFF
+        await store.dispatch('fetchDestroyTariff', route.params.id);
         await changeConfirmationStateModal();
         await router.push({name: 'tariffs-periods-list', params: {period: MONTHLY_TYPE}});
       } catch (e) {
