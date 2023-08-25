@@ -5,4 +5,9 @@ const loadStates = async () => {
     return response.data;
 };
 
-export {loadStates};
+const updateState = async (id, body) => {
+    const response = await http.post('/api/company/v1/state/state-list/' + id, body);
+    return response.data;
+}
+
+export {loadStates, updateState};
