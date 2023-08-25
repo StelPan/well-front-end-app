@@ -95,8 +95,12 @@ export default defineComponent({
 
 <template>
   <section class="py-2 mb-3">
-    <div class="flex justify-content-start mb-3">
+    <div class="flex justify-content-between mb-3">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
+      <div class="flex">
+        <Button v-if="!isUpdated" label="Сохранить изменения" class="btn-primary font-light" @click="saveUserData"/>
+        <ButtonSuccess v-if="isUpdated" label="Изменения сохранены"/>
+      </div>
     </div>
     <div class="flex justify-content-between mb-3">
       <span class="color-black-40">
@@ -106,9 +110,6 @@ export default defineComponent({
           <template v-if="i !== user.roles.length - 1"> + </template>
         </template>
       </span>
-
-      <Button v-if="!isUpdated" label="Сохранить изменения" class="btn-primary font-light" @click="saveUserData"/>
-      <ButtonSuccess v-if="isUpdated" label="Изменения сохранены"/>
     </div>
 
     <div class="grid mb-3">

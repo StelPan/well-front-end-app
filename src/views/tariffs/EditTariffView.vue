@@ -38,6 +38,7 @@ export default defineComponent({
       name_ru: '',
       period: '',
       cost: '',
+      daily_cost: ''
     });
 
     const tariff = computed(() => store.getters.getCurrentTariff);
@@ -73,7 +74,9 @@ export default defineComponent({
       } catch (e) {
         console.error(e);
       }
-    }
+    };
+
+    watch(form, () => errors.clearErrors());
 
     onMounted(async () => {
       await store.dispatch('fetchTariff', route.params.id);
@@ -146,21 +149,38 @@ export default defineComponent({
         <MainCard title="Тип тарифа">
           <div class="grid">
             <div class="col-12">
-              <Dropdown
-                  v-model="form.period"
-                  optionLabel="name"
-                  optionValue="name"
-                  :options="typeTariffs"
-                  placeholder="Тип тарифа"
-                  class="w-full">
-                <template #option="{ option }">
-                  {{ TARIFF_NAMES[option.name] }}
-                </template>
+              <div class="grid flex-column gap-4">
+                <Dropdown
+                    v-model="form.period"
+                    optionLabel="name"
+                    optionValue="name"
+                    :options="typeTariffs"
+                    placeholder="Тип тарифа"
+                    class="w-full">
+                  <template #option="{ option }">
+                    {{ TARIFF_NAMES[option.name] }}
+                  </template>
 
-                <template #value="{ value }">
-                  {{ TARIFF_NAMES[value] }}
-                </template>
-              </Dropdown>
+                  <template #value="{ value }">
+                    {{ TARIFF_NAMES[value] }}
+                  </template>
+                </Dropdown>
+
+                <div>
+                  <span v-if="form.period === 'monthly'" class="p-float-label w-full">
+                    <InputText
+                        v-model="form.daily_cost"
+                        id="daily_costname"
+                        :class="{'p-invalid': errors.daily_cost}"
+                        class="w-full"
+                    />
+                    <label for="name">Суточная стоимость *</label>
+                  </span>
+                  <span v-if="errors.daily_cost" class="text-xs color-error">
+                    {{ errors.daily_cost[0] }}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </MainCard>
