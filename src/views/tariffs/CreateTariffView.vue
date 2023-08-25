@@ -71,7 +71,7 @@ export default defineComponent({
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
       <Button v-if="!isCreated" label="Создать тариф" @click="toggleCreateTariff" class="btn-primary font-light"/>
-      <ButtonSuccess v-if="isCreated" label="Тариф создан" />
+      <ButtonSuccess v-if="isCreated" label="Тариф создан"/>
     </div>
   </section>
 
@@ -84,12 +84,12 @@ export default defineComponent({
              <span class="p-float-label w-full">
               <InputText v-model="form.name_ru" id="name" class="w-full" :class="{'p-invalid': !!errors?.name_ru}"/>
               <label for="name">Имя *</label>
-              <span class="color-error" v-if="errors?.name_ru">
-              <template v-for="(error, i) in errors.name_ru" :key="i">
-                {{ error }} <br>
-              </template>
-            </span>
              </span>
+              <span class="color-error" v-if="errors?.name_ru">
+                <template v-for="(error, i) in errors.name_ru" :key="i">
+                  {{ error }} <br>
+                </template>
+              </span>
             </div>
           </div>
         </MainCard>
@@ -122,9 +122,14 @@ export default defineComponent({
           <div class="grid">
             <div class="col-12">
              <span class="p-float-label w-full">
-              <InputText v-model="form.cost" id="name" class="w-full"/>
+              <InputText v-model="form.cost" id="name" class="w-full" :class="{'p-invalid': !!errors?.cost}"/>
               <label for="name">Cтоимость, руб. *</label>
              </span>
+              <span class="color-error" v-if="errors?.cost">
+                <template v-for="(error, i) in errors.cost" :key="i">
+                  {{ error }} <br>
+                </template>
+              </span>
             </div>
           </div>
         </MainCard>
@@ -139,11 +144,19 @@ export default defineComponent({
           <div class="grid">
             <div class="col-12">
               <span>Полное описание</span>
-              <Editor v-model="form.description_ru" class="w-full" />
+              <Editor v-model="form.description_ru" class="w-full"/>
+
+              <span v-if="errors.description_ru" :class="{'color-error': errors.description_ru }">
+                {{ errors.description_ru[0] }}
+              </span>
             </div>
             <div class="col-12">
               <span>Краткое описание</span>
-              <Editor v-model="form.short_description_ru" class="w-full" />
+              <Editor v-model="form.short_description_ru" class="w-full"/>
+
+              <span v-if="errors.short_description_ru" :class="{'color-error': errors.short_description_ru }">
+                {{ errors.short_description_ru[0] }}
+              </span>
             </div>
           </div>
         </MainCard>

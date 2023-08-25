@@ -1,7 +1,8 @@
 <script>
 import {defineComponent, onMounted, computed, ref, reactive, watch} from "vue";
-import { useStore } from "vuex";
+import {useStore} from "vuex";
 import {useError} from "@/hooks/useErrors";
+import {useLanguages} from "@/hooks/useLanguages";
 
 import Breadcrumb from "@/components/Breadcrumb.vue";
 import MainCard from "@/components/cards/MainCard.vue";
@@ -18,17 +19,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const errors = useError();
-
-    const languages = [{
-      label: 'Русский',
-      value: 'ru'
-    }, {
-      label: 'Английский',
-      value: 'en'
-    }, {
-      label: 'Чешский',
-      value: 'ch'
-    }];
+    const {languages} = useLanguages();
 
     onMounted(async () => {
       await store.dispatch('fetchRoles');
@@ -81,10 +72,10 @@ export default defineComponent({
 <template>
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
-      <Breadcrumb :data="breadcrumbs" separator="/" />
+      <Breadcrumb :data="breadcrumbs" separator="/"/>
 
       <div class="flex">
-        <Button label="Создать пользователя" class="btn-primary font-light w-12" @click="toCreateUser" />
+        <Button label="Создать пользователя" class="btn-primary font-light w-12" @click="toCreateUser"/>
       </div>
     </div>
   </section>
@@ -113,9 +104,10 @@ export default defineComponent({
       </div>
       <div class="col-12 md:col-4 sm:col-6">
         <MainCard title="Контактные данные">
-            <div class="flex flex-column gap-3">
+          <div class="flex flex-column gap-3">
                 <span class="p-float-label mb-3 w-full">
-                  <InputText id="phone" class="w-full" :class="{'p-invalid': !!errors?.phone}" v-model="formReactive.phone"/>
+                  <InputText id="phone" class="w-full" :class="{'p-invalid': !!errors?.phone}"
+                             v-model="formReactive.phone"/>
                   <label for="phone">Контактный номер *</label>
                   <span class="color-red" v-if="errors?.phone">
                     <template v-for="(error, i) in errors.phone" :key="i">
@@ -124,11 +116,11 @@ export default defineComponent({
                   </span>
               </span>
 
-                <span class="p-float-label mb-3 w-full">
+            <span class="p-float-label mb-3 w-full">
                   <InputText id="phone" class="w-full" v-model="formReactive.email"/>
                   <label for="phone">E-mail (для уведомлений) *</label>
                 </span>
-            </div>
+          </div>
         </MainCard>
       </div>
       <div class="col-12 md:col-4 sm:col-6">
@@ -142,7 +134,7 @@ export default defineComponent({
                   optionLabel="name_ru"
                   option-value="id"
                   placeholder="Роли"
-                  class="w-full" />
+                  class="w-full"/>
             </MainCard>
           </div>
           <div class="col-12">
@@ -153,7 +145,7 @@ export default defineComponent({
                   optionLabel="label"
                   option-value="value"
                   placeholder="Язык"
-                  class="w-full" />
+                  class="w-full"/>
             </MainCard>
           </div>
         </div>

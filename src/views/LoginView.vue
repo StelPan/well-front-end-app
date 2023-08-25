@@ -104,7 +104,7 @@ export default defineComponent({
         <div class="grid justify-content-center h-screen">
           <div class="col-12">
             <div class="flex align-items-center h-screen">
-              <div class="form w-full">
+              <div class="form w-full mx-2">
                 <img class="gap-3 w-4rem mb-3" src="../assets/images/admin/Logo.png" alt="">
                 <p class="mb-5 text-left text-xl font-bold">Добро пожаловать</p>
 

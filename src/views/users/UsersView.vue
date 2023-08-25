@@ -10,9 +10,11 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Paginator from "primevue/paginator";
 
+import UserFilterModal from "@/components/modals/UserFilterModal.vue";
+
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {Dropdown, Button, DataTable, Column, Paginator},
+  components: {Dropdown, Button, DataTable, Column, Paginator, UserFilterModal},
   setup() {
     useMeta({
       title: 'Пользователи'
@@ -21,7 +23,10 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
 
+    const visibleModal = computed(() => store.getters.getUserFilterModal);
+
     const users = computed(() => store.getters.getUsersList);
+
     const roles = computed(() => store.getters.getRolesList);
 
     const first = ref(0);
@@ -41,7 +46,14 @@ export default defineComponent({
           filterObject
       );
 
-      window.scrollTo(0,0);
+      window.scrollTo(0, 0);
+    };
+
+    const showUserFilterModal = () => {
+      store.dispatch('changeStateModal', {
+        type: 'userFilterModal',
+        bool: !visibleModal.value,
+      })
     }
 
     watch(selectedRole, async () => {
@@ -52,25 +64,27 @@ export default defineComponent({
       await findUsers();
     });
 
-    const filter = reactive({
-      roles: [],
-    });
-
     const toCreateUsers = () => {
-      router.push({ name: 'user-create' });
+      router.push({name: 'user-create'});
     };
 
     onMounted(async () => {
-      await store.dispatch('fetchRoles');
       await store.dispatch('fetchUsers');
+      await store.dispatch('fetchRoles');
     });
 
-    return {selectedRole, roles, users, toCreateUsers, first};
+    return {selectedRole, roles, users, toCreateUsers, first, visibleModal, showUserFilterModal};
   }
 });
 </script>
 
 <template>
+  <UserFilterModal
+      filter-data=""
+      :visible="visibleModal"
+      :roles="roles"
+  />
+
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <h1 class="font-normal">Пользователи</h1>
@@ -86,7 +100,7 @@ export default defineComponent({
 
         <Button label="Создать пользователя" class="btn-primary font-light" @click="toCreateUsers"/>
 
-        <Button icon="pi pi-filter" aria-label="Submit" class="btn-primary font-light" @click="toCreateUsers" />
+        <Button icon="pi pi-filter" aria-label="Submit" class="btn-primary font-light" @click="showUserFilterModal"/>
       </div>
     </div>
   </section>
@@ -103,7 +117,8 @@ export default defineComponent({
         <Column field="id" header="ID" class="text-center"/>
         <Column field="first_name" header="ФИО">
           <template #body="slotProps">
-            <router-link :to="{ name: 'user-edit', params: { id: slotProps.data.id }}" class="color-black-80 color-primary-hover">
+            <router-link :to="{ name: 'user-edit', params: { id: slotProps.data.id }}"
+                         class="color-black-80 color-primary-hover">
               {{ slotProps.data.last_name }} {{ slotProps.data.first_name }} {{ slotProps.data.patronymic }}
             </router-link>
           </template>

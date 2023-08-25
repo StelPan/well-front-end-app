@@ -42,7 +42,7 @@ export default defineComponent({
 <template>
   <div>
     <div class="mb-4">
-      <span class="p-float-label p-input-icon-right">
+      <span class="p-float-label p-input-icon-right w-full">
         <Timer
             :minutes="1"
             v-if="timeVisible"
@@ -59,7 +59,7 @@ export default defineComponent({
           </span>
         </i>
 
-        <InputText v-model="code" id="code"/>
+        <InputText v-model="code" id="code" class="w-full" />
 
         <label for="code">Код подтверждения</label>
       </span>

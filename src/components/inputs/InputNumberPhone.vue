@@ -48,12 +48,13 @@ export default defineComponent({
             @click="toggleChangePhoneCode"
             class="icon-number flex align-items-center left-0 cursor-pointer color-black-80"
         >
-          <img :src="source" alt="">
+          <img width="20" :src="source" alt="">
           <span>{{ phoneCode }}</span>
         </i>
         <InputText
             id="phone"
             class="w-full color-black-80"
+            style="font-family: 'RF Dewi', sans-serif;"
             :style="`padding-left:${2.5   + (phoneCode.length) / 2}em !important`"
             v-model="phone"
         />
@@ -70,6 +71,7 @@ export default defineComponent({
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-style: normal;
   margin: -11px -1px 0 15px !important;
+  top: 52.5% !important;
 }
 
 .left-number-label {

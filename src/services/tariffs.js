@@ -21,7 +21,8 @@ const editTariff = async (id, data) => {
 }
 
 const destroyTariff = async (id) => {
-  const response = await http.post(`/api/company/v1/tariff/` + id + '/delete');
+  const response = await http.get(`/api/company/v1/tariff/` + id + '/delete');
+  return response.data;
 }
 
 export default {loadTariffs, loadTariff, editTariff, createTariff, destroyTariff};

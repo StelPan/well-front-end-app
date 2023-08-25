@@ -2,7 +2,8 @@
 import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {useRoute, useRouter} from "vue-router";
-import {useCreateReactiveCopy} from "../../hooks/useCreateReactiveCopy";
+import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
+import {useError} from "@/hooks/useErrors";
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -29,6 +30,7 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter()
     const store = useStore();
+    const errors = useError();
 
     const form = reactive({
       short_description_ru: '',
@@ -58,7 +60,7 @@ export default defineComponent({
           body: form
         });
       } catch (e) {
-        console.error(e.response);
+        errors.setErrors(e.response.data.errors);
       }
     };
 
@@ -78,8 +80,13 @@ export default defineComponent({
       await store.dispatch('fetchTypeTariffs');
       useCreateReactiveCopy(form, tariff.value);
 
-      breadcrumbs.value = [{label: 'Тарифы', router: {name: 'tariffs'}}, {label: tariff.value.name_ru}];
-    })
+      breadcrumbs.value = [
+        {label: 'Тарифы', router: {name: 'tariffs'}},
+        {label: tariff.value.name_ru}
+      ];
+    });
+
+    watch(form, () => errors.clearErrors());
 
     return {
       breadcrumbs,
@@ -89,7 +96,8 @@ export default defineComponent({
       visibleConfirmationModal,
       changeConfirmationStateModal,
       toggleUpdateTariff,
-      toggleDestroyTariff
+      toggleDestroyTariff,
+      errors: errors.errors
     };
   }
 });
@@ -107,8 +115,8 @@ export default defineComponent({
 
     <template #footer>
       <div class="flex justify-content-between">
-        <Button label="Отменить" @click="changeConfirmationStateModal" class="btn-primary-outlined font-light w-12" />
-        <Button label="Удалить" @click="toggleDestroyTariff" class="btn-primary font-light ml-3 w-12" />
+        <Button label="Отменить" @click="changeConfirmationStateModal" class="btn-primary-outlined font-light w-12"/>
+        <Button label="Удалить" @click="toggleDestroyTariff" class="btn-primary font-light ml-3 w-12"/>
       </div>
     </template>
   </ConfirmationModal>
@@ -179,11 +187,17 @@ export default defineComponent({
           <div class="grid">
             <div class="col-12">
               <span>Полное описание</span>
-              <Editor v-model="form.description_ru" class="w-full" />
+              <Editor v-model="form.description_ru" class="w-full"/>
             </div>
             <div class="col-12">
               <span>Краткое описание</span>
-              <Editor v-model="form.short_description_ru" class="w-full" />
+              <Editor
+                  v-model="form.short_description_ru"
+                  class="w-full p-invalid"
+              />
+              <span v-if="errors.short_description_ru" :class="{'color-error': errors.short_description_ru }">
+                {{ errors.short_description_ru[0] }}
+              </span>
             </div>
           </div>
         </MainCard>

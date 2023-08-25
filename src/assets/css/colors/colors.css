@@ -7,6 +7,10 @@
     color: var(--color-primary) !important;
 }
 
+.color-black-20 {
+    color: var(--color-black-20) !important;
+}
+
 .color-black-40 {
     color: var(--color-black-40) !important;
 }

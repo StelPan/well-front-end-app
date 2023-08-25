@@ -1,5 +1,6 @@
 const state = () => ({
     confirmationStateModal: false,
+    userFilterModal: false,
 });
 
 const actions = {
@@ -17,6 +18,9 @@ const mutations = {
 const getters = {
     getConfirmationStateModal(state) {
         return state.confirmationStateModal;
+    },
+    getUserFilterModal(state) {
+        return state.userFilterModal;
     }
 };
 
