@@ -146,10 +146,10 @@ export default defineComponent({
                       <InputText
                           v-model="formData.inn"
                           :class="{'p-invalid': errors?.inn}"
-                          id="snils"
+                          id="inn"
                           class="w-full"
                       />
-                      <label for="snils">ИНН *</label>
+                      <label for="inn">ИНН *</label>
                   </span>
                   <span v-if="errors?.inn" class="text-xs color-error">
                     {{ errors.inn[0] }}
@@ -167,6 +167,20 @@ export default defineComponent({
                   </span>
                   <span v-if="errors?.ogrnip" class="text-xs color-error">
                     {{ errors.ogrnip[0] }}
+                  </span>
+                </div>
+                <div class="w-full">
+                  <span class="p-float-label w-full">
+                    <InputText
+                        v-model="formData.data.ogrnip_place"
+                        :class="{'p-invalid': errors?.ogrnip_place}"
+                        id="ogrn"
+                        class="w-full"
+                    />
+                    <label for="ogrn">ОГРН PLACE *</label>
+                  </span>
+                  <span v-if="errors?.ogrnip_place" class="text-xs color-error">
+                    {{ errors.ogrnip_place[0] }}
                   </span>
                 </div>
                 <div class="w-full">
@@ -212,6 +226,20 @@ export default defineComponent({
                   </span>
                   <span v-if="errors?.oktmo" class="text-xs color-error">
                     {{ errors.oktmo[0] }}
+                  </span>
+                </div>
+                <div class="w-full">
+                  <span class="p-float-label w-full">
+                      <InputText
+                          v-model="formData.data.snils"
+                          :class="{'p-invalid': errors?.snils}"
+                          id="snils"
+                          class="w-full"
+                      />
+                      <label for="snils">СНИЛС *</label>
+                  </span>
+                  <span v-if="errors?.snils" class="text-xs color-error">
+                    {{ errors.snils[0] }}
                   </span>
                 </div>
                 <div class="w-full">

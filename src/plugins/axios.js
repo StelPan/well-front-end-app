@@ -20,6 +20,7 @@ http.interceptors.response.use(
         }
 
         if (status === 401) {
+            TokenService.removeAccessToken();
             router.push('/login').then(() => {});
         }
 

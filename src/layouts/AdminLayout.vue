@@ -8,6 +8,8 @@ import AdminSidebar from "@/components/sidebars/AdminSidebar.vue";
 import Menu from "@/components/menubar/Menu.vue";
 import Button from "primevue/button";
 
+import TokenService from "@/services/token";
+
 export default defineComponent({
   name: "AdminLayout",
   components: {AdminSidebar, Menu, ConfirmationModal, Button}  ,
@@ -28,6 +30,8 @@ export default defineComponent({
 
     const logout = async () => {
       changeConfirmationStateModal();
+      TokenService.removeAccessToken();
+      await store.dispatch('fetchUpdateAuth', false);
       await router.push({ name: 'login' });
     }
 

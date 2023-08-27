@@ -4,6 +4,8 @@ import {middleware} from "vue-router-middleware";
 
 import "./middleware/require-auth";
 import "./middleware/redirect-to-login";
+import "./middleware/redirect-with-not-found";
+import "./middleware/require-without-auth";
 
 import Login from "@/views/LoginView.vue";
 import AboutView from "@/views/AboutView.vue";
@@ -46,6 +48,9 @@ import ServiceCategory from "@/views/services/ServiceCategory";
 import CreateServiceCategory from "@/views/services/CreateServiceCategory";
 import CreateVendorView from "@/views/vendors/CreateVendorView";
 import CreateBuildingView from "@/views/buildings/CreateBuildingView";
+import NotFound from "@/views/NotFound";
+
+console.log(...middleware('require-auth', [{}]))
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -60,7 +65,7 @@ const routes = [
             {
                 path: 'login',
                 name: 'login',
-                component: Login
+                component: Login,
             },
             ...middleware('require-auth', [{
                 path: 'notifications',
@@ -120,7 +125,7 @@ const routes = [
                 name: 'buildings',
                 component: BuildingsView,
             }, {
-                path: 'buildins/create',
+                path: 'buildings/create',
                 name: 'create-building',
                 component: CreateBuildingView
             }, {
@@ -223,8 +228,11 @@ const routes = [
                 name: 'support',
                 component: SupportView
             }]),
-        ]
-    },
+        ],
+    }, {
+        path: '/:pathMatch(.*)*',
+        redirect: '/login'
+    }
 ];
 
 const router = createRouter({

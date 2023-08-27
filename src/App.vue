@@ -1,8 +1,43 @@
 <script>
-import {defineComponent, ref} from "vue";
+import {computed, defineComponent, onMounted, ref} from "vue";
+import {useStore} from "vuex";
+import {useRoute} from "vue-router";
+import {useRouter} from "vue-router";
+
+import TokenService from "@/services/token";
 
 export default defineComponent({
   setup() {
+    const store = useStore();
+    const route = useRoute();
+    const router = useRouter();
+
+    const path = computed(() => route.path);
+
+    const authenticate = async () => {
+      try {
+        if (!TokenService.getAccessToken()) {
+          if (path.value === '/') {
+            await router.push('/login');
+            return;
+          }
+        }
+
+        await store.dispatch('fetchProfile');
+        await store.dispatch('fetchUpdateAuth', true);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    onMounted(async () => {
+      await authenticate();
+
+      if (path.value === '/') {
+        await router.push({name: 'users'});
+      }
+    });
+
     const APP_NAME = ref(process.env.VUE_APP_NAME);
     return {APP_NAME};
   }

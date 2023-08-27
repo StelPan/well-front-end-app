@@ -75,10 +75,10 @@ export default defineComponent({
                     />
                     <label for="short_name">Краткое наименование *</label>
                   </span>
-                </div>
-                <span v-if="errors?.short_name" class="text-xs color-error">
+                  <span v-if="errors?.short_name" class="text-xs color-error">
                     {{ errors.short_name[0] }}
                 </span>
+                </div>
 
                 <Dropdown
                     v-model="formData.data.legal_form"
@@ -106,7 +106,7 @@ export default defineComponent({
                       <label for="inn">ИНН *</label>
                   </span>
                   <span v-if="errors?.inn" class="text-xs color-error">
-                    {{ errors.legal_form[0] }}
+                    {{ errors.inn[0] }}
                   </span>
                 </div>
 
@@ -120,8 +120,23 @@ export default defineComponent({
                     />
                     <label for="ogrn">ОГРН *</label>
                   </span>
-                  <span v-if="errors?.orgn" class="text-xs color-error">
-                    {{ errors.orgn[0] }}
+                  <span v-if="errors?.ogrn" class="text-xs color-error">
+                    {{ errors.ogrn[0] }}
+                  </span>
+                </div>
+
+                <div class="w-full">
+                  <span class="p-float-label w-full">
+                    <InputText
+                        v-model="formData.data.ogrn_place"
+                        :class="{'p-invalid': errors?.ogrn_place}"
+                        id="ogrn"
+                        class="w-full"
+                    />
+                    <label for="ogrn">ОГРН PLACE *</label>
+                  </span>
+                  <span v-if="errors?.ogrn_place" class="text-xs color-error">
+                    {{ errors.ogrn_place[0] }}
                   </span>
                 </div>
 

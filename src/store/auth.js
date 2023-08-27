@@ -6,6 +6,7 @@ const state = () => ({
     phone: null,
     phoneCode: null,
     profile: null,
+    auth: null
 })
 
 const actions = {
@@ -27,6 +28,9 @@ const actions = {
     async fetchUpdateProfile({commit}, {id, body}) {
         const profile = await AuthService.fetchUpdateProfile(id, body);
         console.log(profile);
+    },
+    async fetchUpdateAuth({commit}, auth) {
+        commit('updateAuth', !!auth);
     }
 };
 
@@ -42,6 +46,9 @@ const mutations = {
     },
     updatePhoneCode(state, phoneCode) {
         state.phoneCode = phoneCode;
+    },
+    updateAuth(state, auth) {
+        state.auth = auth;
     }
 };
 
@@ -57,6 +64,9 @@ const getters = {
     },
     getPhoneCode(state) {
         return state.phoneCode;
+    },
+    getAuth(state) {
+        return state.auth;
     }
 };
 

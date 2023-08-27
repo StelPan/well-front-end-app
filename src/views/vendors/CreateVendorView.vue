@@ -1,8 +1,9 @@
 <script>
-import {defineComponent, reactive, ref, watch} from "vue";
+import {defineComponent, reactive, ref, toRaw, watch} from "vue";
 import {useStore} from "vuex";
 import {useError} from "@/hooks/useErrors";
 import {useFlat} from "@/hooks/flat";
+import {useDates} from "@/hooks/dates";
 
 import Button from "primevue/button";
 import Tab from "@/components/tabs/Tab";
@@ -22,27 +23,27 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const errors = useError();
+    const dates = useDates();
 
     const formData = reactive({
       data: {
         full_name: '', short_name: '', legal_form: '',
-        ogrn: '', orgn_date: '', reg_date: '',
-        kpp: '', oktmo: '', ogrn_ip: '', ogrnip_date: ''
+        ogrn: '', orgn_date: '', ogrn_plaсe: '', reg_date: '',
+        kpp: '', oktmo: '', ogrn_ip: '', ogrnip_date: '', ogrnip_place: ''
       },
       inn: '', postcode: '', region: '', city: '', street: '', house: '', building: '', corps: '', floor: '', room: '',
       post_code: '', region_fact: '', city_fact: '', street_fact: '', house_fact: '', building_fact: '', corps_fact: '',
-      floor_fact: '', room_fact: '', account: '', bic: '', corr_account: '', bank: '', phone: '', email: ''
+      floor_fact: '', room_fact: '', account: '', bic: '', corr_account: '', bank: '', phone: '', email: '', snils: ''
     });
 
     const file = ref(false);
     const fileUploader = ref();
+    const isCreated = ref(false);
 
     const breadcrumbs = ref([
       {label: 'Реквизиты', router: '/vendors/list'},
       {label: 'Создание реквизитов'}
     ]);
-
-    const isCreated = ref(false);
 
     const tabs = ref([{
       label: 'Юр.лицо',
@@ -61,10 +62,12 @@ export default defineComponent({
 
     const toggleTabHandler = ({type}) => currentStep.value = type;
 
-    watch(formData, () => errors.clearErrors());
+    watch([formData, currentStep], () => {
+      errors.clearErrors();
+      isCreated.value = false;
+    });
 
     const uploadRequests = ({files}) => {
-      console.log(fileUploader.value);
       file.value = files;
     };
 
@@ -77,7 +80,6 @@ export default defineComponent({
     };
 
     const fileDestroyLocal = async () => {
-      console.log(fileUploader);
       file.value = false;
     };
 
@@ -87,8 +89,14 @@ export default defineComponent({
         const type = currentStep.value;
         const merge = {type, ...useFlat(formData)};
 
-        for (let key in merge)
+        for (let key in merge) {
+          if (toRaw(merge[key]).constructor.name === Date.name) {
+            data.set(key, dates.correctDate(toRaw(merge[key])));
+            continue;
+          }
+
           data.set(key, merge[key]);
+        }
 
         await store.dispatch('fetchCreateVendor', data);
 
@@ -102,7 +110,7 @@ export default defineComponent({
       formData, tabSteps, currentStep,
       breadcrumbs, createVendor, tabs, file,
       toggleTabHandler, uploadRequests, errors: errors.errors,
-      fileDestroyLocal, fileUploader
+      fileDestroyLocal, fileUploader, isCreated
     };
   }
 });
@@ -112,6 +120,7 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
+      <ButtonSuccess label="Реквизит создан" />
       <Button label="Создать реквизиты" class="btn-primary font-light" @click="createVendor"/>
     </div>
   </section>
