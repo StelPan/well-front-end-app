@@ -29,6 +29,9 @@ const actions = {
     },
     async fetchUpdatePartner({commit}, {id, body}) {
         await PartnerService.updatePartner(id, body);
+    },
+    async fetchCreatePartnerCategory({commit}, body) {
+        await PartnerService.createPartnerCategory(body);
     }
 };
 

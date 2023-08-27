@@ -81,9 +81,9 @@ export default defineComponent({
   </section>
 
   <section class="py-2 mb-3">
-    <div class="grid mb-2">
+    <div class="grid mb-2 h-max">
       <div class="col-12 md:col-4 sm:col-6">
-        <MainCard title="Основные регистрационные сведения">
+        <MainCard title="Основные регистрационные сведения" :styles="{'h-full': true }">
           <div class="flex flex-column gap-3">
             <span class="p-float-label mb-3 w-full">
               <InputText id="last_name" class="w-full" v-model="formReactive.last_name"/>
@@ -103,7 +103,7 @@ export default defineComponent({
         </MainCard>
       </div>
       <div class="col-12 md:col-4 sm:col-6">
-        <MainCard title="Контактные данные">
+        <MainCard title="Контактные данные" :styles="{'h-full': true }">
           <div class="flex flex-column gap-3">
                 <span class="p-float-label mb-3 w-full">
                   <InputText id="phone" class="w-full" :class="{'p-invalid': !!errors?.phone}"
@@ -124,9 +124,9 @@ export default defineComponent({
         </MainCard>
       </div>
       <div class="col-12 md:col-4 sm:col-6">
-        <div class="grid flex-column">
-          <div class="col-12">
-            <MainCard title="Роль">
+        <div class="grid flex-column h-max">
+          <div class="col-12 h-full">
+            <MainCard title="Роль" :styles="{'h-full': true}">
               <MultiSelect
                   v-model="formReactive.roles"
                   display="chip"
@@ -137,8 +137,8 @@ export default defineComponent({
                   class="w-full"/>
             </MainCard>
           </div>
-          <div class="col-12">
-            <MainCard title="Язык">
+          <div class="col-12 h-full">
+            <MainCard title="Язык" :styles="{'h-full': true}">
               <Dropdown
                   v-model="formReactive.language"
                   :options="languages"

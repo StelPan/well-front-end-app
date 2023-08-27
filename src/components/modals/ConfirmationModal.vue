@@ -22,10 +22,12 @@ export default defineComponent({
       modal
       :close-on-escape="true"
       :closable="false"
-      :style="{ width: '50vw', 'border-radius': '20px' }"
+      :style="{ 'max-width': '500px', 'border-radius': '25px' }"
   >
     <template #header>
-      <slot name="header"></slot>
+      <span class="font-bold">
+        <slot name="header"></slot>
+      </span>
     </template>
 
     <template #default>

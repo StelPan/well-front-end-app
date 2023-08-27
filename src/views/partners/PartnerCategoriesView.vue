@@ -31,7 +31,13 @@ export default defineComponent({
 
 <template>
   <section class="py-2 mb-3">
-    <div class="grid">
+    <div v-if="!categories?.data?.data" class="flex justify-content-center align-items-center center-text-screen">
+      <span class="color-black-40">
+        Здесь пока ничего нет
+      </span>
+    </div>
+
+    <div v-if="Array.isArray(categories?.data?.data) ? categories.data.data.length : false" class="grid">
       <div class="col-12">
         <PartnerCategoriesTable :categories="categories?.data?.data ?? []" />
 

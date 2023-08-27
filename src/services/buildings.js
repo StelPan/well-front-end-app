@@ -1,7 +1,7 @@
 import http from "../plugins/axios";
 
-const loadBuildings = async () => {
-    const response = http.get('/api/company/v1/building');
+const loadBuildings = async (params = {}) => {
+    const response = http.get('/api/company/v1/building', {params});
     return response.data;
 };
 
@@ -10,4 +10,9 @@ const loadBuilding = async (id) => {
     return response.data;
 };
 
-export {loadBuildings, loadBuilding};
+const createBuilding = async (body = {}) => {
+    const response = await http.post('/api/company/v1/building', body);
+    return response.data;
+}
+
+export {loadBuildings, loadBuilding, createBuilding};

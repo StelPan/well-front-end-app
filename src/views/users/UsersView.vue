@@ -69,8 +69,12 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      await store.dispatch('fetchUsers');
-      await store.dispatch('fetchRoles');
+      try {
+        await store.dispatch('fetchUsers');
+        await store.dispatch('fetchRoles');
+      } catch (e) {
+        console.error(e);
+      }
     });
 
     return {selectedRole, roles, users, toCreateUsers, first, visibleModal, showUserFilterModal};
@@ -119,7 +123,7 @@ export default defineComponent({
           <template #body="slotProps">
             <router-link :to="{ name: 'user-edit', params: { id: slotProps.data.id }}"
                          class="color-black-80 color-primary-hover">
-              {{ slotProps.data.last_name }} {{ slotProps.data.first_name }} {{ slotProps.data.patronymic }}
+              {{ slotProps.data.last_name ?? '-' }} {{ slotProps.data.first_name ?? '-' }} {{ slotProps.data.patronymic ?? '-' }}
             </router-link>
           </template>
         </Column>
@@ -148,9 +152,5 @@ export default defineComponent({
 <style scoped>
 .p-dropdown-panel {
   border-radius: 15px !important;
-}
-
-.center-text-screen {
-  height: calc(100vh - 200px);
 }
 </style>

@@ -44,6 +44,8 @@ export default defineComponent({
       }
     });
 
+    const file = ref(false);
+
     const breadcrumbs = ref([]);
     const visible = ref(false);
 

@@ -47,10 +47,11 @@ export default defineComponent({
 
         isUpdated.value = true;
       } catch (e) {
-        console.log(e.response.data.errors);
         errors.setErrors(e.response.data.errors)
       }
     };
+
+    const breadcrumbs = ref([]);
 
     watch(formReactive, () => isUpdated.value = false);
 
@@ -58,26 +59,26 @@ export default defineComponent({
       await store.dispatch('fetchUser', route.params.id);
       await store.dispatch('fetchRoles');
 
+      const label = ((user.value.last_name ? user.value.last_name + ' ' : '') ?? ' -')
+          + ((user.value.first_name ? user.value.first_name + ' ' : '') ?? ' -')
+          + ((user.value.patronymic ? user.value.patronymic + ' ' : '') ?? ' -');
+
+      breadcrumbs.value = [
+        {label: 'Пользователи', router: {name: 'users'}},
+        {label}
+      ];
+
       useCreateReactiveCopy(
           formReactive,
           store.getters.getCurrentUser,
-          {roles: (roles) => roles.map(role => role.id)}
+          // {roles: (roles) => roles.map(role => role.id)}
       );
+
+      formReactive.roles = store.getters.getCurrentUser.roles.map(role => role.id);
     });
 
     const user = computed(() => store.getters.getCurrentUser);
     const roles = computed(() => store.getters.getRolesList);
-
-    const breadcrumbs = ref([{
-      label: 'Пользователи',
-      router: {name: 'users'}
-    }, {
-      label: user?.first_name,
-    }]);
-
-    watch(user, (data) => {
-      breadcrumbs.value[1].label = data.first_name
-    });
 
     return {
       user,
@@ -112,9 +113,9 @@ export default defineComponent({
       </span>
     </div>
 
-    <div class="grid mb-3">
+    <div class="grid mb-3 h-max">
       <div class="col-12 md:col-4">
-        <MainCard title="Основные регистрационные сведения">
+        <MainCard :styles="{'h-full': true}" title="Основные регистрационные сведения">
           <div class="flex flex-column gap-3 ">
             <div class="mb-3">
               <span class="p-float-label w-full">
@@ -156,7 +157,7 @@ export default defineComponent({
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
-        <MainCard title="Контактные данные">
+        <MainCard :styles="{'h-full': true}" title="Контактные данные">
           <div class="flex flex-column gap-3">
             <div class="mb-3">
               <span class="p-float-label w-full">
@@ -185,22 +186,34 @@ export default defineComponent({
           <MainCard title="Роль">
             <MultiSelect
                 v-model="formReactive.roles"
+                :class="{'p-invalid': errors.roles}"
                 display="chip"
                 :options="roles"
                 optionLabel="name_ru"
                 option-value="id"
                 placeholder="Роли"
-                class="w-full"/>
+                class="w-full"
+            />
+
+            <span v-if="errors.roles" class="color-error text-xs">
+              {{ errors.roles[0] }}
+            </span>
           </MainCard>
 
           <MainCard title="Язык">
             <Dropdown
                 v-model="formReactive.language"
+                :class="{'p-invalid': errors.language}"
                 :options="languages"
                 optionLabel="label"
                 option-value="value"
                 placeholder="Язык"
-                class="w-full"/>
+                class="w-full"
+            />
+
+            <span v-if="errors.language" class="color-error text-xs">
+              {{ errors.language[0] }}
+            </span>
           </MainCard>
 
           <MainCard title="Быстрые ссылки"></MainCard>

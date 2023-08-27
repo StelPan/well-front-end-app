@@ -1,4 +1,4 @@
-import {createNotice, loadNotice, loadNotices} from "@/services/notices";
+import {createNotice, loadNotice, loadNotices, updateNotice} from "@/services/notices";
 
 const store = () => ({
     listNotices: [],
@@ -11,11 +11,14 @@ const actions = {
         commit('updateListNotices', notices);
     },
     async fetchNotice({commit}, id) {
-        const notice = await loadNotice(id);
+        const {data: notice} = await loadNotice(id);
         commit('updateCurrentNotice', notice);
     },
     async fetchCreateNotice({commit}, body) {
         await createNotice(body);
+    },
+    async fetchUpdateNotice({commit}, {id, body}) {
+        await updateNotice(id, body);
     }
 };
 

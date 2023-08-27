@@ -1,4 +1,5 @@
 import ServiceCategory from "../services/service-category";
+
 const state = () => ({
    listServiceCategories: [],
    currentServiceCategory: {},
@@ -10,12 +11,15 @@ const actions = {
         commit('updateListServiceCategories', services);
     },
     async fetchServiceCategory({commit}, id) {
-        const service = await ServiceCategory.loadServiceCategory(id);
+        const {data: service} = await ServiceCategory.loadServiceCategory(id);
         commit('updateCurrentServiceCategory', service);
     },
     async fetchUpdateServiceCategory({commit}, {id, body}) {
         await ServiceCategory.updateServiceCategory(id, body);
-    }
+    },
+    async fetchDestroyServiceCategory({commit}, id) {
+        await ServiceCategory.destroyServiceCategory(id);
+    },
 };
 
 const mutations = {

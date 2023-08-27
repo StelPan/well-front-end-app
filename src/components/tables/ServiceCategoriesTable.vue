@@ -21,7 +21,7 @@ export default defineComponent({
         checkboxes[category.id] = ref(!!category.quick_access);
 
         watch(() => checkboxes[category.id], (value) => {
-          emit('toggleChangeView', { category, quick_access: value });
+          emit('toggleChangeView', {category, quick_access: value});
         })
       });
     };
@@ -40,7 +40,13 @@ export default defineComponent({
 <template>
   <DataTable :value="categories" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
     <Column field="id" header="ID"></Column>
-    <Column field="name_ru" header="Наименование категории"></Column>
+    <Column field="name_ru" header="Наименование категории">
+      <template #body="slotProps">
+        <router-link :to="{name: 'service-category', params: {id: slotProps.data.id}}" class="color-primary">
+          {{ slotProps.data.name_ru }}
+        </router-link>
+      </template>
+    </Column>
     <Column field="view" header="Видимость">
       <template #body="slotProps">
         <Checkbox

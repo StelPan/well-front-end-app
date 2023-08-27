@@ -1,4 +1,4 @@
-import {loadBuildings, loadBuilding} from "@/services/buildings";
+import {loadBuildings, loadBuilding, createBuilding} from "@/services/buildings";
 
 const state = () => ({
     listBuildings: [],
@@ -6,9 +6,12 @@ const state = () => ({
 });
 
 const actions = {
-    async fetchBuildings({commit}) {
-        const buildings = await loadBuildings();
+    async fetchBuildings({commit}, params = {}) {
+        const buildings = await loadBuildings(params);
         commit('updateListBuildings', buildings);
+    },
+    async fetchCreateBuilding({commit}, body = {}) {
+        await createBuilding(body);
     }
 };
 

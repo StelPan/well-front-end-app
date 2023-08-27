@@ -5,6 +5,11 @@ export function useFlat(data) {
 
     function flatting (data) {
         for (let key in data) {
+            if (data[key] instanceof Date) {
+                flat[key] = data[key];
+                continue;
+            }
+
             if (typeof data[key] === 'object' && data[key] !== null) {
                 flatting(data[key]);
             } else {

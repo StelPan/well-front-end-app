@@ -42,6 +42,10 @@ import PartnerCategoriesView from "@/views/partners/PartnerCategoriesView";
 import ServiceView from "@/views/services/ServiceView.vue";
 import PartnerView from "@/views/partners/PartnerView";
 import PartnerCategoryView from "@/views/partners/PartnerCategoryView";
+import ServiceCategory from "@/views/services/ServiceCategory";
+import CreateServiceCategory from "@/views/services/CreateServiceCategory";
+import CreateVendorView from "@/views/vendors/CreateVendorView";
+import CreateBuildingView from "@/views/buildings/CreateBuildingView";
 
 const RouterLayout = createRouterLayout(layout => {
     return import('@/layouts/' + layout + '.vue')
@@ -103,10 +107,22 @@ const routes = [
                     name: 'services-list',
                     component: ServicesListView
                 },]
+            },  {
+                path: 'services/categories/:id',
+                name: 'service-category',
+                component: ServiceCategory
+            }, {
+                path: 'services/categories/create',
+                name: 'create-service-category',
+                component: CreateServiceCategory,
             }, {
                 path: 'buildings',
                 name: 'buildings',
                 component: BuildingsView,
+            }, {
+                path: 'buildins/create',
+                name: 'create-building',
+                component: CreateBuildingView
             }, {
                 path: 'users',
                 name: 'users',
@@ -153,6 +169,10 @@ const routes = [
                 path: 'vendors/:id',
                 name: 'vendor-view',
                 component: VendorView
+            }, {
+                path: 'vendors/create',
+                name: 'create-vendor-view',
+                component: CreateVendorView
             }, {
                 path: '/banks/:id/acquiring/create',
                 name: 'acquiring-create',

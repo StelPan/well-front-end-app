@@ -18,44 +18,28 @@ export default defineComponent({
     const route = useRoute();
     const errors = useError();
 
-    const category = computed(() => store.getters.getCurrentPartnerCategory);
-
     const form = reactive({name_ru: ''});
 
     const breadcrumbs = ref([]);
-    const isUpdated = ref(false);
+    const isCreated = ref(false);
 
-    const loadPartnerCategory = async () => {
-      await store.dispatch('fetchPartnerCategory', route.params.id);
-    };
-
-
-    const updatePartnerCategory = async () => {
+    const createPartnerCategory = async () => {
       try {
-        await store.dispatch('fetchUpdatePartnerCategory', {
-          id: route.params.id,
-          body: form,
-        });
-        isUpdated.value = true;
+        await store.dispatch('fetchCreatePartnerCategory', form);
+        isCreated.value = true;
       } catch (e) {
         errors.setErrors(e.response.data.errors);
       }
     };
 
-    watch(form, () => isUpdated.value = false);
-
     onMounted(async () => {
-      await loadPartnerCategory();
-
       breadcrumbs.value = [
         {label: 'Партнеры', router: {name: 'partners-categories'}},
-        {label: category.value.name_ru}
+        {label: 'Создание категории'}
       ];
-
-      form.name_ru = category.value.name_ru;
     });
 
-    return {category, form, breadcrumbs, updatePartnerCategory, errors: errors.errors, isUpdated};
+    return {form, breadcrumbs, createPartnerCategory, errors: errors.errors, isCreated};
   }
 })
 </script>
@@ -66,10 +50,11 @@ export default defineComponent({
       <Breadcrumb :data="breadcrumbs" separator="/"/>
 
       <div class="flex">
-        <ButtonSuccess v-if="isUpdated" label="Изменения сохранены"/>
+        <ButtonSuccess v-if="isCreated" label="Категория создана" />
 
         <Button
-            @click="updatePartnerCategory"
+            v-else
+            @click="createPartnerCategory"
             label="Сохранить изменения"
             class="btn-primary font-light ml-2"
         />

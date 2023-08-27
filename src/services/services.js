@@ -1,7 +1,7 @@
 import http from "../plugins/axios";
 
 const loadServices = async (params) => {
-    const response = await http.get('/api/company/v1/service', { params });
+    const response = await http.get('/api/company/v1/service', {params});
     return response.data;
 };
 
@@ -20,4 +20,9 @@ const createService = async (body) => {
     return response.data;
 };
 
-export default {loadService, loadServices, updateService, createService};
+const destroyServicePhoto = async (id, uuid) => {
+    const response = await http.post('/api/company/v1/service/' + id + '/photo/delete', {uuid});
+    return response.data;
+}
+
+export default {loadService, loadServices, updateService, createService, destroyServicePhoto};

@@ -18,5 +18,10 @@ export default defineComponent({
 <template>
   <DataTable :value="buildings" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
     <Column field="id" header="ID" />
+    <Column field="name" header="Наименование" />
+    <Column field="address" header="Адрес" />
+    <Column field="segments" header="Сегменты" />
+    <Column field="categories" header="Категории" />
+    <Column field="objects" header="Объекты" />
   </DataTable>
 </template>

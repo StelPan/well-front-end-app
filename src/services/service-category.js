@@ -13,11 +13,23 @@ const loadServiceCategory = async (id) => {
 const createServiceCategory = async (data) => {
     const response = await http.post('/api/company/v1/service-category', data);
     return response.data;
-}
+};
 
 const updateServiceCategory = async (id, data) => {
-    const response = await http.post('/api/company/v1/service-category/' + id, data);
+    const response = await http.post('/api/company/v1/service-category/' + id, data, {
+        'Content-Type': 'multipart/form-data'
+    });
     return response.data;
+};
+
+const destroyServiceCategory = async (id) => {
+    const response = 1;
 }
 
-export default {loadServiceCategories, loadServiceCategory, createServiceCategory, updateServiceCategory};
+export default {
+    loadServiceCategories,
+    loadServiceCategory,
+    createServiceCategory,
+    updateServiceCategory,
+    destroyServiceCategory,
+};

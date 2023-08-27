@@ -13,6 +13,11 @@ const loadNotice = async (id) => {
 const createNotice = async (body) => {
     const response = await http.post('/api/company/v1/push', body);
     return response.data;
-}
+};
 
-export {loadNotices, loadNotice, createNotice};
+const updateNotice = async (id, body) => {
+    const response = await http.post('/api/company/v1/push/' + id, body);
+    return response.data;
+};
+
+export {loadNotices, loadNotice, createNotice, updateNotice};

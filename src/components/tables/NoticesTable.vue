@@ -31,7 +31,7 @@ export default defineComponent({
     <Column field="text" header="Текст сообщения">
       <template #body="slotProps">
         <router-link :to="{ name: 'notice-view', params: {id: slotProps.data.id }}" class="color-primary-hover">
-          <span class="color-black-80">{{ slotProps.data.text }}</span>
+          <span class="color-black-80" v-html="slotProps.data.text"></span>
         </router-link>
       </template>
     </Column>
@@ -55,8 +55,15 @@ export default defineComponent({
 
     <Column field="text" header="Дата рассылки">
       <template #body="slotProps">
-        {{ slotProps.data.send_date }}
-        {{ slotProps.data.send_time }}
+        <template v-if="!(slotProps.data.send_date && slotProps.data.send_time)">
+          <span>Дата не указана</span>
+        </template>
+        <template v-else>
+          <span>
+            {{ slotProps.data.send_date }}
+            {{ slotProps.data.send_time }}
+          </span>
+        </template>
       </template>
     </Column>
   </DataTable>

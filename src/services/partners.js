@@ -33,11 +33,17 @@ const loadPartnerCategory = async (id) => {
     return response.data;
 };
 
+const createPartnerCategory = async (body) => {
+    const response = await http.post('/api/company/v1/partner-category', body);
+    return response.data;
+};
+
 export default {
     loadPartner,
     loadPartners,
     loadPartnerCategories,
     loadPartnerCategory,
     updatePartnerCategory,
+    createPartnerCategory,
     updatePartner,
 };

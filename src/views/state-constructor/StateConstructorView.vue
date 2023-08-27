@@ -15,9 +15,10 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
-    const changes = reactive({});
-
-    const checkboxesState = reactive({});
+    // [{ id: state, permission: [{id: permisison, paid}, {}] }]
+    const modelStates = ref([]);
+    const modelStatesCopy = ref([]);
+    const changesStates = reactive({}); // { stateId: { permissionId: { access: true, paid: true,} }}
 
     const states = computed(() => store.getters.getStateList);
     const permissions = computed(() => store.getters.getPermissionList);
@@ -30,70 +31,86 @@ export default defineComponent({
       await store.dispatch('fetchPermissions');
     };
 
-    const fillCheckboxesState = () => {
+    const fillChangesState = (stateId, permission) => {
+      if (!changesStates[stateId]) {
+        changesStates[stateId] = {};
+      }
+
+      changesStates[stateId][permission.id] = {
+        paid: permission.paid,
+        permission: permission.id,
+        access: permission.access,
+      }
+    }
+
+    const fillModelStates = () => {
       for (let state of states.value) {
-        checkboxesState[state.id] = {};
-        for (let permission of permissions.value) {
-          checkboxesState[state.id][permission.id] = {
-            ...permission,
-            paid: false,
-            access: false,
-          };
-        }
-
-        for (let permission of state.permissions) {
-          if (checkboxesState[state.id][permission.id]) {
-            checkboxesState[state.id][permission.id].paid = permission.paid;
-            checkboxesState[state.id][permission.id].access = true;
-          }
-        }
+        modelStates.value.push({
+          ...state,
+          permissions: [...permissions.value.map(permission => {
+            return {
+              id: permission.id,
+              paid: state.permissions.find(p => permission.id === p.id)?.paid ?? 0,
+              access: !!state.permissions.find(p => permission.id === p.id),
+            }
+          })]
+        });
       }
     };
 
-    const changeCheckboxesState = (name, params = {}) => {
-      const { permissionId, stateId } = params;
-      switch (name) {
-        case 'access':
-          checkboxesState[stateId][permissionId].access = !checkboxesState[stateId][permissionId].access;
-          if (!checkboxesState[stateId][permissionId].access) {
-            checkboxesState[stateId][permissionId].paid = false;
-          }
-          break;
-        case 'paid':
-          checkboxesState[stateId][permissionId].paid = !checkboxesState[stateId][permissionId].paid;
-          if (checkboxesState[stateId][permissionId].paid) {
-            checkboxesState[stateId][permissionId].access = true;
-          }
-      }
-
-      if (!changes[stateId]) {
-        changes[stateId] = {};
-      }
-
-      changes[stateId] = { paid: checkboxesState[stateId][permissionId].paid, permissionId };
+    const findPermission = (state, permission) => {
+      return modelStates.value.find(s => s.id === state).permissions
+          .find(p => p.id === permission);
     };
 
-    const makeChangesState = async () => {
-      let reqs = [];
-      for (let stateId in changes) {
-        let state = changes[stateId];
+    const changeModelStateAccess = ({state, permission}) => {
+      const perm = findPermission(state, permission);
+      perm.access = !perm.access;
 
-        reqs.push(store.dispatch('fetchUpdateState', {
-          id: stateId,
-          body: {permission: state.permission, paid: state.access}
-        }));
-
-        await Promise.all(reqs);
+      if (perm.paid && !perm.access) {
+        perm.paid = false;
       }
+
+      fillChangesState(state, perm);
+    }
+
+    const changeModelStatePaid = ({state, permission}) => {
+      const perm = findPermission(state, permission);
+      perm.paid = !perm.paid;
+
+      if (perm.paid && !perm.access) {
+        perm.access = true;
+      }
+
+      fillChangesState(state, perm);
+    };
+
+    const storeChanges = () => {
+      const changes = [];
+      for (let stateId in changesStates) {
+        for (let permissionId in changesStates[stateId]) {
+          changes.push(store.dispatch('fetchUpdateState', {
+            id: stateId,
+            body: {
+              permission: permissionId,
+              paid: Number(changesStates[stateId][permissionId].paid)
+            }
+          }));
+        }
+      }
+
+      console.log(changes);
     };
 
     onMounted(async () => {
       await loadPermissionList();
       await loadStateList();
-      fillCheckboxesState();
+      fillModelStates();
+
+      modelStatesCopy.value = modelStates.value;
     });
 
-    return {states, permissions, checkboxesState, changeCheckboxesState, changes};
+    return {states, permissions, modelStates, changeModelStateAccess, changeModelStatePaid, changesStates, storeChanges};
   }
 });
 </script>
@@ -102,7 +119,7 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <h1 class="font-normal">Конструктор состояний</h1>
-      <Button label="Сохранить изменения" class="btn-primary font-light"/>
+      <Button @click="storeChanges" label="Сохранить изменения" class="btn-primary font-light"/>
     </div>
   </section>
 
@@ -120,8 +137,8 @@ export default defineComponent({
           <template #body="slotProps">
             <div class="flex align-items-center mb-2">
               <Checkbox
-                  @click="changeCheckboxesState('access', { permissionId: slotProps.data.id, stateId: state.id  })"
-                  :model-value="checkboxesState?.[state.id]?.[slotProps.data.id]?.access"
+                  @click="changeModelStateAccess({ state: state.id, permission: slotProps.data.id })"
+                  :model-value="modelStates.find(s => s.id === state.id)?.permissions?.find(p => p.id === slotProps.data.id)?.access"
                   :binary="true"
                   name="category"
               />
@@ -130,8 +147,8 @@ export default defineComponent({
 
             <div class="flex align-items-center mb-2">
               <Checkbox
-                  @click="changeCheckboxesState('paid', { permissionId: slotProps.data.id, stateId: state.id  })"
-                  :model-value="checkboxesState?.[state.id]?.[slotProps.data.id]?.paid"
+                  @click="changeModelStatePaid({ state: state.id, permission: slotProps.data.id })"
+                  :model-value="modelStates.find(s => s.id === state.id)?.permissions?.find(p => p.id === slotProps.data.id)?.paid"
                   :binary="true"
                   name="category"
               />

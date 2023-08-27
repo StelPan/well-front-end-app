@@ -1,4 +1,5 @@
 import axios from 'axios';
+import router from "../router";
 import TokenService from "../services/token";
 
 const http = axios.create({
@@ -7,7 +8,23 @@ const http = axios.create({
 
 http.interceptors.response.use(
     (response) => response,
-    (error) => Promise.reject(error)
+    (error) => {
+        const response = error?.response;
+        if (!response) {
+            return Promise.reject(error);
+        }
+
+        const status = response?.status;
+        if (!status) {
+            return Promise.reject(error);
+        }
+
+        if (status === 401) {
+            router.push('/login').then(() => {});
+        }
+
+        return Promise.reject(error);
+    }
 );
 
 http.interceptors.request.use(

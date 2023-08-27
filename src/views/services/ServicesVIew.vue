@@ -1,5 +1,5 @@
 <script>
-import {defineComponent, ref} from "vue";
+import {computed, defineComponent, ref} from "vue";
 import {useStore} from "vuex";
 import {useRouter, useRoute} from "vue-router";
 
@@ -13,6 +13,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
+
     const items = ref([
       {
         label: 'Штучные',
@@ -20,11 +21,11 @@ export default defineComponent({
       },
       {
         label: 'Пакеты услуг',
-        to: '/services/list/single1'
+        to: '/services/list/package'
       },
       {
         label: 'Разовые платежи',
-        to: '/services/list/single2'
+        to: '/services/list/one_time'
       },
       {
         label: 'Категории услуг',
@@ -36,7 +37,23 @@ export default defineComponent({
       router.push('/services/list/single');
     }
 
-    return {items};
+    const action = computed(() => {
+      return route.path === '/services/categories' ?
+          'categories' :
+          'services';
+    });
+
+    const routes = computed(() => {
+      return action.value === 'categories' ?
+          {name: 'create-service-category'} :
+          {name: 'create-service-category'};
+    })
+
+    const redirect = async () => {
+      await router.push(routes.value)
+    }
+
+    return {items, action, redirect};
   }
 });
 
@@ -47,7 +64,8 @@ export default defineComponent({
     <div class="flex justify-content-between mb-3">
       <h1>Услуги</h1>
 
-      <Button label="Создать услугу" class="btn-primary font-light ml-3" />
+      <Button v-if="action !== 'categories'" label="Создать услугу" class="btn-primary font-light ml-3" />
+      <Button v-if="action === 'categories'" @click="redirect" label="Создать категорию" class="btn-primary font-light ml-3" />
     </div>
 
     <div class="flex">

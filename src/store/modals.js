@@ -1,5 +1,8 @@
 const state = () => ({
     confirmationStateModal: false,
+    confirmationDestroyTariffModal: false,
+    confirmationDestroyServiceCategoryModal: false,
+    createTypeNoticeModal: false,
     userFilterModal: false,
 });
 
@@ -21,6 +24,15 @@ const getters = {
     },
     getUserFilterModal(state) {
         return state.userFilterModal;
+    },
+    getConfirmationDestroyTariffModal(state) {
+        return state.confirmationDestroyTariffModal;
+    },
+    getConfirmationDestroyServiceCategoryModal(state) {
+        return state.confirmationDestroyServiceCategoryModal;
+    },
+    getCreateTypeNoticeModal(state) {
+        return state.createTypeNoticeModal;
     }
 };
 

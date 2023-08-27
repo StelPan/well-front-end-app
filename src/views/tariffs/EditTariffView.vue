@@ -41,15 +41,20 @@ export default defineComponent({
       daily_cost: ''
     });
 
+    const visibleConfirmationModal = computed(() => store.getters.getConfirmationDestroyTariffModal);
     const tariff = computed(() => store.getters.getCurrentTariff);
-    const typeTariffs = computed(() => store.getters.getListTypeTariffs);
-    const breadcrumbs = ref([]);
+    const typeTariffs = computed(() => {
+      const tariffs = store.getters.getListTypeTariffs;
+      return tariffs.map(tariff => {
+        return {...tariff, name_ru: TARIFF_NAMES[tariff.name]}
+      });
+    });
 
-    const visibleConfirmationModal = computed(() => store.getters.getConfirmationStateModal);
+    const breadcrumbs = ref([]);
 
     const changeConfirmationStateModal = () => {
       store.dispatch('changeStateModal', {
-        type: 'confirmationStateModal',
+        type: 'confirmationDestroyTariffModal',
         bool: !visibleConfirmationModal.value
       });
     };
@@ -132,21 +137,24 @@ export default defineComponent({
   </section>
 
   <section class="py-2 mb-3">
-    <div class="grid">
+    <div class="grid h-max">
       <div class="col-12 md:col-4">
-        <MainCard title="Наименование тарифа">
+        <MainCard :styles="{'h-full': true}" title="Наименование тарифа">
           <div class="grid">
             <div class="col-12">
              <span class="p-float-label w-full">
-              <InputText v-model="form.name_ru" id="name" class="w-full"/>
+              <InputText v-model="form.name_ru" id="name" class="w-full" :class="{'p-invalid': errors.name_ru}"/>
               <label for="name">Имя *</label>
              </span>
+              <span v-if="errors.name_ru" class="color-error text-xs">
+                {{ errors.name_ru[0] }}
+              </span>
             </div>
           </div>
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
-        <MainCard title="Тип тарифа">
+        <MainCard :styles="{'h-full': true}" title="Тип тарифа">
           <div class="grid">
             <div class="col-12">
               <div class="grid flex-column gap-4">
@@ -186,13 +194,16 @@ export default defineComponent({
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
-        <MainCard title="Стоимость тарифа / платежа">
+        <MainCard :styles="{'h-full': true}" title="Стоимость тарифа / платежа">
           <div class="grid">
             <div class="col-12">
              <span class="p-float-label w-full">
-              <InputText v-model="form.cost" id="name" class="w-full"/>
+              <InputText v-model="form.cost" id="name" class="w-full" :class="{'p-invalid': errors.cost}"/>
               <label for="name">Cтоимость, руб. *</label>
              </span>
+              <span v-if="errors.cost" class="color-error text-xs">
+                {{ errors.cost[0] }}
+              </span>
             </div>
           </div>
         </MainCard>
@@ -206,11 +217,11 @@ export default defineComponent({
         <MainCard title="Описание тарифа / платежа">
           <div class="grid">
             <div class="col-12">
-              <span>Полное описание</span>
+              <span class="text-xl font-bold">Полное описание</span>
               <Editor v-model="form.description_ru" class="w-full"/>
             </div>
             <div class="col-12">
-              <span>Краткое описание</span>
+              <span class="text-xl font-bold">Краткое описание</span>
               <Editor
                   v-model="form.short_description_ru"
                   class="w-full p-invalid"

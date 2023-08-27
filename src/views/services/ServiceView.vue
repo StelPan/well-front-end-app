@@ -1,5 +1,5 @@
 <script>
-import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
+import {computed, defineComponent, onMounted, reactive, ref, watch, toRaw} from "vue";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
@@ -8,15 +8,19 @@ import Dropdown from "primevue/dropdown";
 import InputText from "primevue/inputtext";
 import Editor from "primevue/editor";
 import Button from "primevue/button";
+import FileUpload from "primevue/fileupload";
 import Breadcrumb from "@/components/Breadcrumb.vue";
 import MainCard from "@/components/cards/MainCard.vue";
+import ImageCard from "@/components/cards/ImageCard";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {Breadcrumb, MainCard, Dropdown, InputText, Editor, Button},
+  components: {Breadcrumb, MainCard, Dropdown, InputText, Editor, Button, FileUpload, ImageCard},
   setup() {
     const store = useStore();
     const route = useRoute();
+
+    const files = ref([]);
 
     const serviceTypes = [
       {label: 'Штучная', value: 'single'},
@@ -44,10 +48,10 @@ export default defineComponent({
       cost: ''
     });
 
-    const categories  = computed(() => store.getters.getListServiceCategories);
-    const service     = computed(() => store.getters.getCurrentService);
-    const banks       = computed(() => store.getters.getListBanks);
-    const acquiring   = computed(() => store.getters.getListAcquiring);
+    const categories = computed(() => store.getters.getListServiceCategories);
+    const service = computed(() => store.getters.getCurrentService);
+    const banks = computed(() => store.getters.getListBanks);
+    const acquiring = computed(() => store.getters.getListAcquiring);
 
     const breadcrumbs = ref([]);
     const selectBank = ref();
@@ -77,6 +81,13 @@ export default defineComponent({
       await store.dispatch('fetchAcquiring', selectBank.value);
     };
 
+    const deleteServicePhoto = async (photo) => {
+      await store.dispatch('fetchDestroyServicePhoto', {
+        id: service.value.id,
+        uuid: photo.uuid
+      })
+    };
+
     const updateService = async () => {
       await store.dispatch('fetchUpdateService', {
         id: route.params.id,
@@ -85,6 +96,17 @@ export default defineComponent({
           service_category_id: formData.value.category
         }
       });
+    };
+
+    const removeFileLoading = (file) => {
+      files.value = files.value.filter(f => {
+        console.log(file, toRaw(f));
+        return toRaw(f) !== file;
+      });
+    };
+
+    const onSelectFiles = (event) => {
+      files.value = event.files;
     };
 
     watch(selectBank, async () => await loadAcquiring());
@@ -119,7 +141,11 @@ export default defineComponent({
       selectBank,
       updateService,
       addSubservice,
-      destroySubservice
+      destroySubservice,
+      onSelectFiles,
+      removeFileLoading,
+      deleteServicePhoto,
+      files
     };
   }
 });
@@ -219,12 +245,29 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <MainCard title="Изображения">
       <div class="grid">
-        <div class="col-12 md:col-2">
+        <div class="col-12 md:col-2" v-for="(photo, i) in service.photos" :key="i">
+          <ImageCard @toggleCancel="deleteServicePhoto" :handle="() => photo" :src="photo.original_url" />
+        </div>
 
+        <div class="col-12 md:col-2" v-for="(file, i) in files" :key="i">
+          <ImageCard @toggleCancel="removeFileLoading" :handle="() => file" :src="file.objectURL" />
         </div>
 
         <div class="col-12">
-          <Button label="Добавить изображение" class="btn-primary font-light"/>
+          <FileUpload
+              name="demo[]"
+              url="./upload.php"
+              accept="image/*"
+              :maxFileSize="10000000"
+              @select="onSelectFiles"
+              :multiple="true"
+          >
+            <template #header="{ chooseCallback }">
+              <Button @click="chooseCallback" label="Добавить изображение" class="btn-primary font-light"/>
+            </template>
+
+            <template #content="{files}">&nbsp;</template>
+          </FileUpload>
         </div>
       </div>
     </MainCard>
@@ -277,7 +320,7 @@ export default defineComponent({
             </div>
           </div>
 
-          <Button @click="addSubservice" label="Добавить" class="btn-primary" />
+          <Button @click="addSubservice" label="Добавить" class="btn-primary"/>
         </MainCard>
       </div>
     </div>
@@ -296,3 +339,14 @@ export default defineComponent({
     </div>
   </section>
 </template>
+
+<style>
+.p-fileupload-content {
+  display: none !important;
+}
+
+.p-fileupload-buttonbar {
+  background: transparent !important;
+  border: none !important;
+}
+</style>

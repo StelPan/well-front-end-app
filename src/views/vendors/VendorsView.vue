@@ -1,5 +1,6 @@
 <script>
 import {computed, defineComponent, onMounted, ref} from "vue";
+import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 
 import Button from "primevue/button";
@@ -10,6 +11,8 @@ export default defineComponent({
   layout: {name: "AdminLayout"},
   components: {Button, VendorsTable, TabMenu},
   setup() {
+    const router = useRouter();
+
     const items = ref([
       {
         label: 'Реквизиты',
@@ -21,7 +24,11 @@ export default defineComponent({
       }
     ]);
 
-    return {items};
+    const toCreateVendors = async () => {
+      await router.push({name: 'create-vendor-view'});
+    }
+
+    return {items, toCreateVendors};
   }
 });
 </script>
@@ -30,7 +37,7 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <h1>Обслуживающие компании</h1>
-      <Button label="Добавить реквизиты" class="btn-primary font-light" />
+      <Button @click="toCreateVendors" label="Добавить реквизиты" class="btn-primary font-light" />
     </div>
   </section>
 

@@ -14,6 +14,10 @@ export default defineComponent({
     phoneCode: {
       type: String,
     },
+    classes: {
+      type: Object,
+      required: false
+    },
     modelValue: String,
   },
   setup(props, {emit}) {
@@ -54,6 +58,7 @@ export default defineComponent({
         <InputText
             id="phone"
             class="w-full color-black-80"
+            :class="classes"
             style="font-family: 'RF Dewi', sans-serif;"
             :style="`padding-left:${2.5   + (phoneCode.length) / 2}em !important`"
             v-model="phone"

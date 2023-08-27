@@ -16,6 +16,10 @@ const actions = {
     },
     async fetchUpdateService({commit}, {id, body}) {
         await ServiceService.updateService(id, body);
+    },
+    async fetchDestroyServicePhoto({commit}, {id, uuid}) {
+        await ServiceService.destroyServicePhoto(id, uuid);
+        commit('deletePhotoCurrentService');
     }
 };
 
@@ -25,6 +29,9 @@ const mutations = {
     },
     updateCurrentService(state, service) {
         state.currentService = service;
+    },
+    deletePhotoCurrentService(state, {id, uuid}) {
+        state.currentService.photos = state.currentService.photos.filter(photo => photo.uuid !== uuid);
     }
 };
 

@@ -12,9 +12,9 @@ const HOURLY_TYPE = 'hourly';
 const MONTHLY_TYPE = 'monthly';
 
 const TARIFF_NAMES = {
+  [MONTHLY_TYPE]: 'Долгосрочные',
   [DAILY_TYPE]: 'Краткосрочные (суточные)',
   [HOURLY_TYPE]: 'Краткосрочные (часовые)',
-  [MONTHLY_TYPE]: 'Долгосрочные',
 };
 
 export default defineComponent({

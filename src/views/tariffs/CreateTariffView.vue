@@ -44,7 +44,12 @@ export default defineComponent({
         () => errors.clearErrors()
     )
 
-    const typeTariffs = computed(() => store.getters.getListTypeTariffs);
+    const typeTariffs = computed(() => {
+      const tariffs = store.getters.getListTypeTariffs;
+      return tariffs.map(tariff => {
+        return {...tariff, name_ru: TARIFF_NAMES[tariff.name]}
+      });
+    });
 
     const breadcrumbs = [{label: 'Тарифы', router: {name: 'tariffs'}}, {label: 'Создание тарифа'}];
 
@@ -55,13 +60,29 @@ export default defineComponent({
       } catch (e) {
         errors.setErrors(e.response.data.errors);
       }
-    }
+    };
+
+    const toggleSetDefault = () => {
+      isCreated.value = false;
+      for (let key in form) {
+        form[key] = ""
+      }
+    };
 
     onMounted(async () => {
       await store.dispatch('fetchTypeTariffs');
     });
 
-    return {TARIFF_NAMES, form, typeTariffs, breadcrumbs, toggleCreateTariff, errors: errors.errors, isCreated};
+    return {
+      TARIFF_NAMES,
+      form,
+      typeTariffs,
+      breadcrumbs,
+      toggleCreateTariff,
+      errors: errors.errors,
+      isCreated,
+      toggleSetDefault
+    };
   }
 });
 </script>
@@ -71,14 +92,14 @@ export default defineComponent({
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
       <Button v-if="!isCreated" label="Создать тариф" @click="toggleCreateTariff" class="btn-primary font-light"/>
-      <ButtonSuccess v-if="isCreated" label="Тариф создан"/>
+      <ButtonSuccess v-if="isCreated" label="Тариф создан" @click="toggleSetDefault" />
     </div>
   </section>
 
   <section class="py-2 mb-3">
-    <div class="grid">
+    <div class="grid h-max">
       <div class="col-12 md:col-4">
-        <MainCard title="Наименование тарифа">
+        <MainCard :styles="{'h-full': true}" title="Наименование тарифа">
           <div class="grid">
             <div class="col-12">
              <span class="p-float-label w-full">
@@ -95,23 +116,16 @@ export default defineComponent({
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
-        <MainCard title="Тип тарифа">
+        <MainCard :styles="{'h-full': true}" title="Тип тарифа">
           <div class="grid">
             <div class="col-12">
               <Dropdown
                   v-model="form.period"
-                  optionLabel="name"
+                  optionLabel="name_ru"
                   optionValue="name"
                   :options="typeTariffs"
                   placeholder="Тип тарифа"
                   class="w-full">
-                <template #option="{ option }">
-                  {{ TARIFF_NAMES[option.name] }}
-                </template>
-
-                <template #value="{ value }">
-                  {{ TARIFF_NAMES[value] }}
-                </template>
               </Dropdown>
             </div>
           </div>
@@ -140,10 +154,12 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="grid">
       <div class="col-12">
-        <MainCard title="Описание тарифа / платежа">
+        <MainCard :styles="{'h-full': true}" title="Описание тарифа / платежа">
           <div class="grid">
             <div class="col-12">
-              <span>Полное описание</span>
+              <div class="mb-1">
+                <span class="text-xl font-bold">Полное описание</span>
+              </div>
               <Editor v-model="form.description_ru" class="w-full"/>
 
               <span v-if="errors.description_ru" :class="{'color-error': errors.description_ru }">
@@ -151,7 +167,9 @@ export default defineComponent({
               </span>
             </div>
             <div class="col-12">
-              <span>Краткое описание</span>
+              <div class="mb-1">
+                <span class="text-xl font-bold">Краткое описание</span>
+              </div>
               <Editor v-model="form.short_description_ru" class="w-full"/>
 
               <span v-if="errors.short_description_ru" :class="{'color-error': errors.short_description_ru }">

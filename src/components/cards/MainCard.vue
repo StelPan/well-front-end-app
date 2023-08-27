@@ -10,13 +10,17 @@ export default defineComponent({
     title: {
       type: String,
       required: false,
+    },
+    styles: {
+      type: Object,
+      required: false
     }
   }
 });
 </script>
 
 <template>
-  <Card>
+  <Card :class="styles">
     <template #title v-if="title">
       {{ title }}
     </template>

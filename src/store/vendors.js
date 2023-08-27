@@ -16,6 +16,15 @@ const actions = {
     },
     async fetchUpdateVendor({commit}, {id, form}) {
         await VendorService.updateVendor(id, form);
+    },
+    async fetchCreateVendor({commit}, body = {}) {
+        await VendorService.createVendor(body);
+    },
+    async fetchUploadVendorPayment({commit}, {id, body}) {
+        await VendorService.updateVendor(id, body);
+    },
+    async fetchDestroyVendorPayment({commit}, id) {
+        await VendorService.destroyVendorRequests(id);
     }
 };
 
