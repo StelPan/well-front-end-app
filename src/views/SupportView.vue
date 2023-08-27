@@ -1,6 +1,7 @@
 <script>
 import {computed, defineComponent, ref} from "vue";
 import {useStore} from "vuex";
+import {useMeta} from "vue-meta";
 
 import InputText from "primevue/inputtext";
 
@@ -8,6 +9,10 @@ export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {InputText},
   setup() {
+    useMeta({
+      title: 'Поддержка'
+    });
+
     const store = useStore();
 
     const message = ref('');

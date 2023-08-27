@@ -1,6 +1,7 @@
 <script>
 import {computed, defineComponent, onMounted, ref, reactive, watch} from "vue";
 import {useStore} from "vuex";
+import {useMeta} from "vue-meta";
 import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
 
 import Button from "primevue/button";
@@ -12,6 +13,10 @@ export default defineComponent({
   layout: { name: 'AdminLayout' },
   components: {MainCard, Button, InputText, Dropdown},
   setup() {
+    useMeta({
+      title: 'Профиль'
+    });
+
     const store = useStore();
 
     const changeConfirmationStateModal = () => {

@@ -14,6 +14,7 @@ import MultiSelect from "primevue/multiselect";
 import Breadcrumb from "@/components/Breadcrumb.vue";
 import MainCard from "@/components/cards/MainCard.vue";
 import ButtonSuccess from "@/components/buttons/ButtonSuccess.vue";
+import {useMeta} from "vue-meta";
 
 export default defineComponent({
   layout: {
@@ -21,6 +22,10 @@ export default defineComponent({
   },
   components: {Breadcrumb, MainCard, InputText, Dropdown, Button, MultiSelect, ButtonSuccess},
   setup() {
+    useMeta({
+      title: 'Редактирование пользователя'
+    });
+
     const store = useStore();
     const route = useRoute();
     const errors = useError();

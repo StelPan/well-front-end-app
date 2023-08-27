@@ -10,6 +10,7 @@ import MultiSelect from "primevue/multiselect";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
+import {useMeta} from "vue-meta";
 
 export default defineComponent({
   layout: {
@@ -17,6 +18,10 @@ export default defineComponent({
   },
   components: {Breadcrumb, MainCard, MultiSelect, InputText, Button, Dropdown},
   setup() {
+    useMeta({
+      title: 'Создание пользователя'
+    });
+
     const store = useStore();
     const errors = useError();
     const {languages} = useLanguages();

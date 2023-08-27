@@ -2,6 +2,7 @@
 import {defineComponent, ref, onMounted, computed} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
+import {useMeta} from "vue-meta";
 
 import AdminLoginForm from "@/components/forms/AdminLoginForm.vue";
 import SelectPhoneModal from "@/components/modals/SelectPhoneModal.vue";
@@ -18,8 +19,11 @@ export default defineComponent({
     EnterSmsCodeForm,
   },
   setup() {
-    const store = useStore();
+    useMeta({
+      title: 'Авторизация'
+    });
 
+    const store = useStore();
     const router = useRouter();
 
     const currentStep = ref(STEP_SMS_CHECK);

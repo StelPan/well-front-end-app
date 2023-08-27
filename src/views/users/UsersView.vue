@@ -2,7 +2,7 @@
 import {defineComponent, reactive, ref, computed, onMounted, watch} from "vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
-import {useMeta} from "vue-meta"
+import {useMeta} from "vue-meta";
 
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
