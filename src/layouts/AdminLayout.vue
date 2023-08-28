@@ -53,7 +53,7 @@ export default defineComponent({
 
       <template #footer>
         <div class="flex justify-content-between">
-          <Button label="Отменить" @click="changeConfirmationStateModal" class="btn-primary-outlined font-light w-12" />
+          <Button label="Отменить" @click="changeConfirmationStateModal" class="btn-black-20-outlined font-light w-12" />
           <Button label="Выйти" @click="logout" class="btn-primary font-light ml-3 w-12" />
         </div>
       </template>

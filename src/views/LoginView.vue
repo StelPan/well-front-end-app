@@ -1,8 +1,9 @@
 <script>
-import {defineComponent, ref, onMounted, computed} from "vue";
+import {defineComponent, ref, onMounted, computed, watch} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useMeta} from "vue-meta";
+import {useError} from "@/hooks/useErrors";
 
 import AdminLoginForm from "@/components/forms/AdminLoginForm.vue";
 import SelectPhoneModal from "@/components/modals/SelectPhoneModal.vue";
@@ -25,6 +26,7 @@ export default defineComponent({
 
     const store = useStore();
     const router = useRouter();
+    const errors = useError();
 
     const currentStep = ref(STEP_SMS_CHECK);
 
@@ -41,7 +43,7 @@ export default defineComponent({
         await store.dispatch('fetchAuthorization', phone);
         changeStep(STEP_SMS_REQUEST);
       } catch (e) {
-        // TODO: Something
+        errors.setErrors(e.response.data);
       }
     }
 
@@ -52,6 +54,8 @@ export default defineComponent({
           phoneCode: store.getters.getSelectCountry.phone_code,
           code,
         });
+
+        await store.dispatch('fetchUpdateAuth', true);
 
         await router.push('/users');
       } catch (e) {
@@ -88,6 +92,7 @@ export default defineComponent({
       toggleCheckCodeHandler,
       toggleLoginHandler,
       changeStep,
+      errors: errors.errors
     };
   }
 });
@@ -104,9 +109,9 @@ export default defineComponent({
     <div class="grid">
       <div class="hidden md:block md:col-7 h-screen background-login">
       </div>
-      <div class="col-12 md:col-5">
+      <div class="col-12 md:col-5 py-0 px-3">
         <div class="grid justify-content-center h-screen">
-          <div class="col-12">
+          <div class="col-12 p-0">
             <div class="flex align-items-center h-screen">
               <div class="form w-full mx-2">
                 <img class="gap-3 w-4rem mb-3" src="../assets/images/admin/Logo.png" alt="">
@@ -114,6 +119,7 @@ export default defineComponent({
 
                 <AdminLoginForm
                     v-if="currentStep === STEP_SMS_CHECK"
+                    :errors="errors"
                     @toggleSelectPhone="showSelectPhoneModal"
                     @toggleLogin="toggleLoginHandler"
                 />

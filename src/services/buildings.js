@@ -13,6 +13,6 @@ const loadBuilding = async (id) => {
 const createBuilding = async (body = {}) => {
     const response = await http.post('/api/company/v1/building', body);
     return response.data;
-}
+};
 
 export {loadBuildings, loadBuilding, createBuilding};

@@ -23,6 +23,7 @@ import notices from "@/store/notices";
 import objects from "@/store/objects";
 import banks from "@/store/banks";
 import partners from "@/store/partners";
+import segments from "@/store/segments";
 
 export default createStore({
   modules: {
@@ -48,6 +49,7 @@ export default createStore({
     notices,
     objects,
     banks,
-    partners
+    partners,
+    segments,
   }
 });

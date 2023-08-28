@@ -2,15 +2,21 @@
 import {defineComponent, ref, watch} from "vue";
 
 import Editor from "primevue/editor";
+import Button from "primevue/button";
 import MainCard from "@/components/cards/MainCard";
 import FileUpload from "@/components/FileUpload";
+import BuilderLocationsTable from "@/components/tables/BuilderLocationsTable.vue";
 
 export default defineComponent({
-  components: {Editor, MainCard, FileUpload},
+  components: {Editor, MainCard, FileUpload, Button, BuilderLocationsTable},
   props: {
     formData: {
       type: Object,
       required: true,
+    },
+    locationTypes: {
+      type: Array,
+      required: false,
     },
     errors: {
       type: Object,
@@ -19,6 +25,15 @@ export default defineComponent({
   },
   setup(props, {emit}) {
     const form = ref(props.formData);
+
+    //
+    form.value.locations = [{
+      name: 'cnasdsad',
+      address: 'Кемерово 1',
+      type: {id: 1, label: 'Метро'},
+      lat: '55.656',
+      lon: '54.456'
+    }];
 
     watch(form, () => emit('changeFormData', form));
 
@@ -44,6 +59,21 @@ export default defineComponent({
       </div>
     </div>
   </section>
+
+  <template v-if="form?.locations ?? true">
+    <section class="py-2 mb-3">
+      <div class="flex justify-content-between">
+        <span class="text-3xl font-bold">Ближайшие точки на карте</span>
+        <div class="flex">
+          <Button label="Редактировать" class="btn-black-20-outlined"/>
+          <Button label="Добавить точку" class="btn-primary ml-2"/>
+        </div>
+      </div>
+    </section>
+    <section class="py-2 mb-3">
+      <BuilderLocationsTable :location-types="locationTypes" :locations="form?.locations ?? []"/>
+    </section>
+  </template>
 </template>
 
 <style scoped>

@@ -2,16 +2,24 @@
 import {computed, defineComponent, onMounted, ref, reactive, watch} from "vue";
 import {useStore} from "vuex";
 import {useMeta} from "vue-meta";
+import {onBeforeRouteUpdate} from "vue-router";
+
 import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
-import MainCard from "@/components/cards/MainCard";
 import Dropdown from "primevue/dropdown";
+import MainCard from "@/components/cards/MainCard";
+import FileUpload from "@/components/FileUpload.vue";
 
 export default defineComponent({
   layout: { name: 'AdminLayout' },
-  components: {MainCard, Button, InputText, Dropdown},
+  components: {MainCard, Button, InputText, Dropdown, FileUpload},
+  async beforeRouteEnter(to, from, next) {
+    const store = useStore();
+    await store.dispatch('fetchProfile');
+    next();
+  },
   setup() {
     useMeta({
       title: 'Профиль'
@@ -26,9 +34,6 @@ export default defineComponent({
       })
     };
 
-    const profile = computed(() => store.getters.getProfile);
-    watch(profile, (data) => useCreateReactiveCopy(reactiveForm, data));
-
     const reactiveForm = reactive({
       first_name: '',
       last_name: '',
@@ -37,6 +42,9 @@ export default defineComponent({
       phone: '',
       phone_code: ''
     });
+
+    const profile = computed(() => store.getters.getProfile);
+    useCreateReactiveCopy(reactiveForm, profile.value);
 
     const languages = [{
       label: 'Русский',
@@ -48,10 +56,6 @@ export default defineComponent({
       label: 'Чешский',
       value: 'ch'
     }];
-
-    onMounted(async () => {
-      await store.dispatch('fetchProfile');
-    });
 
     const toggleUpdateProfile = async () => {
       await store.dispatch("fetchUpdateProfile", {
@@ -130,7 +134,11 @@ export default defineComponent({
     <div class="grid">
       <div class="col-12 sm:col-6">
         <MainCard title="Фото профиля">
-
+          <div class="grid">
+            <div class="col-12">
+              <FileUpload label="Добавить аватар" />
+            </div>
+          </div>
         </MainCard>
       </div>
     </div>

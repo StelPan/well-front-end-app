@@ -1,4 +1,4 @@
-import {loadTypeLocations} from "../services/type-locations";
+import {loadTypeLocations} from "@/services/type-locations";
 
 const state = () => ({
    listTypeLocations: []
@@ -6,7 +6,8 @@ const state = () => ({
 
 const actions = {
     async fetchTypeLocations({commit}) {
-        const typeLocations = await loadTypeLocations();
+        const {data: typeLocations} = await loadTypeLocations();
+        commit('updateListTypeLocations', typeLocations);
     }
 };
 

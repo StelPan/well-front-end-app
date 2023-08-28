@@ -9,6 +9,12 @@ import InputNumberPhone from "@/components/inputs/InputNumberPhone";
 
 export default defineComponent({
   components: {Button, InputMask, InputText, InputNumberPhone},
+  props: {
+    errors: {
+      type: Object,
+      required: false
+    }
+  },
   setup(props, { emit }) {
     const store = useStore();
     const country = computed(() => store.getters.getSelectCountry);
@@ -39,11 +45,15 @@ export default defineComponent({
   <div>
     <div class="mb-4">
       <InputNumberPhone
-          @toggleChangePhoneCode="toggleSelectPhone"
           v-model="phone"
+          @toggleChangePhoneCode="toggleSelectPhone"
+          :classes="{'p-invalid': errors?.error }"
           :phone-code="country?.phone_code ? country.phone_code : '+7'"
           :country="country?.name"
       />
+      <span v-if="errors?.error" class="color-error text-xs">
+        {{ errors.error }}
+      </span>
     </div>
 
     <div class="mb-2">

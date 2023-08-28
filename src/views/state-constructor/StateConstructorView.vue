@@ -1,6 +1,7 @@
 <script>
 import {computed, defineComponent, onMounted, reactive, ref} from "vue";
 import {useStore} from "vuex";
+import {useMeta} from "vue-meta";
 import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
 
 import Button from "primevue/button";
@@ -12,24 +13,29 @@ import StateConstructorTable from "@/components/tables/StateConstructorTable.vue
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {Button, StateConstructorTable, DataTable, Column, Checkbox},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const store = useStore();
+      await store.dispatch('fetchPermissions');
+      await store.dispatch('fetchStateList');
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
+    useMeta({
+      title: 'Контруктор состояний'
+    });
+
     const store = useStore();
 
-    // [{ id: state, permission: [{id: permisison, paid}, {}] }]
     const modelStates = ref([]);
     const modelStatesCopy = ref([]);
     const changesStates = reactive({}); // { stateId: { permissionId: { access: true, paid: true,} }}
 
     const states = computed(() => store.getters.getStateList);
     const permissions = computed(() => store.getters.getPermissionList);
-
-    const loadStateList = async () => {
-      await store.dispatch('fetchStateList');
-    };
-
-    const loadPermissionList = async () => {
-      await store.dispatch('fetchPermissions');
-    };
 
     const fillChangesState = (stateId, permission) => {
       if (!changesStates[stateId]) {
@@ -102,11 +108,8 @@ export default defineComponent({
       console.log(changes);
     };
 
-    onMounted(async () => {
-      await loadPermissionList();
-      await loadStateList();
+    onMounted(() => {
       fillModelStates();
-
       modelStatesCopy.value = modelStates.value;
     });
 
@@ -148,7 +151,7 @@ export default defineComponent({
             <div class="flex align-items-center mb-2">
               <Checkbox
                   @click="changeModelStatePaid({ state: state.id, permission: slotProps.data.id })"
-                  :model-value="modelStates.find(s => s.id === state.id)?.permissions?.find(p => p.id === slotProps.data.id)?.paid"
+                  :model-value="!!modelStates.find(s => s.id === state.id)?.permissions?.find(p => p.id === slotProps.data.id)?.paid"
                   :binary="true"
                   name="category"
               />

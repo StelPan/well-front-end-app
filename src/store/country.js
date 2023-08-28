@@ -28,6 +28,9 @@ const mutations = {
     },
     selectCountryByCountryName(state, name) {
         state.selectCountry = state.countriesListCp.find(country => country.name === name);
+    },
+    selectCountryByPhoneCode(state, phoneCode) {
+        state.selectCountry = state.countriesList.find(country => country.phone_code === phoneCode);
     }
 };
 

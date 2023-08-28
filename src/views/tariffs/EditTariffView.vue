@@ -7,6 +7,7 @@ import {useError} from "@/hooks/useErrors";
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
+import InputNumber from "primevue/inputnumber";
 import Dropdown from "primevue/dropdown";
 import Editor from "primevue/editor";
 import Breadcrumb from "@/components/Breadcrumb.vue";
@@ -25,7 +26,7 @@ const TARIFF_NAMES = {
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {Button, Breadcrumb, MainCard, InputText, Dropdown, Editor, ConfirmationModal},
+  components: {Button, Breadcrumb, MainCard, InputText, Dropdown, Editor, ConfirmationModal, InputNumber},
   setup() {
     const route = useRoute();
     const router = useRouter()
@@ -73,8 +74,8 @@ export default defineComponent({
     const toggleDestroyTariff = async () => {
       try {
         // TODO: DELETE TARIFF
-        await store.dispatch('fetchDestroyTariff', route.params.id);
         await changeConfirmationStateModal();
+        await store.dispatch('fetchDestroyTariff', route.params.id);
         await router.push({name: 'tariffs-periods-list', params: {period: MONTHLY_TYPE}});
       } catch (e) {
         console.error(e);
@@ -143,7 +144,12 @@ export default defineComponent({
           <div class="grid">
             <div class="col-12">
              <span class="p-float-label w-full">
-              <InputText v-model="form.name_ru" id="name" class="w-full" :class="{'p-invalid': errors.name_ru}"/>
+              <InputText
+                  v-model="form.name_ru"
+                  id="name"
+                  class="w-full"
+                  :class="{'p-invalid': errors.name_ru}"
+              />
               <label for="name">Имя *</label>
              </span>
               <span v-if="errors.name_ru" class="color-error text-xs">
@@ -176,7 +182,7 @@ export default defineComponent({
 
                 <div>
                   <span v-if="form.period === 'monthly'" class="p-float-label w-full">
-                    <InputText
+                    <InputNumber
                         v-model="form.daily_cost"
                         id="daily_costname"
                         :class="{'p-invalid': errors.daily_cost}"

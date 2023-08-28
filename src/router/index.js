@@ -8,7 +8,6 @@ import "./middleware/redirect-with-not-found";
 import "./middleware/require-without-auth";
 
 import Login from "@/views/LoginView.vue";
-import AboutView from "@/views/AboutView.vue";
 import UsersView from "@/views/users/UsersView.vue";
 import ProfileVIew from "@/views/ProfileVIew.vue";
 import EditUserView from "@/views/users/EditUserView.vue";
@@ -49,6 +48,8 @@ import CreateServiceCategory from "@/views/services/CreateServiceCategory";
 import CreateVendorView from "@/views/vendors/CreateVendorView";
 import CreateBuildingView from "@/views/buildings/CreateBuildingView";
 import NotFound from "@/views/NotFound";
+import BuildingView from "@/views/buildings/BuildingView.vue";
+import BuildingPointsView from "@/views/buildings/BuildingPointsView.vue";
 
 console.log(...middleware('require-auth', [{}]))
 
@@ -128,6 +129,14 @@ const routes = [
                 path: 'buildings/create',
                 name: 'create-building',
                 component: CreateBuildingView
+            }, {
+                path: 'buildings/:id',
+                name: 'building-edit',
+                component: BuildingView,
+            }, {
+                path: 'buildings/:id/points',
+                name: 'building-points-edit',
+                component: BuildingPointsView
             }, {
                 path: 'users',
                 name: 'users',

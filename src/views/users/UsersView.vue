@@ -15,6 +15,17 @@ import UserFilterModal from "@/components/modals/UserFilterModal.vue";
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {Dropdown, Button, DataTable, Column, Paginator, UserFilterModal},
+  async beforeRouteEnter(to, from, next) {
+    const store = useStore();
+
+    try {
+      await store.dispatch('fetchUsers');
+      await store.dispatch('fetchRoles');
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     useMeta({
       title: 'Пользователи'
@@ -24,9 +35,7 @@ export default defineComponent({
     const router = useRouter();
 
     const visibleModal = computed(() => store.getters.getUserFilterModal);
-
     const users = computed(() => store.getters.getUsersList);
-
     const roles = computed(() => store.getters.getRolesList);
 
     const first = ref(0);
@@ -67,15 +76,6 @@ export default defineComponent({
     const toCreateUsers = () => {
       router.push({name: 'user-create'});
     };
-
-    onMounted(async () => {
-      try {
-        await store.dispatch('fetchUsers');
-        await store.dispatch('fetchRoles');
-      } catch (e) {
-        console.error(e);
-      }
-    });
 
     return {selectedRole, roles, users, toCreateUsers, first, visibleModal, showUserFilterModal};
   }

@@ -161,9 +161,9 @@ export default defineComponent({
   </section>
 
   <section class="py-2 mb-3">
-    <div class="grid">
+    <div class="grid h-max">
       <div class="col-12 md:col-4">
-        <MainCard title="Наименование услуги">
+        <MainCard :styles="{'h-full': true}" title="Наименование услуги">
           <div class="flex flex-column gap-3">
             <span class="p-float-label mb-3 w-full">
               <InputText v-model="formData.name_ru" id="last_name" class="w-full"/>
@@ -192,7 +192,7 @@ export default defineComponent({
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
-        <MainCard title="Стоимость услуги">
+        <MainCard :styles="{'h-full': true}" title="Стоимость услуги">
           <div class="flex flex-column gap-3">
             <span class="p-float-label mb-3 w-full">
               <InputText v-model="formData.cost" id="last_name" class="w-full"/>
@@ -211,7 +211,7 @@ export default defineComponent({
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
-        <MainCard title="Реквизиты и эквайринг">
+        <MainCard :styles="{'h-full': true}" title="Реквизиты и эквайринг">
           <div class="flex flex-column gap-3">
             <Dropdown
                 v-model="selectBank"

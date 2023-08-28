@@ -5,22 +5,42 @@ import {useRoute} from "vue-router";
 import {useError} from "@/hooks/useErrors";
 import {useLanguages} from "@/hooks/useLanguages";
 import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
+import {useMeta} from "vue-meta";
 
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
 import MultiSelect from "primevue/multiselect";
-
 import Breadcrumb from "@/components/Breadcrumb.vue";
 import MainCard from "@/components/cards/MainCard.vue";
 import ButtonSuccess from "@/components/buttons/ButtonSuccess.vue";
-import {useMeta} from "vue-meta";
+import InputNumberPhone from "@/components/inputs/InputNumberPhone.vue";
+import SelectPhoneModal from "@/components/modals/SelectPhoneModal.vue";
 
 export default defineComponent({
   layout: {
     name: 'AdminLayout',
   },
-  components: {Breadcrumb, MainCard, InputText, Dropdown, Button, MultiSelect, ButtonSuccess},
+  components: {
+    Breadcrumb, MainCard, InputText,
+    Dropdown, Button, MultiSelect,
+    ButtonSuccess, InputNumberPhone, SelectPhoneModal
+  },
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const store = useStore();
+      const route = useRoute();
+      await store.dispatch('fetchUser', route.params.id);
+      await store.dispatch('fetchRoles');
+      await store.dispatch('fetchCountries');
+      store.commit(
+          'selectCountryByPhoneCode',
+          store.getters.getCurrentUser.value.phone_code
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     useMeta({
       title: 'Редактирование пользователя'
@@ -42,12 +62,16 @@ export default defineComponent({
     });
 
     let isUpdated = ref(false);
+    let visible = ref(false);
 
     const saveUserData = async () => {
       try {
         await store.dispatch(
             'fetchSaveUserData',
-            {id: route.params.id, data: formReactive}
+            {
+              id: route.params.id,
+              data: {...formReactive, phone_code: country.value.phone_code},
+            }
         );
 
         isUpdated.value = true;
@@ -63,6 +87,8 @@ export default defineComponent({
     onMounted(async () => {
       await store.dispatch('fetchUser', route.params.id);
       await store.dispatch('fetchRoles');
+      await store.dispatch('fetchCountries');
+      store.commit('selectCountryByPhoneCode', user.value.phone_code);
 
       const label = ((user.value.last_name ? user.value.last_name + ' ' : '') ?? ' -')
           + ((user.value.first_name ? user.value.first_name + ' ' : '') ?? ' -')
@@ -84,6 +110,8 @@ export default defineComponent({
 
     const user = computed(() => store.getters.getCurrentUser);
     const roles = computed(() => store.getters.getRolesList);
+    const countries = computed(() => store.getters.getCountriesList);
+    const country = computed(() => store.getters.getSelectCountry);
 
     return {
       user,
@@ -92,7 +120,10 @@ export default defineComponent({
       formReactive,
       saveUserData,
       isUpdated,
+      visible,
       languages,
+      countries,
+      country,
       errors: errors.errors,
     };
   }
@@ -100,6 +131,11 @@ export default defineComponent({
 </script>
 
 <template>
+  <SelectPhoneModal
+      @toggleCloseModal="visible = !visible"
+      :countries="countries"
+      :visible="visible"
+  />
   <section class="py-2 mb-3">
     <div class="flex justify-content-between mb-3">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
@@ -165,10 +201,13 @@ export default defineComponent({
         <MainCard :styles="{'h-full': true}" title="Контактные данные">
           <div class="flex flex-column gap-3">
             <div class="mb-3">
-              <span class="p-float-label w-full">
-                <InputText id="phone" class="w-full" :class="{'p-invalid': errors.phone}" v-model="formReactive.phone"/>
-                <label for="phone">Контактный номер *</label>
-              </span>
+              <InputNumberPhone
+                  v-model="formReactive.phone"
+                  @toggleChangePhoneCode="visible = !visible"
+                  :class="{'p-invalid': errors.phone}"
+                  :phone-code="country?.phone_code ? country.phone_code : '+7'"
+                  :country="country?.name"
+              />
               <span v-if="errors.phone" class="color-red text-xs">
                 {{ errors.phone[0] }}
               </span>

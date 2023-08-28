@@ -22,7 +22,10 @@ export default defineComponent({
 <template>
   <Card :class="styles">
     <template #title v-if="title">
-      {{ title }}
+      <div class="flex justify-content-between">
+        <span>{{ title }}</span>
+        <slot name="title-action"></slot>
+      </div>
     </template>
     <template #content>
       <slot />

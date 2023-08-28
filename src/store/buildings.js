@@ -12,6 +12,10 @@ const actions = {
     },
     async fetchCreateBuilding({commit}, body = {}) {
         await createBuilding(body);
+    },
+    async fetchBuilding({commit}, id) {
+        const {data: building} = await loadBuilding(id);
+        commit('updateCurrentBuilding', building);
     }
 };
 
