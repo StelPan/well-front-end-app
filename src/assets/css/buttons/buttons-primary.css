@@ -44,3 +44,28 @@
 .btn-primary-outlined:hover {
     color: var(--color-primary) !important;
 }
+
+.btn-non-background {
+    background-color: transparent !important;
+    border: none !important;
+    color: var(--color-black);
+}
+
+.btn-belge {
+    background-color: var(--color-belge) !important;
+    border: none !important;
+    color: var(--color-black)
+}
+
+.btn-belge:hover {
+    background-color: var(--color-belge) !important;
+    border: none !important;
+    color: var(--color-black) !important;
+}
+
+
+
+.btn-non-background:hover {
+    background-color: transparent !important;
+    color: var(--color-black) !important;
+}

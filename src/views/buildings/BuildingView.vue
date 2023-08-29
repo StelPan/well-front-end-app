@@ -58,6 +58,7 @@ export default defineComponent({
     const activeTabComponent = computed(() => tabs.value[activeTabIndex.value]);
     const segments = computed(() => store.getters.getListBuildingSegments);
     const locationTypes = computed(() => store.getters.getListTypeLocations);
+    const building = computed(() => store.getters.getCurrentBuilding);
 
     const first = ref(0);
 
@@ -66,7 +67,7 @@ export default defineComponent({
     };
 
     const loadBuilding = async () => {
-      await store.dispatch('fetchBuildings', route.params.id);
+      await store.dispatch('fetchBuilding', route.params.id);
     };
 
     const loadSegments = async () => {
@@ -75,7 +76,7 @@ export default defineComponent({
 
     onMounted(async () => {
       try {
-        // await loadBuilding();
+        await loadBuilding();
         await loadSegments();
         await loadLocationTypes();
 
@@ -95,6 +96,7 @@ export default defineComponent({
       activeTabComponent,
       locationTypes,
       segments,
+      building,
       first,
       form,
       errors: errors.errors
@@ -121,7 +123,10 @@ export default defineComponent({
   </section>
 
   <template v-if="activeTabComponent.component === 'SegmentsTabView'">
-    <SegmentsTabView :segments="segments?.data?.data ?? []" />
+    <SegmentsTabView
+        :segments="segments?.data?.data ?? []"
+        :buildingId="building.id"
+    />
 
     <Paginator
         v-model:first="first"

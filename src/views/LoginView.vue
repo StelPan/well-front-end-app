@@ -101,7 +101,7 @@ export default defineComponent({
 <template>
   <SelectPhoneModal
       v-model:visible="visible"
-      :countries="countries ?? []"
+      :countries="countries"
       @toggleCloseModal="visible = false"
   />
 

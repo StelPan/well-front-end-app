@@ -27,6 +27,16 @@ const TARIFF_NAMES = {
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {Button, Breadcrumb, MainCard, InputText, Dropdown, Editor, ConfirmationModal, InputNumber},
+  async beforeRouteEnter (to, from, next) {
+    try {
+      const store = useStore();
+      await store.dispatch('fetchTariff', to.params.id);
+      await store.dispatch('fetchTypeTariffs');
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     const route = useRoute();
     const router = useRouter()
@@ -85,8 +95,6 @@ export default defineComponent({
     watch(form, () => errors.clearErrors());
 
     onMounted(async () => {
-      await store.dispatch('fetchTariff', route.params.id);
-      await store.dispatch('fetchTypeTariffs');
       useCreateReactiveCopy(form, tariff.value);
 
       breadcrumbs.value = [

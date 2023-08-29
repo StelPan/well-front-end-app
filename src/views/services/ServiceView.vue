@@ -16,6 +16,17 @@ import ImageCard from "@/components/cards/ImageCard";
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {Breadcrumb, MainCard, Dropdown, InputText, Editor, Button, FileUpload, ImageCard},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const store = useStore();
+      await store.dispatch('fetchServiceCategories');
+      await store.dispatch('fetchService', to.params.id);
+      await store.dispatch('fetchBanks');
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     const store = useStore();
     const route = useRoute();
@@ -112,10 +123,6 @@ export default defineComponent({
     watch(selectBank, async () => await loadAcquiring());
 
     onMounted(async () => {
-      await loadServiceCategories();
-      await loadService();
-      await loadBanks()
-
       useCreateReactiveCopy(
           formData.value,
           service.value,

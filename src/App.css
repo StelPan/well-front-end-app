@@ -1,5 +1,7 @@
 @import "./assets/css/modules/primevue.css";
+
 @import "./assets/css/modules/primeflex.css";
+
 @import "./assets/css/modules/primeicons.css";
 
 @import "./assets/css/backgrounds/background.css";
@@ -66,4 +68,19 @@
 
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
     background: var(--color-grey) !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+    background: white !important;
+}
+
+.p-column-header-content {
+    display: flex !important;
+    align-items: center !important;
+    text-align: center !important;
+    justify-content: center !important;
+}
+
+.p-datatable-table tbody tr td {
+    text-align: center !important;
 }

@@ -10,6 +10,15 @@ import ServiceCategoriesTable from "@/components/tables/ServiceCategoriesTable.v
 export default defineComponent({
   layout: { name: 'AdminLayout' },
   components: {Button, DataView, ServiceCategoriesTable},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const store = useStore();
+      await store.dispatch('fetchServiceCategories');
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -30,10 +39,6 @@ export default defineComponent({
         console.error(e);
       }
     }
-
-    onMounted(async () => {
-      await store.dispatch('fetchServiceCategories');
-    });
 
     return {categories, updateVisibleCategory};
   }

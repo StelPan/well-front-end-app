@@ -10,6 +10,10 @@ export default defineComponent({
     segments: {
       type: Array,
       required: true
+    },
+    buildingId: {
+      type: Number,
+      required: true,
     }
   }
 });
@@ -18,7 +22,13 @@ export default defineComponent({
 <template>
   <DataTable :value="segments" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
     <Column field="id" header="ID"></Column>
-    <Column field="name_ru" header="Наименование сегмента"></Column>
+    <Column field="name_ru" header="Наименование сегмента">
+      <template #body="slotProps">
+        <router-link :to="{name: 'building-segment-edit'}">
+
+        </router-link>
+      </template>
+    </Column>
     <Column field="categories_count" header="Категории"></Column>
     <Column field="rooms_count" header="Объекты"></Column>
   </DataTable>

@@ -2,6 +2,7 @@
 @import "../env/colors/grayscale-palette.css";
 @import "../env/colors/neutral.css";
 @import "../env/colors/system.css";
+@import "../env/colors/secondary.css";
 
 .color-primary {
     color: var(--color-primary) !important;

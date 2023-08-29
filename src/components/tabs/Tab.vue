@@ -25,7 +25,6 @@ export default defineComponent({
       for (let s of switcher.value) {
         if (s.type === defaultTab.value.type)
           s.toggle = true;
-
       }
     })
 

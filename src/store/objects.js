@@ -17,20 +17,20 @@ const actions = {
         commit('updateListCategories', filters);
     },
     async fetchObjectsByCategory({commit}, params = {}) {
-        const {data: objects} = await ObjectService.loadObjectsByCategory(params);
+        const objects = await ObjectService.loadObjectsByCategory(params);
         commit('updateListObjects', objects);
     }
 };
 
 const mutations = {
     updateListSegments(state, segments) {
-        state.segments = segments;
+        state.listSegments = segments;
     },
     updateListObjects(state, objects) {
-        state.objects = objects;
+        state.listObjects = objects;
     },
     updateListCategories(state, categories) {
-        state.categories = categories;
+        state.listCategories = categories;
     },
     updateCurrentObject(state, object) {
         state.currentObject = object;

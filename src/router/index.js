@@ -50,6 +50,8 @@ import CreateBuildingView from "@/views/buildings/CreateBuildingView";
 import NotFound from "@/views/NotFound";
 import BuildingView from "@/views/buildings/BuildingView.vue";
 import BuildingPointsView from "@/views/buildings/BuildingPointsView.vue";
+import CreateServiceView from "@/views/services/CreateServiceView.vue";
+import CategoriesSegmentView from "@/views/buildings/CategoriesSegmentView.vue";
 
 console.log(...middleware('require-auth', [{}]))
 
@@ -122,6 +124,10 @@ const routes = [
                 name: 'create-service-category',
                 component: CreateServiceCategory,
             }, {
+                path: 'services/create',
+                name: 'create-service',
+                component: CreateServiceView
+            }, {
                 path: 'buildings',
                 name: 'buildings',
                 component: BuildingsView,
@@ -133,6 +139,10 @@ const routes = [
                 path: 'buildings/:id',
                 name: 'building-edit',
                 component: BuildingView,
+            }, {
+                path: 'buildings/:id/segments/:segment',
+                name: 'building-segment-edit',
+                component: CategoriesSegmentView,
             }, {
                 path: 'buildings/:id/points',
                 name: 'building-points-edit',

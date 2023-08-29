@@ -20,16 +20,10 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-    const countries = ref([]);
-
-    watch(() => props.countries, (state) => {
-      countries.value = state;
-    });
 
     const closeModalEvent = () => emit('toggleCloseModal', true);
 
     return {
-      countries,
       closeModalEvent,
     };
   }
@@ -42,7 +36,7 @@ export default defineComponent({
       modal
       :close-on-escape="true"
       :closable="false"
-      :style="{ width: '50vw', 'border-radius': '20px' }"
+      :style="{ 'max-width': '400px', 'border-radius': '20px' }"
   >
     <template #default>
       <div class="flex justify-content-center py-2">

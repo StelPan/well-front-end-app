@@ -25,6 +25,16 @@ export default defineComponent({
     Dropdown, FileUpload, ConfirmationModal,
     ButtonSuccess
   },
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const store = useStore();
+      await store.dispatch('fetchServiceCategory', to.params.id);
+      await store.dispatch('fetchBanks');
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     const store = useStore();
     const route = useRoute();
@@ -59,14 +69,6 @@ export default defineComponent({
 
     const onSelectFiles = ({files, originalEvent}) => {
       banner.value = files;
-    };
-
-    const loadServiceCategory = async () => {
-      await store.dispatch('fetchServiceCategory', route.params.id);
-    };
-
-    const loadBanks = async () => {
-      await store.dispatch('fetchBanks');
     };
 
     const loadAcquiring = async () => {
@@ -107,9 +109,6 @@ export default defineComponent({
     watch([form, banner, icon], () => isUpdated.value = false);
 
     onMounted(async () => {
-      await loadServiceCategory();
-      await loadBanks();
-
       useCreateReactiveCopy(form, category.value, {quick_access: (q) => !!q});
       breadcrumb.value = [
         {label: 'Услуги', router: {name: 'services'}},

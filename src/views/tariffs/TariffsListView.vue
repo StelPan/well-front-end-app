@@ -10,6 +10,19 @@ import TariffsTable from "@/components/tables/TariffsTable";
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {Button, TariffsTable, Paginator},
+  async beforeRouteEnter (to, from, next) {
+    try {
+      const store = useStore();
+      const route = useRoute();
+      await store.dispatch('fetchTariffs', {
+        period: to.params.period,
+        page: 1
+      });
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     const store = useStore();
     const route = useRoute();

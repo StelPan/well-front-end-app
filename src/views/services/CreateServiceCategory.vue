@@ -16,11 +16,23 @@ import ImageCard from "@/components/cards/ImageCard";
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {InputText, Checkbox, Button, MainCard, Breadcrumb, ImageCard, Dropdown, FileUpload},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const store = useStore();
+      await store.dispatch('fetchBanks');
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     const store = useStore();
     const route = useRoute();
 
-    const breadcrumb = ref([]);
+    const breadcrumb = ref( [
+      {label: 'Услуги', router: {name: 'services'}},
+      {label: 'Создание категории'}
+    ]);
 
     const form = reactive({
       name_ru: '',
@@ -36,24 +48,11 @@ export default defineComponent({
     const banks = computed(() => store.getters.getListBanks);
     const acquiring = computed(() => store.getters.getListAcquiring);
 
-    const loadBanks = async () => {
-      await store.dispatch('fetchBanks');
-    };
-
     const loadAcquiring = async () => {
       await store.dispatch('fetchAcquiring', selectBank.value);
     };
 
     watch(selectBank, async () => await loadAcquiring());
-
-    onMounted(async () => {
-      await loadBanks();
-
-      breadcrumb.value = [
-        {label: 'Услуги', router: {name: 'services'}},
-        {label: 'Создание категории'}
-      ];
-    });
 
     return {breadcrumb, form, selectBank, acquiring, banks};
   }

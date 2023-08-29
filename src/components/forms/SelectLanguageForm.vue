@@ -54,7 +54,7 @@ export default defineComponent({
 <template>
   <div class="w-full">
     <div class="flex flex-column">
-      <div class="px-2 mb-2">
+      <div>
         <span class="p-input-icon-left w-full">
         <i class="pi pi-search"/>
         <InputText v-model="writeCountry" class="w-full" placeholder="Поиск"/>
@@ -66,8 +66,8 @@ export default defineComponent({
           <template #list="slotProps">
             <div class="col-12 cursor-pointer" @click="toSelectedCountry(slotProps.data.id)">
               <div class="hover:bg-neutral flex justify-content-start xl:flex-row xl:align-items-start p-4 gap-4">
-                <div class="w-9 sm:w-4rem xl:w-5rem border-round">
-                  <img :src="CountryFlagsImage(slotProps.data.name)" alt="">
+                <div class="w-9 sm:w-4rem xl:w-2rem border-round flex align-items-center">
+                  <img style="width: 25px" :src="CountryFlagsImage(slotProps.data.name)" alt="">
                 </div>
                 <div class="w-9 sm:w-4rem xl:w-5rem border-round flex justify-content-start align-items-center">
                   {{ slotProps.data.phone_code }}
@@ -87,7 +87,6 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .p-inputtext {
-  padding: 1rem 2rem;
   border-width: 2px ;
   border-radius: 17px !important;
 }

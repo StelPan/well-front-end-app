@@ -29,14 +29,14 @@ export default defineComponent({
   async beforeRouteEnter(to, from, next) {
     try {
       const store = useStore();
-      const route = useRoute();
-      await store.dispatch('fetchUser', route.params.id);
+      await store.dispatch('fetchUser', to.params.id);
       await store.dispatch('fetchRoles');
       await store.dispatch('fetchCountries');
       store.commit(
           'selectCountryByPhoneCode',
-          store.getters.getCurrentUser.value.phone_code
+          store.getters.getCurrentUser.phone_code
       );
+      next();
     } catch (e) {
       console.error(e);
     }
@@ -82,14 +82,12 @@ export default defineComponent({
 
     const breadcrumbs = ref([]);
 
-    watch(formReactive, () => isUpdated.value = false);
+    watch(formReactive, () => {
+      isUpdated.value = false;
+      errors.setErrors()
+    });
 
     onMounted(async () => {
-      await store.dispatch('fetchUser', route.params.id);
-      await store.dispatch('fetchRoles');
-      await store.dispatch('fetchCountries');
-      store.commit('selectCountryByPhoneCode', user.value.phone_code);
-
       const label = ((user.value.last_name ? user.value.last_name + ' ' : '') ?? ' -')
           + ((user.value.first_name ? user.value.first_name + ' ' : '') ?? ' -')
           + ((user.value.patronymic ? user.value.patronymic + ' ' : '') ?? ' -');
@@ -99,11 +97,7 @@ export default defineComponent({
         {label}
       ];
 
-      useCreateReactiveCopy(
-          formReactive,
-          store.getters.getCurrentUser,
-          // {roles: (roles) => roles.map(role => role.id)}
-      );
+      useCreateReactiveCopy(formReactive, store.getters.getCurrentUser);
 
       formReactive.roles = store.getters.getCurrentUser.roles.map(role => role.id);
     });

@@ -70,7 +70,4 @@ export default defineComponent({
 </template>
 
 <style>
-.main-content {
-  height: 100vh;
-}
 </style>

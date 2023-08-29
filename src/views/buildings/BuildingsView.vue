@@ -53,13 +53,13 @@ export default defineComponent({
   </section>
 
   <section class="py-2 mb-3">
-    <div v-if="!buildings?.data?.data" class="flex justify-content-center align-items-center center-text-screen">
-      <span class="color-black-40">
-        Здесь пока ничего нет
-      </span>
-    </div>
-
-    <div v-if="Array.isArray(buildings?.data?.data) ? buildings.data.data.length : false">
+<!--    <div v-if="!buildings?.data?.data" class="flex justify-content-center align-items-center center-text-screen">-->
+<!--      <span class="color-black-40">-->
+<!--        Здесь пока ничего нет-->
+<!--      </span>-->
+<!--    </div>-->
+<!--    v-if="Array.isArray(buildings?.data?.data) ? buildings.data.data.length : false"-->
+    <div>
       <BuildingsTable :buildings="buildings?.data?.data ?? []" />
 
       <Paginator

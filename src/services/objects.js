@@ -5,6 +5,11 @@ const loadFilterSegments = async () => {
     return response.data;
 };
 
+const loadSegment = async (id) => {
+    const response = await http.get('/api/company/v1/room/filter/segment/' + id);
+    return response.data;
+}
+
 const loadCategoriesByFilter = async (filterId) => {
     const response = await http.get(`/api/company/v1/room/filter/${filterId}/category`);
     return response.data;
@@ -22,7 +27,13 @@ const loadObject = async (objectId) => {
 
 const updateObject = async (objectId, body = {}) => {
     const response = await http.post('/api/company/v1/room' + id, body);
-    return reponse.data;
+    return response.data;
 };
 
-export default {loadFilterSegments, loadCategoriesByFilter, loadObjectsByCategory, loadObject, updateObject};
+export default {
+    loadSegment,
+    loadFilterSegments,
+    loadCategoriesByFilter,
+    loadObjectsByCategory,
+    loadObject, updateObject
+};

@@ -46,7 +46,7 @@ export default defineComponent({
     const routes = computed(() => {
       return action.value === 'categories' ?
           {name: 'create-service-category'} :
-          {name: 'create-service-category'};
+          {name: 'create-service'};
     })
 
     const redirect = async () => {
@@ -64,7 +64,7 @@ export default defineComponent({
     <div class="flex justify-content-between mb-3">
       <h1>Услуги</h1>
 
-      <Button v-if="action !== 'categories'" label="Создать услугу" class="btn-primary font-light ml-3" />
+      <Button v-if="action !== 'categories'" @click="redirect" label="Создать услугу" class="btn-primary font-light ml-3" />
       <Button v-if="action === 'categories'" @click="redirect" label="Создать категорию" class="btn-primary font-light ml-3" />
     </div>
 

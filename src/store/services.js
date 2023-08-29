@@ -20,6 +20,9 @@ const actions = {
     async fetchDestroyServicePhoto({commit}, {id, uuid}) {
         await ServiceService.destroyServicePhoto(id, uuid);
         commit('deletePhotoCurrentService');
+    },
+    async fetchCreateService({commit}, body = {}) {
+        await ServiceService.createService(body);
     }
 };
 

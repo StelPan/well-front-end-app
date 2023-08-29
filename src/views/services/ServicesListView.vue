@@ -10,6 +10,15 @@ import Paginator from "primevue/paginator";
 export default defineComponent({
   layout: { name: 'AdminLayout'},
   components: {Button, DataView, Paginator},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const store = useStore();
+      await store.dispatch('fetchServices');
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     const store = useStore();
     const route = useRoute();
@@ -33,10 +42,6 @@ export default defineComponent({
           await loadServices()
         }
     );
-
-    onMounted(async () => {
-      await store.dispatch('fetchServices');
-    });
 
     return {services, first};
   }

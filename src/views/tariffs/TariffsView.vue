@@ -20,6 +20,15 @@ const TARIFF_NAMES = {
 export default defineComponent({
   layout: {name: "AdminLayout"},
   components: {TariffsTable, Button, TabMenu},
+  async beforeRouteEnter (to, from, next) {
+    try {
+      const store = useStore();
+      await store.dispatch('fetchTypeTariffs');
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -43,7 +52,6 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      await store.dispatch('fetchTypeTariffs');
       fillTypeTariffItems();
 
       if (!route.params?.period) {
