@@ -4,13 +4,18 @@ import {defineComponent, ref, watch} from "vue";
 import Editor from "primevue/editor";
 import MainCard from "@/components/cards/MainCard";
 import FileUpload from "@/components/FileUpload";
+import BuilderAttractionPointsTable from "@/components/tables/BuilderAttractionPointsTable";
 
 export default defineComponent({
-  components: {Editor, MainCard, FileUpload},
+  components: {Editor, MainCard, FileUpload, BuilderAttractionPointsTable},
   props: {
     formData: {
       type: Object,
       required: true,
+    },
+    locationTypes: {
+      type: Array,
+      required: false,
     },
     errors: {
       type: Object,
@@ -44,6 +49,21 @@ export default defineComponent({
       </div>
     </div>
   </section>
+
+  <template v-if="form?.attraction_points">
+    <section class="py-2 mb-3">
+      <div class="flex justify-content-between">
+        <span class="text-3xl font-bold">Ближайшие точки на карте</span>
+        <div class="flex">
+          <Button label="Редактировать" class="btn-black-20-outlined"/>
+          <Button label="Добавить точку" class="btn-primary ml-2"/>
+        </div>
+      </div>
+    </section>
+    <section class="py-2 mb-3">
+      <BuilderAttractionPointsTable :location-types="locationTypes" :points="form.attraction_points"/>
+    </section>
+  </template>
 </template>
 
 <style scoped>

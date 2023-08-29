@@ -21,7 +21,7 @@ export default defineComponent({
   setup(props, {emit}) {
     const form = ref(props.formData);
 
-    watch(form, () => emit('changeForData', form));
+    watch(form, () => emit('changeFormData', form));
 
     return {form};
   }

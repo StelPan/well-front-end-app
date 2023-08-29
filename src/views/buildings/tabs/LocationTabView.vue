@@ -1,5 +1,6 @@
 <script>
 import {defineComponent, ref, watch} from "vue";
+import {useRouter, useRoute} from "vue-router";
 
 import Editor from "primevue/editor";
 import Button from "primevue/button";
@@ -25,6 +26,8 @@ export default defineComponent({
   },
   setup(props, {emit}) {
     const form = ref(props.formData);
+    const route = useRoute();
+    const router = useRouter();
 
     //
     form.value.locations = [{
@@ -35,9 +38,17 @@ export default defineComponent({
       lon: '54.456'
     }];
 
+    const toPointsEdit = async () => {
+      try {
+        await router.push({name: 'building-points-edit', params: {id: route.params.id}})
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     watch(form, () => emit('changeFormData', form));
 
-    return {form};
+    return {form, toPointsEdit};
   }
 });
 </script>
@@ -65,7 +76,7 @@ export default defineComponent({
       <div class="flex justify-content-between">
         <span class="text-3xl font-bold">Ближайшие точки на карте</span>
         <div class="flex">
-          <Button label="Редактировать" class="btn-black-20-outlined"/>
+          <Button @click="toPointsEdit" label="Редактировать" class="btn-black-20-outlined"/>
           <Button label="Добавить точку" class="btn-primary ml-2"/>
         </div>
       </div>

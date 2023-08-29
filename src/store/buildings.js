@@ -1,4 +1,4 @@
-import {loadBuildings, loadBuilding, createBuilding} from "@/services/buildings";
+import {loadBuildings, loadBuilding, createBuilding, destroyBuilding} from "@/services/buildings";
 
 const state = () => ({
     listBuildings: [],
@@ -14,9 +14,11 @@ const actions = {
         await createBuilding(body);
     },
     async fetchBuilding({commit}, id) {
-        const building = await loadBuilding(id);
-        console.log(building)
+        const {data: building} = await loadBuilding(id);
         commit('updateCurrentBuilding', building);
+    },
+    async fetchDestroyBuilding({commit}, id) {
+        await destroyBuilding(id);
     }
 };
 
@@ -25,7 +27,7 @@ const mutations = {
         state.listBuildings = buildings;
     },
     updateCurrentBuilding(state, building) {
-        state.currentBuildings = building;
+        state.currentBuilding = building;
     }
 };
 

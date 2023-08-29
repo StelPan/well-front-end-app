@@ -6,7 +6,7 @@ const loadBuildings = async (params = {}) => {
 };
 
 const loadBuilding = async (id) => {
-    const response = http.get('/api/company/v1/building/' + id);
+    const response = await http.get('/api/company/v1/building/' + id);
     return response.data;
 };
 
@@ -15,4 +15,8 @@ const createBuilding = async (body = {}) => {
     return response.data;
 };
 
-export {loadBuildings, loadBuilding, createBuilding};
+const destroyBuilding = async (id) => {
+     // TODO: ДОБАВИТЬ ЗАПРОС НА УДАЛЕНИЕ ЗДАНИЯ
+}
+
+export {loadBuildings, loadBuilding, createBuilding, destroyBuilding};

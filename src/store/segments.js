@@ -9,7 +9,13 @@ const actions = {
         const segments = await SegmentService.loadSegments(params);
         commit('updateListBuildingSegments', segments);
     },
-
+    async fetchBuildingSegment({commit}, id) {
+        const {data: segment} = await SegmentService.loadSegment(id);
+        commit('updateCurrentBuildingSegment', segment);
+    },
+    async fetchUpdateSegment({commit}, {id, body}) {
+        await SegmentService.updateSegment(id, body);
+    }
 };
 
 const mutations = {
@@ -17,7 +23,7 @@ const mutations = {
         state.listSegments = segments;
     },
     updateCurrentBuildingSegment(state, segment) {
-        state.segment = segment;
+        state.currentBuildingSegment = segment;
     }
 };
 
@@ -26,7 +32,7 @@ const getters = {
         return state.listSegments;
     },
     getCurrentBuildingSegment(state) {
-        return state.getCurrentSegment;
+        return state.currentBuildingSegment;
     }
 };
 

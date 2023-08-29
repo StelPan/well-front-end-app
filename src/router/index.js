@@ -49,7 +49,7 @@ import CreateVendorView from "@/views/vendors/CreateVendorView";
 import CreateBuildingView from "@/views/buildings/CreateBuildingView";
 import NotFound from "@/views/NotFound";
 import BuildingView from "@/views/buildings/BuildingView.vue";
-import BuildingPointsView from "@/views/buildings/BuildingPointsView.vue";
+import BuildingPointsView from "@/views/buildings/BuildingLocationPointsView.vue";
 import CreateServiceView from "@/views/services/CreateServiceView.vue";
 import CategoriesSegmentView from "@/views/buildings/CategoriesSegmentView.vue";
 import ObjectView from "@/views/objects/ObjectView.vue";

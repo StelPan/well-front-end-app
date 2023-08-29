@@ -1,5 +1,5 @@
 <script>
-import {computed, defineComponent, onMounted, reactive, ref} from "vue";
+import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {useMeta} from "vue-meta";
 import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
@@ -8,11 +8,12 @@ import Button from "primevue/button";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Checkbox from "primevue/checkbox";
+import ButtonSuccess from "@/components/buttons/ButtonSuccess";
 import StateConstructorTable from "@/components/tables/StateConstructorTable.vue";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {Button, StateConstructorTable, DataTable, Column, Checkbox},
+  components: {Button, StateConstructorTable, DataTable, Column, Checkbox, ButtonSuccess},
   async beforeRouteEnter(to, from, next) {
     try {
       const store = useStore();
@@ -32,7 +33,8 @@ export default defineComponent({
 
     const modelStates = ref([]);
     const modelStatesCopy = ref([]);
-    const changesStates = reactive({}); // { stateId: { permissionId: { access: true, paid: true,} }}
+    const changesStates = reactive({});
+    const isUpdated = ref(false);
 
     const states = computed(() => store.getters.getStateList);
     const permissions = computed(() => store.getters.getPermissionList);
@@ -91,29 +93,45 @@ export default defineComponent({
       fillChangesState(state, perm);
     };
 
-    const storeChanges = () => {
-      const changes = [];
+    const storeChanges = async () => {
       for (let stateId in changesStates) {
         for (let permissionId in changesStates[stateId]) {
-          changes.push(store.dispatch('fetchUpdateState', {
+          let body = {
+            permission: permissionId,
+            paid: Number(changesStates[stateId][permissionId].paid),
+          };
+
+          if (!Number(changesStates[stateId][permissionId].access)) {
+            body.remove = 1;
+          }
+
+          await store.dispatch('fetchUpdateState', {
             id: stateId,
-            body: {
-              permission: permissionId,
-              paid: Number(changesStates[stateId][permissionId].paid)
-            }
-          }));
+            body
+          });
         }
       }
 
-      console.log(changes);
+      isUpdated.value = true;
     };
+
+    watch(changesStates, () => isUpdated.value = false);
 
     onMounted(() => {
       fillModelStates();
       modelStatesCopy.value = modelStates.value;
     });
 
-    return {states, permissions, modelStates, changeModelStateAccess, changeModelStatePaid, changesStates, storeChanges};
+    return {
+      states,
+      permissions,
+      modelStates,
+      changeModelStateAccess,
+      changeModelStatePaid,
+      changesStates,
+      storeChanges,
+      isUpdated
+    };
   }
 });
 </script>
@@ -122,7 +140,10 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <h1 class="font-normal">Конструктор состояний</h1>
-      <Button @click="storeChanges" label="Сохранить изменения" class="btn-primary font-light"/>
+      <div class="flex">
+        <ButtonSuccess v-if="isUpdated" label="Изменения сохранены" />
+        <Button @click="storeChanges" label="Сохранить изменения" class="btn-primary font-light ml-2"/>
+      </div>
     </div>
   </section>
 
