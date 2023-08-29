@@ -4,15 +4,17 @@ import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 
 import InputText from "primevue/inputtext";
+import Button from "primevue/button";
 import MainCard from "@/components/cards/MainCard.vue";
 import Breadcrumb from "@/components/Breadcrumb.vue";
 
 export default defineComponent({
-  components: {InputText, MainCard, Breadcrumb},
+  layout: {name: 'AdminLayout'},
+  components: {InputText, MainCard, Breadcrumb, Button},
   async beforeRouteEnter(to, from, next) {
     try {
       const store = useStore();
-      await store.dispatch()
+      await store.dispatch('fetchBuildingSegments')
       next();
     } catch (e) {
       console.error(e);
@@ -37,6 +39,8 @@ export default defineComponent({
         {label: building.name_ru, router: {name: 'building-edit', params: {id: 2}}},
         {label: "Апартаменты"}
       ];
+
+      form.value.name_ru = segment.value.name_ru;
     });
 
     return {form, breadcrumbs, segment}
@@ -54,9 +58,13 @@ export default defineComponent({
   </section>
 
   <section class="py-2 mb-3">
-    <MainCard title="Название сегмента">
-
-    </MainCard>
+    <div class="grid">
+      <div class="col-12 md:col-3">
+        <MainCard title="Название сегмента">
+          <InputText placeholder="Название *" v-model="form.name_ru"></InputText>
+        </MainCard>
+      </div>
+    </div>
   </section>
 </template>
 

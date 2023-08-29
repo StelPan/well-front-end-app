@@ -1,5 +1,5 @@
 <script>
-import {defineComponent, ref, computed, onMounted} from "vue";
+import {defineComponent, ref, computed, onMounted, watch} from "vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 
@@ -10,6 +10,15 @@ import Paginator from "primevue/paginator";
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {Button, BuildingsTable, Paginator},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const store = useStore();
+      await store.dispatch('fetchBuildings', {page: 1});
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -30,13 +39,11 @@ export default defineComponent({
       }
     };
 
+    watch(first, async () => await loadBuildings());
+
     const toCreateBuilding = async () => {
       await router.push({name: 'create-building'});
     };
-
-    onMounted(async () => {
-      await loadBuildings();
-    });
 
     return { toCreateBuilding, buildings, first };
   }
@@ -53,13 +60,12 @@ export default defineComponent({
   </section>
 
   <section class="py-2 mb-3">
-<!--    <div v-if="!buildings?.data?.data" class="flex justify-content-center align-items-center center-text-screen">-->
-<!--      <span class="color-black-40">-->
-<!--        Здесь пока ничего нет-->
-<!--      </span>-->
-<!--    </div>-->
-<!--    v-if="Array.isArray(buildings?.data?.data) ? buildings.data.data.length : false"-->
-    <div>
+    <div v-if="!buildings?.data?.data" class="flex justify-content-center align-items-center center-text-screen">
+      <span class="color-black-40">
+        Здесь пока ничего нет
+      </span>
+    </div>
+    <div v-if="Array.isArray(buildings?.data?.data) ? buildings.data.data.length : false">
       <BuildingsTable :buildings="buildings?.data?.data ?? []" />
 
       <Paginator

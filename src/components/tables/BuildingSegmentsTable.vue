@@ -24,8 +24,8 @@ export default defineComponent({
     <Column field="id" header="ID"></Column>
     <Column field="name_ru" header="Наименование сегмента">
       <template #body="slotProps">
-        <router-link :to="{name: 'building-segment-edit'}">
-
+        <router-link :to="{name: 'building-segment-edit', params: {id: buildingId, segment: slotProps.data.id}}">
+          {{ slotProps.data.name_ru }}
         </router-link>
       </template>
     </Column>

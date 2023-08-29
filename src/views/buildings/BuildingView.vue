@@ -23,6 +23,17 @@ export default defineComponent({
     LocationTabView, AttractionTabView, Breadcrumb, TabMenu, Button,
     Paginator,
   },
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const store = useStore();
+      await store.dispatch('fetchTypeLocations');
+      await store.dispatch('fetchBuilding', to.params.id);
+      await store.dispatch('fetchBuildingSegments');
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     useMeta({
       title: "Редактирование здания"
@@ -62,27 +73,11 @@ export default defineComponent({
 
     const first = ref(0);
 
-    const loadLocationTypes = async () => {
-      await store.dispatch('fetchTypeLocations');
-    };
-
-    const loadBuilding = async () => {
-      await store.dispatch('fetchBuilding', route.params.id);
-    };
-
-    const loadSegments = async () => {
-      await store.dispatch('fetchBuildingSegments');
-    };
-
     onMounted(async () => {
       try {
-        await loadBuilding();
-        await loadSegments();
-        await loadLocationTypes();
-
         breadcrumbs.value = [
           {label: 'Структура', router: {name: 'buildings'}},
-          {label: 'Well 1'}
+          {label: building.value.name_ru}
         ];
       } catch (e) {
         console.error(e);

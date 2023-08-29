@@ -9,6 +9,7 @@ const actions = {
         const segments = await SegmentService.loadSegments(params);
         commit('updateListBuildingSegments', segments);
     },
+
 };
 
 const mutations = {

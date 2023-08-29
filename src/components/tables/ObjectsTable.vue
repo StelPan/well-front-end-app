@@ -25,7 +25,11 @@ export default defineComponent({
 
     </Column>
     <Column field="area" header="Площадь"></Column>
-    <Column field="build" header="Здание"></Column>
+    <Column field="building" header="Здание">
+      <template #body="slotProps">
+        {{ slotProps.data.name_ru }}
+      </template>
+    </Column>
     <Column field="status" header="Статус"></Column>
     <Column field="tariff" header="Тариф, Р"></Column>
     <Column field="bron" header="Бронь"></Column>

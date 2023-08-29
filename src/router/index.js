@@ -52,6 +52,7 @@ import BuildingView from "@/views/buildings/BuildingView.vue";
 import BuildingPointsView from "@/views/buildings/BuildingPointsView.vue";
 import CreateServiceView from "@/views/services/CreateServiceView.vue";
 import CategoriesSegmentView from "@/views/buildings/CategoriesSegmentView.vue";
+import ObjectView from "@/views/objects/ObjectView.vue";
 
 console.log(...middleware('require-auth', [{}]))
 
@@ -218,6 +219,10 @@ const routes = [
                 name: 'objects',
                 component: ObjectsView
             }, {
+                path: 'objects',
+                name: 'object-edit',
+                component: ObjectView,
+            },{
                 path: 'partners',
                 name: 'partners',
                 component: PartnersView,

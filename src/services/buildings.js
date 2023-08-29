@@ -1,7 +1,7 @@
 import http from "../plugins/axios";
 
 const loadBuildings = async (params = {}) => {
-    const response = http.get('/api/company/v1/building', {params});
+    const response = await http.get('/api/company/v1/building', {params});
     return response.data;
 };
 

@@ -18,10 +18,16 @@ export default defineComponent({
 <template>
   <DataTable :value="buildings" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
     <Column field="id" header="ID" />
-    <Column field="name" header="Наименование" />
-    <Column field="address" header="Адрес" />
-    <Column field="segments" header="Сегменты" />
-    <Column field="categories" header="Категории" />
-    <Column field="objects" header="Объекты" />
+    <Column field="name_ru" header="Наименование">
+      <template #body="slotProps">
+        <router-link :to="{name: 'building-edit', params: {id: slotProps.data.id}}" class="color-primary">
+          {{ slotProps.data.name_ru }}
+        </router-link>
+      </template>
+    </Column>
+    <Column field="address_ru" header="Адрес" />
+    <Column field="segments_count" header="Сегменты" />
+    <Column field="categories_count" header="Категории" />
+    <Column field="rooms_count" header="Объекты" />
   </DataTable>
 </template>
