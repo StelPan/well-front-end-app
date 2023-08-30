@@ -20,4 +20,9 @@ const updateNotice = async (id, body) => {
     return response.data;
 };
 
-export {loadNotices, loadNotice, createNotice, updateNotice};
+const deleteNotice = async (id) => {
+    const response = await http.get('/api/company/v1/push/' + id + '/delete');
+    return response.data;
+};
+
+export {loadNotices, loadNotice, createNotice, updateNotice, deleteNotice};

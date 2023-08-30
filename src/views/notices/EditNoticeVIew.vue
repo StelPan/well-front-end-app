@@ -28,6 +28,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const route = useRoute();
+    const router = useRouter();
     const errors = useError();
 
     const form = reactive({
@@ -62,7 +63,12 @@ export default defineComponent({
     };
 
     const toDeclineNotice = async () => {
-      // TODO: DECLINE NOTICE
+      try {
+        await store.dispatch('fetchDeleteNotice', route.params.id);
+        await router.push({name: 'notices'});
+      } catch (e) {
+        console.error(e);
+      }
     };
 
     onMounted(async () => {

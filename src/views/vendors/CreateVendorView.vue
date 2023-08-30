@@ -120,8 +120,10 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
-      <ButtonSuccess label="Реквизит создан" />
-      <Button label="Создать реквизиты" class="btn-primary font-light" @click="createVendor"/>
+      <div class="flex">
+        <ButtonSuccess label="Реквизит создан" />
+        <Button label="Создать реквизиты" class="btn-primary font-light ml-2" @click="createVendor"/>
+      </div>
     </div>
   </section>
   <section class="py-2 mb-3">

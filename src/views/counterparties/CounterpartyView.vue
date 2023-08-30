@@ -22,7 +22,7 @@ export default defineComponent({
   async beforeRouteEnter(to, from, next) {
     try {
       const store = useStore();
-      await store.dispatch('fetchCounterparties');
+      await store.dispatch('fetchCounterparty', to.params.id);
       next();
     } catch (e) {
       console.error(e);
