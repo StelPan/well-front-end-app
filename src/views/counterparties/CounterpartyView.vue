@@ -60,5 +60,7 @@ export default defineComponent({
     </div>
   </section>
 
-  <component :is="tabSteps.get(counterparty.type)" />
+  <component
+      :is="tabSteps.get(counterparty.type)"
+  />
 </template>
