@@ -31,7 +31,13 @@ export default defineComponent({
     const locationTypes = computed(() => store.getters.getListTypeLocations);
 
     const visible = ref(false);
-    const points = ref(building.value.location_points);
+    const points = ref(building.value.attraction_points);
+    const destroyPoint = ref(null);
+
+    const showModalDestroyPoint = (point) => {
+      destroyPoint.value = point;
+      visible.value = true;
+    }
 
     const loadLocationTypes = async () => {
       try {
@@ -41,11 +47,22 @@ export default defineComponent({
       }
     };
 
+    const updatePointHandler = async (point) => {
+      // TODO: ДОБАВИТЬ ЗАПРОС НА ОБНОВЛЕНИЕ ТОЧКИ
+    };
+
+    const destroyPointHandler = async () => {
+      // TODO: ДОБАВИТЬ ЗАПРОС НА УДАЛЕНИЕ ТОЧКИ
+      points.value = points.value.filter(point => point.id !== destroyPoint.value.id);
+      visible.value = false;
+    };
+
+
     onMounted(async () => {
       await loadLocationTypes();
     });
 
-    return {locationTypes, building, visible, points};
+    return {locationTypes, building, visible, points, showModalDestroyPoint, destroyPointHandler};
   },
 })
 </script>
@@ -63,7 +80,7 @@ export default defineComponent({
     <template #footer>
       <div class="flex justify-content-between">
         <Button @click="visible = false" label="Отмена" class="btn-black-20-outlined font-light w-full"/>
-        <Button label="Удалить" class="btn-primary font-light ml-3 w-full"/>
+        <Button @click="destroyPointHandler" label="Удалить" class="btn-primary font-light ml-3 w-full"/>
       </div>
     </template>
   </ConfirmationModal>
@@ -85,7 +102,10 @@ export default defineComponent({
       <div class="col-12 md:col-4" v-for="point in points">
         <MainCard :title="point.name_ru">
           <template v-slot:title-action>
-            <span class="color-error underline text-xl">Удалить точку</span>
+            <span
+                @click="showModalDestroyPoint(point)"
+                class="cursor-pointer color-error underline text-xl"
+            >Удалить точку</span>
           </template>
 
           <div class="grid gap-3">

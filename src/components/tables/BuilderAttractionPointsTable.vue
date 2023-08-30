@@ -22,8 +22,8 @@ export default defineComponent({
 
 <template>
   <DataTable :value="points" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
-    <Column field="name" header="Название точки"></Column>
-    <Column field="address" header="Адрес"></Column>
+    <Column field="name_ru" header="Название точки"></Column>
+    <Column field="address_ru" header="Адрес"></Column>
     <Column field="type" header="Тип точки">
       <template #body="slotProps">
         <Dropdown

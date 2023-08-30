@@ -19,6 +19,10 @@ export default defineComponent({
       type: Array,
       required: false,
     },
+    locationPoints: {
+      type: Array,
+      required: true,
+    },
     errors: {
       type: Object,
       required: true,
@@ -40,15 +44,19 @@ export default defineComponent({
 
     const toPointsEdit = async () => {
       try {
-        await router.push({name: 'building-points-edit', params: {id: route.params.id}})
+        await router.push({name: 'building-locations-points-edit', params: {id: route.params.id}})
       } catch (e) {
         console.error(e);
       }
-    }
+    };
+
+    const toPointCreate = async () => {
+      await router.push({name: 'building-locations-points-create', params: {id: route.params.id}});
+    };
 
     watch(form, () => emit('changeFormData', form));
 
-    return {form, toPointsEdit};
+    return {form, toPointsEdit, toPointCreate};
   }
 });
 </script>
@@ -71,18 +79,18 @@ export default defineComponent({
     </div>
   </section>
 
-  <template v-if="form?.locations ?? true">
+  <template v-if="locationPoints ?? []">
     <section class="py-2 mb-3">
       <div class="flex justify-content-between">
         <span class="text-3xl font-bold">Ближайшие точки на карте</span>
         <div class="flex">
           <Button @click="toPointsEdit" label="Редактировать" class="btn-black-20-outlined"/>
-          <Button label="Добавить точку" class="btn-primary ml-2"/>
+          <Button @click="toPointCreate" label="Добавить точку" class="btn-primary ml-2"/>
         </div>
       </div>
     </section>
     <section class="py-2 mb-3">
-      <BuilderLocationsTable :location-types="locationTypes" :locations="form?.locations ?? []"/>
+      <BuilderLocationsTable :location-types="locationTypes" :locations="locationPoints"/>
     </section>
   </template>
 </template>

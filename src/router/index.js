@@ -53,6 +53,9 @@ import BuildingPointsView from "@/views/buildings/BuildingLocationPointsView.vue
 import CreateServiceView from "@/views/services/CreateServiceView.vue";
 import CategoriesSegmentView from "@/views/buildings/CategoriesSegmentView.vue";
 import ObjectView from "@/views/objects/ObjectView.vue";
+import BuildingAttractionPointsView from "@/views/buildings/BuildingAttractionPointsView.vue";
+import CreateLocationPointView from "@/views/buildings/CreateLocationPointView.vue";
+import CategorySegmentView from "@/views/buildings/CategorySegmentView.vue";
 
 console.log(...middleware('require-auth', [{}]))
 
@@ -145,10 +148,26 @@ const routes = [
                 name: 'building-segment-edit',
                 component: CategoriesSegmentView,
             }, {
-                path: 'buildings/:id/points',
-                name: 'building-points-edit',
+                path: 'buildings/:id/locations/points',
+                name: 'building-locations-points-edit',
                 component: BuildingPointsView
             }, {
+                path: 'buildings/:id/attractions/points',
+                name: 'building-attractions-points-edit',
+                component: BuildingAttractionPointsView
+            }, {
+                path: 'buildings/:id/attractions/points/create',
+                name: 'building-attractions-points-create',
+                component: BuildingAttractionPointsView
+            }, {
+                path: 'buildings/:id/locations/points/create',
+                name: 'building-locations-points-create',
+                component: CreateLocationPointView
+            }, {
+                path: 'buildings/:id/segments/:segmentId/categories/:categoryId',
+                name: 'building-room-categories-view',
+                component: CategorySegmentView
+            },{
                 path: 'users',
                 name: 'users',
                 component: UsersView

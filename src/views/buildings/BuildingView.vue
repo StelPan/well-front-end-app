@@ -175,6 +175,24 @@ export default defineComponent({
     ></Paginator>
   </template>
 
+  <template v-else-if="activeTabComponent.component === 'AttractionTabView'">
+    <AttractionTabView
+        :errors="errors"
+        :location-types="locationTypes"
+        :attraction-points="building.attraction_points"
+        :form-data="form"
+    />
+  </template>
+
+  <template v-else-if="activeTabComponent.component === 'LocationTabView'">
+    <LocationTabView
+        :errors="errors"
+        :form-data="form"
+        :location-types="locationTypes"
+        :location-points="building.location_points"
+    />
+  </template>
+
   <template v-else>
     <component
         :formData="form"

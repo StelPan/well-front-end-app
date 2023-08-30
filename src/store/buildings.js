@@ -1,4 +1,10 @@
-import {loadBuildings, loadBuilding, createBuilding, destroyBuilding} from "@/services/buildings";
+import {
+    loadBuildings,
+    loadBuilding,
+    createBuilding,
+    destroyBuilding,
+    createBuildingLocationPoint
+} from "@/services/buildings";
 
 const state = () => ({
     listBuildings: [],
@@ -19,6 +25,9 @@ const actions = {
     },
     async fetchDestroyBuilding({commit}, id) {
         await destroyBuilding(id);
+    },
+    async fetchCreateBuildingLocationPoint({commit}, {id, body = {}}) {
+        await createBuildingLocationPoint(id, body);
     }
 };
 

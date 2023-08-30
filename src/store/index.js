@@ -24,6 +24,7 @@ import objects from "@/store/objects";
 import banks from "@/store/banks";
 import partners from "@/store/partners";
 import segments from "@/store/segments";
+import roomCategory from "@/store/room-category";
 
 export default createStore({
   modules: {
@@ -51,5 +52,6 @@ export default createStore({
     banks,
     partners,
     segments,
+    roomCategory,
   }
 });

@@ -19,4 +19,9 @@ const destroyBuilding = async (id) => {
      // TODO: ДОБАВИТЬ ЗАПРОС НА УДАЛЕНИЕ ЗДАНИЯ
 }
 
-export {loadBuildings, loadBuilding, createBuilding, destroyBuilding};
+const createBuildingLocationPoint = async (id, body = {}) => {
+    const response = await http.post('/api/company/v1/building/' + id + '/point/location', body);
+    return response.data;
+};
+
+export {loadBuildings, loadBuilding, createBuilding, destroyBuilding, createBuildingLocationPoint};

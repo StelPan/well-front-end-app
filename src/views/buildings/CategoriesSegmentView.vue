@@ -5,18 +5,21 @@ import {useRoute} from "vue-router";
 
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
+import Paginator from "primevue/paginator";
 import MainCard from "@/components/cards/MainCard.vue";
 import Breadcrumb from "@/components/Breadcrumb.vue";
 import ButtonSuccess from "@/components/buttons/ButtonSuccess";
+import BuildingCategoriesTable from "@/components/tables/BuildingCategoriesTable.vue";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {InputText, MainCard, Breadcrumb, Button, ButtonSuccess},
+  components: {InputText, MainCard, Breadcrumb, Button, ButtonSuccess, BuildingCategoriesTable},
   async beforeRouteEnter(to, from, next) {
     try {
       const store = useStore();
       await store.dispatch('fetchBuilding', to.params.id);
       await store.dispatch('fetchBuildingSegment', to.params.segment);
+      await store.dispatch('loadCategoriesByFilter', store.getters.getCurrentBuildingSegment.id);
       next();
     } catch (e) {
       console.error(e);
@@ -34,6 +37,7 @@ export default defineComponent({
 
     const building = computed(() => store.getters.getCurrentBuilding);
     const segment = computed(() => store.getters.getCurrentBuildingSegment);
+    const categories = computed(() => store.getters.getListCategories)
 
     const breadcrumbs = ref([]);
 
@@ -56,7 +60,7 @@ export default defineComponent({
 
     watch(form, () => isUpdated.value = false);
 
-    return {form, breadcrumbs, segment, building, updateSegment, isUpdated};
+    return {form, breadcrumbs, segment, building, updateSegment, isUpdated, categories};
   }
 });
 </script>
@@ -83,7 +87,15 @@ export default defineComponent({
   </section>
 
   <section class="py-2 mb-3">
-
+    <div class="grid">
+      <div class="col-12">
+        <BuildingCategoriesTable
+            :categories="categories"
+            :builder-id="building.id"
+            :segment-id="segment.id"
+        />
+      </div>
+    </div>
   </section>
 </template>
 
