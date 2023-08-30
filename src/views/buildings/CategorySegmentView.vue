@@ -5,11 +5,13 @@ import {useRoute} from "vue-router";
 
 import Breadcrumb from "@/components/Breadcrumb.vue";
 import TabMenu from "primevue/tabmenu";
+import Button from "primevue/button";
 import CategorySegmentDescriptionTabView from "@/views/buildings/category-segment/tabs/CategorySegmentDescriptionTabView.vue";
 import CategorySegmentTariffsView from "@/views/buildings/category-segment/tabs/CategorySegmentTariffsView.vue";
+
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {Breadcrumb, TabMenu, CategorySegmentDescriptionTabView, CategorySegmentTariffsView},
+  components: {Breadcrumb, TabMenu, CategorySegmentDescriptionTabView, CategorySegmentTariffsView, Button},
   async beforeRouteEnter(to, from, next) {
     try {
       const store = useStore();
@@ -22,6 +24,8 @@ export default defineComponent({
         segmentId: to.params.segmentId,
         roomCategoryId: to.params.categoryId,
       });
+
+      await store.dispatch('fetchInclusions');
 
       await store.dispatch('fetchRoomCategoryTariffs', {
         segmentId: to.params.segmentId,
@@ -51,6 +55,7 @@ export default defineComponent({
     const building = computed(() => store.getters.getCurrentBuilding);
     const category = computed(() => store.getters.getCurrentRoomCategory);
     const tariffs = computed(() => store.getters.getRoomCategoryTariffsList);
+    const inclusions = computed(() => store.getters.getListInclusions);
 
     onMounted(() => {
       breadcrumbs.value = [
@@ -61,7 +66,7 @@ export default defineComponent({
       ]
     });
 
-    return {category, breadcrumbs, tabs, activeTabIndex, activeTabComponent, tariffs};
+    return {category, breadcrumbs, tabs, activeTabIndex, activeTabComponent, tariffs, inclusions};
   }
 })
 </script>
@@ -70,6 +75,7 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/" />
+      <Button label="Сохранить изменения" class="btn-primary font-light" />
     </div>
   </section>
 
@@ -84,7 +90,9 @@ export default defineComponent({
   </template>
 
   <template v-if="activeTabComponent.component === 'CategorySegmentDescriptionTabView'">
-    <CategorySegmentDescriptionTabView />
+    <CategorySegmentDescriptionTabView
+        :inclusions="inclusions"
+    />
   </template>
 
 </template>

@@ -2,11 +2,12 @@
 import {defineComponent, watch, ref, computed} from "vue";
 
 import InputText from "primevue/inputtext";
+import InputNumber from "primevue/inputnumber";
 
 import LoadImageCountryPlugin from "@/plugins/country-flags-image";
 
 export default defineComponent({
-  components: {InputText},
+  components: {InputText, InputNumber},
   props: {
     country: {
       type: String,

@@ -47,7 +47,7 @@ export default defineComponent({
     const updateSegment = async () => {
       await store.dispatch('fetchUpdateSegment', {
         id: route.params.segment,
-        body: form,
+        body: form.value,
       });
     };
 
@@ -81,6 +81,7 @@ export default defineComponent({
       <Breadcrumb :data="breadcrumbs" separator="/"/>
       <div class="flex">
         <ButtonSuccess v-if="isUpdated" label="Изменения сохранены"/>
+        <Button @click="updateSegment" label="Создать категорию" class="btn-black-20-outlined font-light ml-2"/>
         <Button @click="updateSegment" label="Сохранить изменения" class="btn-primary font-light ml-2"/>
       </div>
     </div>
@@ -88,7 +89,7 @@ export default defineComponent({
 
   <section class="py-2 mb-3">
     <div class="grid">
-      <div class="col-12 md:col-3">
+      <div class="col-12 md:col-4">
         <MainCard title="Название сегмента">
           <InputText placeholder="Название *" v-model="form.name_ru"></InputText>
         </MainCard>

@@ -15,6 +15,9 @@ const actions = {
     },
     async fetchUpdateSegment({commit}, {id, body}) {
         await SegmentService.updateSegment(id, body);
+    },
+    async fetchCreateSegment({commit}, body = {}) {
+        await SegmentService.createSegment(body);
     }
 };
 

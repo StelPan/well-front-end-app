@@ -1,14 +1,15 @@
 <script>
-import {defineComponent, ref, computed} from "vue";
+import {defineComponent, ref, computed, reactive} from "vue";
 import {useStore} from "vuex";
+import { useVuelidate } from '@vuelidate/core';
+import { required, email, integer } from '@vuelidate/validators';
 
 import Button from 'primevue/button';
 import InputMask from "primevue/inputmask";
-import InputText from "primevue/inputtext";
 import InputNumberPhone from "@/components/inputs/InputNumberPhone";
 
 export default defineComponent({
-  components: {Button, InputMask, InputText, InputNumberPhone},
+  components: {Button, InputMask, InputNumberPhone},
   props: {
     errors: {
       type: Object,
@@ -20,7 +21,17 @@ export default defineComponent({
     const country = computed(() => store.getters.getSelectCountry);
 
     const phone = ref('');
+    const formLogin = reactive({
+      phone: ''
+    });
+
     const isShowSelectPhoneModal = ref(false);
+
+    const rules = {
+      phone: { integer }
+    };
+
+    const v$ = useVuelidate(rules, formLogin)
 
     const toggleSelectPhone = () => {
       emit('toggleSelectPhone', true);
@@ -31,6 +42,8 @@ export default defineComponent({
     }
 
     return {
+      formLogin,
+      v$,
       phone,
       country,
       isShowSelectPhoneModal,

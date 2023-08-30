@@ -8,7 +8,13 @@ import FileUpload from "@/components/FileUpload.vue";
 import MainCard from "@/components/cards/MainCard.vue";
 
 export default defineComponent({
-  components: {InputText, Checkbox, Editor, FileUpload, MainCard}
+  components: {InputText, Checkbox, Editor, FileUpload, MainCard},
+  props: {
+    inclusions: {
+      type: Array,
+      required: true,
+    }
+  }
 });
 </script>
 
@@ -77,12 +83,12 @@ export default defineComponent({
     <div class="grid">
       <div class="col-12 md:col-6">
         <MainCard title="Описание разовых платежей">
-          <Editor />
+          <Editor/>
         </MainCard>
       </div>
       <div class="col-12 md:col-6">
         <MainCard title="Условия заселения">
-          <Editor />
+          <Editor/>
         </MainCard>
       </div>
     </div>
@@ -93,6 +99,22 @@ export default defineComponent({
   </section>
 
   <section class="py-2 mb-3">
+    <div class="grid border-round-xl">
+      <div class="col-12 md:col-4 p-0" v-for="(inclusion, i) in inclusions" :key="i">
+        <div class="bg-white m-1 p-2">
+          <Checkbox
+              :binnary="true"
+              :name="`inclusion_${i}`"
+          />
+          <label class="ml-3 font-bold" :for="`inclusion_${i}`">
+            {{ inclusion.name_ru }}
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-2 mb-3">
     <MainCard title="Описание категории">
       <Editor></Editor>
     </MainCard>
@@ -100,7 +122,7 @@ export default defineComponent({
 
   <section class="py-2 mb-3">
     <MainCard title="Изображения">
-      <FileUpload title="Добавить изображение" />
+      <FileUpload title="Добавить изображение"/>
     </MainCard>
   </section>
 

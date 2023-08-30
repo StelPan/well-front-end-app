@@ -93,6 +93,10 @@ export default defineComponent({
       form.value = data;
     };
 
+    const toCreateSegment = async () => {
+      await router.push({name: 'building-segment-create', params: {id: building.value.id}});
+    };
+
     onMounted(async () => {
       try {
         breadcrumbs.value = [
@@ -119,6 +123,7 @@ export default defineComponent({
       form,
       destroyBuilding,
       changeFormData,
+      toCreateSegment,
       errors: errors.errors
     };
   }
@@ -149,7 +154,7 @@ export default defineComponent({
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/" />
       <div class="flex">
-        <Button label="Создать сегмент" class="btn-black-20-outlined font-light"/>
+        <Button @click="toCreateSegment" label="Создать сегмент" class="btn-black-20-outlined font-light"/>
         <Button label="Сохранить изменение" class="btn-primary font-light ml-2" />
       </div>
     </div>

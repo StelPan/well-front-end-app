@@ -6,7 +6,7 @@ const store = () => ({
 
 const actions = {
   async fetchInclusions({commit}) {
-      const inclusions = await InclusionService.loadInclusions();
+      const {data: inclusions} = await InclusionService.loadInclusions();
       commit('updateListInclusions', inclusions);
   }
 };

@@ -57,6 +57,7 @@ import BuildingAttractionPointsView from "@/views/buildings/BuildingAttractionPo
 import CreateLocationPointView from "@/views/buildings/CreateLocationPointView.vue";
 import CategorySegmentView from "@/views/buildings/CategorySegmentView.vue";
 import CounterpartyView from "@/views/counterparties/CounterpartyView.vue";
+import CreateBuildingSegmentView from "@/views/buildings/CreateBuildingSegmentView";
 
 console.log(...middleware('require-auth', [{}]))
 
@@ -148,6 +149,10 @@ const routes = [
                 path: 'buildings/:id/segments/:segment',
                 name: 'building-segment-edit',
                 component: CategoriesSegmentView,
+            }, {
+                path: 'buildings/:id/segments/create',
+                name: 'building-segment-create',
+                component: CreateBuildingSegmentView
             }, {
                 path: 'buildings/:id/locations/points',
                 name: 'building-locations-points-edit',
