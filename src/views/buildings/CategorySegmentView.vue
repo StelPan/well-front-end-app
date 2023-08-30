@@ -6,10 +6,10 @@ import {useRoute} from "vue-router";
 import Breadcrumb from "@/components/Breadcrumb.vue";
 import TabMenu from "primevue/tabmenu";
 import CategorySegmentDescriptionTabView from "@/views/buildings/category-segment/tabs/CategorySegmentDescriptionTabView.vue";
-
+import CategorySegmentTariffsView from "@/views/buildings/category-segment/tabs/CategorySegmentTariffsView.vue";
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {Breadcrumb, TabMenu, CategorySegmentDescriptionTabView},
+  components: {Breadcrumb, TabMenu, CategorySegmentDescriptionTabView, CategorySegmentTariffsView},
   async beforeRouteEnter(to, from, next) {
     try {
       const store = useStore();
@@ -19,6 +19,11 @@ export default defineComponent({
       await store.dispatch('fetchBuildingSegment', to.params.segmentId);
 
       await store.dispatch('fetchRoomCategory', {
+        segmentId: to.params.segmentId,
+        roomCategoryId: to.params.categoryId,
+      });
+
+      await store.dispatch('fetchRoomCategoryTariffs', {
         segmentId: to.params.segmentId,
         roomCategoryId: to.params.categoryId,
       });
@@ -35,7 +40,7 @@ export default defineComponent({
 
     const tabs = ref([
       {label: 'Описание', component: 'CategorySegmentDescriptionTabView'},
-      {label: 'Тарифы', component: 'CategorySegmentDescriptionTabView'},
+      {label: 'Тарифы', component: 'CategorySegmentTariffsView'},
       {label: 'Услуги', component: 'CategorySegmentDescriptionTabView'},
     ]);
 
@@ -45,6 +50,7 @@ export default defineComponent({
     const segment = computed(() => store.getters.getCurrentBuildingSegment);
     const building = computed(() => store.getters.getCurrentBuilding);
     const category = computed(() => store.getters.getCurrentRoomCategory);
+    const tariffs = computed(() => store.getters.getRoomCategoryTariffsList);
 
     onMounted(() => {
       breadcrumbs.value = [
@@ -55,7 +61,7 @@ export default defineComponent({
       ]
     });
 
-    return {category, breadcrumbs, tabs, activeTabIndex, activeTabComponent};
+    return {category, breadcrumbs, tabs, activeTabIndex, activeTabComponent, tariffs};
   }
 })
 </script>
@@ -73,9 +79,14 @@ export default defineComponent({
     </div>
   </section>
 
-  <component
-      :is="activeTabComponent.component"
-  />
+  <template v-if="activeTabComponent.component === 'CategorySegmentTariffsView'">
+    <CategorySegmentTariffsView :tariffs="tariffs" />
+  </template>
+
+  <template v-if="activeTabComponent.component === 'CategorySegmentDescriptionTabView'">
+    <CategorySegmentDescriptionTabView />
+  </template>
+
 </template>
 
 <style scoped>

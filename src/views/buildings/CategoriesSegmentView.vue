@@ -13,13 +13,16 @@ import BuildingCategoriesTable from "@/components/tables/BuildingCategoriesTable
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {InputText, MainCard, Breadcrumb, Button, ButtonSuccess, BuildingCategoriesTable},
+  components: {InputText, MainCard, Breadcrumb, Button, ButtonSuccess, BuildingCategoriesTable, Paginator},
   async beforeRouteEnter(to, from, next) {
     try {
       const store = useStore();
       await store.dispatch('fetchBuilding', to.params.id);
       await store.dispatch('fetchBuildingSegment', to.params.segment);
-      await store.dispatch('loadCategoriesByFilter', store.getters.getCurrentBuildingSegment.id);
+      await store.dispatch('fetchRoomCategories', {
+        segmentId: store.getters.getCurrentBuildingSegment.id,
+        params: {page: 1}
+      });
       next();
     } catch (e) {
       console.error(e);
@@ -33,13 +36,13 @@ export default defineComponent({
       name_ru: ''
     });
 
-    const isUpdated = ref(false);
+    const first = ref(0);
 
+    const isUpdated = ref(false);
+    const breadcrumbs = ref([]);
     const building = computed(() => store.getters.getCurrentBuilding);
     const segment = computed(() => store.getters.getCurrentBuildingSegment);
-    const categories = computed(() => store.getters.getListCategories)
-
-    const breadcrumbs = ref([]);
+    const categories = computed(() => store.getters.getRoomCategoriesList);
 
     const updateSegment = async () => {
       await store.dispatch('fetchUpdateSegment', {
@@ -58,6 +61,13 @@ export default defineComponent({
       form.value.name_ru = segment.value.name_ru;
     });
 
+    watch(first, async () => {
+      await store.dispatch('fetchRoomCategories', {
+        segmentId: store.getters.getCurrentBuildingSegment.id,
+        params: {page: ((first.value / (categories.value?.data?.pagination?.per_page ?? 1)) + 1)}
+      });
+    });
+
     watch(form, () => isUpdated.value = false);
 
     return {form, breadcrumbs, segment, building, updateSegment, isUpdated, categories};
@@ -68,9 +78,9 @@ export default defineComponent({
 <template>
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
-      <Breadcrumb :data="breadcrumbs" separator="/" />
+      <Breadcrumb :data="breadcrumbs" separator="/"/>
       <div class="flex">
-        <ButtonSuccess v-if="isUpdated" label="Изменения сохранены" />
+        <ButtonSuccess v-if="isUpdated" label="Изменения сохранены"/>
         <Button @click="updateSegment" label="Сохранить изменения" class="btn-primary font-light ml-2"/>
       </div>
     </div>
@@ -90,10 +100,17 @@ export default defineComponent({
     <div class="grid">
       <div class="col-12">
         <BuildingCategoriesTable
-            :categories="categories"
+            :categories="categories?.data?.data ?? []"
             :builder-id="building.id"
             :segment-id="segment.id"
         />
+
+        <Paginator
+            v-model:first="first"
+            :rows="categories?.data?.pagination?.per_page ?? 0"
+            :totalRecords="categories?.data?.pagination?.total ?? 0"
+            class="justify-content-start"
+        ></Paginator>
       </div>
     </div>
   </section>

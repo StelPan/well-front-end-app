@@ -9,6 +9,10 @@ const actions = {
     async fetchCounterparties({commit}) {
         const counterparties = await CounterpartyService.loadCounterparties();
         commit('updateCounterpartiesList', counterparties);
+    },
+    async fetchCounterparty({commit}, id) {
+        const {data: counterparty} = await CounterpartyService.loadCounterparty(id);
+        commit('updateCurrentCounterparty', counterparty);
     }
 };
 

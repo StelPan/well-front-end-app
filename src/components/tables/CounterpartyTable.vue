@@ -18,7 +18,13 @@ export default defineComponent({
 <template>
 <DataTable :value="counterparties">
   <Column field="id" header="ID"></Column>
-  <Column field="name" header="ФИО"></Column>
+  <Column field="name" header="ФИО">
+    <template #body="slotProps">
+      <router-link :to="{name: 'counterparty-edit', params: {id: slotProps.data.id}}" class="color-primary">
+        {{ slotProps.data.name }}
+      </router-link>
+    </template>
+  </Column>
   <Column field="type" header="Тип">
     <template #body="slotProps">
       <template v-if="slotProps.data.type === 'ul'">

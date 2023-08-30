@@ -56,6 +56,7 @@ import ObjectView from "@/views/objects/ObjectView.vue";
 import BuildingAttractionPointsView from "@/views/buildings/BuildingAttractionPointsView.vue";
 import CreateLocationPointView from "@/views/buildings/CreateLocationPointView.vue";
 import CategorySegmentView from "@/views/buildings/CategorySegmentView.vue";
+import CounterpartyView from "@/views/counterparties/CounterpartyView.vue";
 
 console.log(...middleware('require-auth', [{}]))
 
@@ -233,6 +234,10 @@ const routes = [
                 path: 'counterparties/create',
                 name: 'counterparty-create',
                 component: CreateCounterpartyView
+            }, {
+                path: 'counterparties/:id',
+                name: 'counterparty-edit',
+                component: CounterpartyView
             }, {
                 path: 'objects',
                 name: 'objects',
