@@ -57,6 +57,11 @@ export default defineComponent({
       value: 'ch'
     }];
 
+    const filesChoose = ref([]);
+    const choose = (files) => {
+      filesChoose.value = files;
+    };
+
     const toggleUpdateProfile = async () => {
       await store.dispatch("fetchUpdateProfile", {
         id: profile.value.id,
@@ -64,7 +69,7 @@ export default defineComponent({
       });
     };
 
-    return {changeConfirmationStateModal, languages, reactiveForm, profile, toggleUpdateProfile};
+    return {changeConfirmationStateModal, languages, reactiveForm, profile, toggleUpdateProfile, choose, filesChoose};
   }
 })
 </script>
@@ -136,7 +141,8 @@ export default defineComponent({
         <MainCard title="Фото профиля">
           <div class="grid">
             <div class="col-12">
-              <ButtonFileUpload label="Добавить фото" />
+              <img v-if="filesChoose?.files" :src="filesChoose.files[0].objectURL" width="400" alt="">
+              <ButtonFileUpload @chooseFiles="choose" label="Добавить фото" />
             </div>
           </div>
         </MainCard>

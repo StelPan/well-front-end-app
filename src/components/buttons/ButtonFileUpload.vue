@@ -5,20 +5,42 @@ import FileUpload from "primevue/fileupload";
 import Button from "primevue/button";
 
 export default defineComponent({
+  components: {FileUpload, Button},
   props: {
     label: {
       type: String,
       required: true,
+    },
+    mode: {
+      type: 'String',
+      required: false,
     }
   },
-  setup() {
+  setup(props, {emit}) {
     const upload = ref();
-    return {upload};
+    const files = ref([]);
+
+    const toSelect = (files) => {
+      files.value = files;
+      emit('chooseFiles' , files.value);
+    }
+
+    return {upload, toSelect};
   }
 });
 </script>
 
 <template>
-  <FileUpload ref="upload"  />
-  <Button :label="label" @click="console.log(upload)" class="btn-primary font-light" />
+  <div class="hidden">
+    <FileUpload
+        name="demo[]"
+        url="./upload.php"
+        :multiple="true"
+        accept="image/*"
+        :maxFileSize="1000000"
+        @select="toSelect"
+        ref="upload"
+    />
+  </div>
+  <Button :label="label" @click="upload.choose()" class="btn-primary font-light" />
 </template>
