@@ -3,6 +3,8 @@ import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
 import {useRoute} from "vue-router";
 import {useStore} from "vuex";
 import {useError} from "@/hooks/useErrors";
+import {useVuelidate} from '@vuelidate/core'
+import {required, email} from '@vuelidate/validators'
 
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
@@ -19,16 +21,24 @@ export default defineComponent({
     const errors = useError();
 
     const form = reactive({name_ru: ''});
+    const rules = {name_ru: {required}};
+
+    const v$ = useVuelidate(rules, form);
 
     const breadcrumbs = ref([]);
     const isCreated = ref(false);
 
     const createPartnerCategory = async () => {
       try {
+        const result = await v$.value.$validate();
+        if (!result) {
+          return;
+        }
+
         await store.dispatch('fetchCreatePartnerCategory', form);
         isCreated.value = true;
       } catch (e) {
-        errors.setErrors(e.response.data.errors);
+        // errors.setErrors(e.response.data.errors);
       }
     };
 
@@ -39,7 +49,7 @@ export default defineComponent({
       ];
     });
 
-    return {form, breadcrumbs, createPartnerCategory, errors: errors.errors, isCreated};
+    return {form, breadcrumbs, createPartnerCategory, errors: errors.errors, isCreated, v$};
   }
 })
 </script>
@@ -50,12 +60,12 @@ export default defineComponent({
       <Breadcrumb :data="breadcrumbs" separator="/"/>
 
       <div class="flex">
-        <ButtonSuccess v-if="isCreated" label="Категория создана" />
+        <ButtonSuccess v-if="isCreated" label="Категория создана"/>
 
         <Button
             v-else
             @click="createPartnerCategory"
-            label="Сохранить изменения"
+            label="Создать категорию"
             class="btn-primary font-light ml-2"
         />
       </div>
@@ -70,6 +80,10 @@ export default defineComponent({
             <span class="p-float-label w-full">
               <InputText v-model="form.name_ru" id="last_name" class="w-full" :class="{'p-invalid': errors.name_ru}"/>
               <label for="last_name">Наименование категории *</label>
+            </span>
+
+            <span class="text-xs color-error" v-if="v$.name_ru.$errors">
+              {{ v$.name_ru.$errors[0].$message }}
             </span>
 
             <span v-if="errors.name_ru" class="text-xs color-error">

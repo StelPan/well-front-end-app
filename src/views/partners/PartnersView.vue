@@ -44,9 +44,13 @@ export default defineComponent({
       }
 
       return l;
-    })
+    });
 
-    return {items, label};
+    const toCreateCategory = async () => {
+      await router.push({name: 'partner-category-create'});
+    }
+
+    return {items, label, toCreateCategory};
   }
 });
 </script>
@@ -58,6 +62,7 @@ export default defineComponent({
 
       <Button
           v-if="label.length"
+          @click="toCreateCategory"
           :label="label"
           class="btn-primary font-light"
       />

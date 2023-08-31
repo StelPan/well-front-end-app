@@ -58,6 +58,7 @@ import CreateLocationPointView from "@/views/buildings/CreateLocationPointView.v
 import CategorySegmentView from "@/views/buildings/CategorySegmentView.vue";
 import CounterpartyView from "@/views/counterparties/CounterpartyView.vue";
 import CreateBuildingSegmentView from "@/views/buildings/CreateBuildingSegmentView";
+import CreatePartnerCategory from "@/views/partners/CreatePartnerCategory.vue";
 
 console.log(...middleware('require-auth', [{}]))
 
@@ -272,6 +273,10 @@ const routes = [
                 path: 'partners/categories/:id',
                 name: 'partner-category-view',
                 component: PartnerCategoryView
+            }, {
+                path: 'partners/categories/create',
+                name: 'partner-category-create',
+                component: CreatePartnerCategory
             }, {
                 path: 'profile',
                 name: 'profile',
