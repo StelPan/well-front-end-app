@@ -1,6 +1,9 @@
 <script>
 import {defineComponent, onMounted, computed, ref, reactive, watch} from "vue";
 import {useStore} from "vuex";
+import {useVuelidate} from '@vuelidate/core';
+import {required, email, minLength, helpers} from '@vuelidate/validators';
+import {useI18n} from "vue-i18n";
 import {useError} from "@/hooks/useErrors";
 import {useLanguages} from "@/hooks/useLanguages";
 import {useMeta} from "vue-meta";
@@ -13,13 +16,14 @@ import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import InputNumberPhone from "@/components/inputs/InputNumberPhone.vue";
 import SelectPhoneModal from "@/components/modals/SelectPhoneModal.vue";
+import ButtonSuccess from "@/components/buttons/ButtonSuccess";
 
 export default defineComponent({
   layout: {
     name: 'AdminLayout',
   },
   components: {
-    Breadcrumb, MainCard, MultiSelect, InputText, Button, Dropdown, SelectPhoneModal, InputNumberPhone
+    Breadcrumb, MainCard, MultiSelect, InputText, Button, Dropdown, SelectPhoneModal, InputNumberPhone, ButtonSuccess
   },
   async beforeRouteEnter(to, from, next) {
     try {
@@ -39,42 +43,66 @@ export default defineComponent({
 
     const store = useStore();
     const errors = useError();
+    const {t} = useI18n({useScope: true});
     const {languages} = useLanguages();
 
     const roles = computed(() => store.getters.getRolesList);
     const countries = computed(() => store.getters.getCountriesList);
     const country = computed(() => store.getters.getSelectCountry);
     const visible = ref(false);
+    const isCreated = ref(false);
 
     const breadcrumbs = ref([
       {label: 'Пользователи', router: {name: 'users'}},
       {label: 'Создание пользователя'}
     ]);
 
+    const formReactive = reactive({
+      first_name: '', last_name: '', patronymic: '',
+      email: '', phone: '', roles: [],
+      language: '',
+    });
+
+    const message = 'Поле обязательно для заполнения';
+    const emailErrorMessage = 'Неверно указан email';
+    const rules = {
+      first_name: {required: helpers.withMessage(message,required)},
+      last_name: {required: helpers.withMessage(message, required)},
+      email: {
+        required: helpers.withMessage(emailErrorMessage, required),
+        email: helpers.withMessage(emailErrorMessage, email),
+      },
+      phone: {required: helpers.withMessage(message, required)},
+      roles: {required: helpers.withMessage(message, required)},
+      language: {required: helpers.withMessage(message, required)},
+    };
+
+    const v$ = useVuelidate(rules, formReactive);
+
     const toCreateUser = async () => {
       try {
+        const result = await v$.value.$validate();
+        if (!result) {
+          return;
+        }
+
         await store.dispatch('fetchCreateUser', {
           ...formReactive,
           phone_code: country.value.phone_code
         });
+
+        isCreated.value = true;
       } catch (e) {
         errors.setErrors(e.response.data.errors);
       }
     };
 
-    const formReactive = reactive({
-      first_name: '',
-      last_name: '',
-      patronymic: '',
-      email: '',
-      phone: '',
-      roles: [],
-      language: '',
-    });
-
     watch(
         formReactive,
-        () => errors.clearErrors()
+        () => {
+          errors.clearErrors();
+          isCreated.value = false;
+        }
     );
 
     onMounted(async () => {
@@ -82,6 +110,8 @@ export default defineComponent({
     });
 
     return {
+      v$,
+      isCreated,
       breadcrumbs,
       roles,
       formReactive,
@@ -107,7 +137,13 @@ export default defineComponent({
       <Breadcrumb :data="breadcrumbs" separator="/"/>
 
       <div class="flex">
-        <Button label="Создать пользователя" class="btn-primary font-light w-12" @click="toCreateUser"/>
+        <ButtonSuccess v-if="isCreated" label="Пользователь создан" />
+        <Button
+            :disabled="v$.result"
+            label="Создать пользователя"
+            class="btn-primary font-light ml-2"
+            @click="toCreateUser"
+        />
       </div>
     </div>
   </section>
@@ -117,20 +153,35 @@ export default defineComponent({
       <div class="col-12 md:col-4 sm:col-6">
         <MainCard title="Основные регистрационные сведения" :styles="{'h-full': true }">
           <div class="flex flex-column gap-3">
-            <span class="p-float-label mb-3 w-full">
-              <InputText id="last_name" class="w-full" v-model="formReactive.last_name"/>
-              <label for="last_name">Фамилия</label>
-            </span>
+            <div class="w-full mb-3">
+              <span class="p-float-label w-full">
+                <InputText
+                    :class="{'p-invalid': v$.last_name.$errors.length}"
+                    id="last_name"
+                    class="w-full"
+                    v-model="formReactive.last_name"
+                />
+                <label for="last_name">Фамилия</label>
+              </span>
+              <span class="color-error text-xs" v-if="v$.last_name.$errors.length">
+                {{ v$.last_name.$errors[0].$message }}
+              </span>
+            </div>
 
-<!--            <p>-->
-<!--              <input id="input" type="text" required />-->
-<!--              <label for="input" alt="Before Typing" placeholder="After Typing"></label>-->
-<!--            </p>-->
-
-            <span class="p-float-label mb-3 w-full">
-              <InputText id="first_name" class="w-full" v-model="formReactive.first_name"/>
-              <label for="first_name">Имя</label>
-            </span>
+            <div class="w-full mb-3">
+              <span class="p-float-label w-full">
+                <InputText
+                    v-model="formReactive.first_name"
+                    :class="{'p-invalid': v$.first_name.$errors.length}"
+                    id="first_name"
+                    class="w-full"
+                />
+                <label for="first_name">Имя</label>
+              </span>
+              <span class="text-xs color-error" v-if="v$.first_name.$errors.length">
+                {{ v$.first_name.$errors[0].$message }}
+              </span>
+            </div>
 
             <span class="p-float-label mb-3 w-full">
               <InputText id="patronymic" class="w-full" v-model="formReactive.patronymic"/>
@@ -143,21 +194,37 @@ export default defineComponent({
         <MainCard title="Контактные данные" :styles="{'h-full': true }">
           <div class="flex flex-column gap-3">
             <div class="mb-3">
-              <InputNumberPhone
-                  v-model="formReactive.phone"
-                  :phone-code="country?.phone_code"
-                  @toggleChangePhoneCode="visible = !visible"
-              />
+              <div class="w-full">
+                <InputNumberPhone
+                    :classes="{'p-invalid': v$.phone.$errors.length}"
+                    v-model="formReactive.phone"
+                    :phone-code="country?.phone_code"
+                    @toggleChangePhoneCode="visible = !visible"
+                />
+                <span class="color-error text-xs" v-if="v$.phone.$errors.length">
+                {{ v$.phone.$errors[0].$message }}
+                </span>
+              </div>
               <span class="color-red" v-if="errors?.phone_code">
                 <template v-for="(error, i) in errors.phone" :key="i">
                   {{ error }} <br>
                 </template>
               </span>
             </div>
-            <span class="p-float-label mb-3 w-full">
-              <InputText id="phone" class="w-full" v-model="formReactive.email"/>
-              <label for="phone">E-mail (для уведомлений) *</label>
-            </span>
+            <div class="w-full mb-3">
+              <span class="p-float-label w-full">
+                <InputText
+                    v-model="formReactive.email"
+                    :class="{'p-invalid': v$.email.$errors.length}"
+                    id="phone"
+                    class="w-full"
+                />
+                <label for="phone">E-mail (для уведомлений) *</label>
+              </span>
+              <span class="text-xs color-error" v-if="v$.email.$errors.length">
+                {{ v$.email.$errors[0].$message }}
+              </span>
+            </div>
           </div>
         </MainCard>
       </div>
@@ -167,23 +234,31 @@ export default defineComponent({
             <MainCard title="Роль" :styles="{'h-full': true}">
               <MultiSelect
                   v-model="formReactive.roles"
+                  :class="{'p-invalid': v$.roles.$errors.length}"
                   display="chip"
                   :options="roles"
                   optionLabel="name_ru"
                   option-value="id"
                   placeholder="Роли"
                   class="w-full"/>
+              <span class="color-error text-xs" v-if="v$.roles.$errors.length">
+                {{ v$.roles.$errors[0].$message }}
+              </span>
             </MainCard>
           </div>
           <div class="col-12 h-full">
             <MainCard title="Язык" :styles="{'h-full': true}">
               <Dropdown
                   v-model="formReactive.language"
+                  :class="{'p-invalid': v$.language.$errors.length}"
                   :options="languages"
                   optionLabel="label"
                   option-value="value"
                   placeholder="Язык"
                   class="w-full"/>
+              <span class="color-error text-xs" v-if="v$.language.$errors.length">
+                {{ v$.language.$errors[0].$message }}
+              </span>
             </MainCard>
           </div>
         </div>

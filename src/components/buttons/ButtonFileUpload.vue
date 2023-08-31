@@ -34,10 +34,8 @@ export default defineComponent({
   <div class="hidden">
     <FileUpload
         name="demo[]"
-        url="./upload.php"
         :multiple="true"
         accept="image/*"
-        :maxFileSize="1000000"
         @select="toSelect"
         ref="upload"
     />

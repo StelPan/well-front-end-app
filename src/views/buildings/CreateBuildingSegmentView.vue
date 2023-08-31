@@ -2,6 +2,8 @@
 import {computed, defineComponent, reactive, watch, ref, onMounted} from "vue";
 import {useStore} from "vuex";
 import {useError} from "@/hooks/useErrors";
+import { useVuelidate } from '@vuelidate/core';
+import { required, helpers } from '@vuelidate/validators';
 
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
@@ -35,9 +37,23 @@ export default defineComponent({
       name_ru: '',
     });
 
+    const rules = {
+      name_ru: {required: helpers.withMessage('Обязательно для заполнения', required)}
+    };
+
+    const v$ = useVuelidate(rules, form);
+
     const createSegment = async () => {
       try {
-        await store.dispatch('fetchCreateSegment', form);
+        const result = await v$.value.$validate();
+        if (!result) {
+          return;
+        }
+
+        await store.dispatch(
+            'fetchCreateSegment',
+            form
+        );
         isCreated.value = true;
       } catch (e) {
         errors.setErrors(e.response.data.errors);
@@ -54,7 +70,7 @@ export default defineComponent({
       ];
     })
 
-    return {form, breadcrumbs, isCreated, createSegment};
+    return {form, breadcrumbs, isCreated, createSegment, v$};
   }
 });
 </script>
@@ -75,10 +91,14 @@ export default defineComponent({
       <div class="col-12 md:col-4">
         <MainCard title="Название сегмента">
           <InputText
-              v-model="form.name_ru"
+              :class="{'p-invalid': v$.name_ru.$errors.length }"
               placeholder="Название сегмента"
+              v-model="form.name_ru"
               class="w-full"
           />
+          <span class="text-xs color-error" v-if="v$.name_ru.$errors.length">
+            {{ v$.name_ru.$errors[0].$message }}
+          </span>
         </MainCard>
       </div>
     </div>
