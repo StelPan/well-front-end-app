@@ -1,5 +1,5 @@
 <script>
-import {defineComponent} from "vue";
+import {defineComponent, ref} from "vue";
 
 import InputText from "primevue/inputtext";
 import Checkbox from "primevue/checkbox";
@@ -10,10 +10,24 @@ import MainCard from "@/components/cards/MainCard.vue";
 export default defineComponent({
   components: {InputText, Checkbox, Editor, FileUpload, MainCard},
   props: {
+    formData: {
+      type: Object,
+      required: true,
+    },
     inclusions: {
       type: Array,
       required: true,
-    }
+    },
+  },
+  setup(props) {
+    const form = ref(props.formData);
+
+    const touchInclusionEvent = ({id}) => {
+      // const inclusion = form.value.inclusions.find(inclusion => inclusion.id === id);
+      // inclusion.include = !inclusion.include;
+    };
+
+    return {form, touchInclusionEvent};
   }
 });
 </script>
@@ -27,6 +41,7 @@ export default defineComponent({
             <InputText
                 id="name"
                 class="w-full"
+                v-model="form.name_ru"
             />
             <label for="name">Название *</label>
           </span>
@@ -40,20 +55,25 @@ export default defineComponent({
                 <InputText
                     id="area"
                     class="w-full mb-2"
+                    v-model="form.area"
+                    :disabled="formData.area_missing"
                 />
                 <label for="area">Площадь, м *</label>
               </span>
 
               <Checkbox
-                  binary
+                  :binary="true"
+                  v-model="form.area_missing"
               />
               <label class="ml-2">Площадь отсутствует</label>
             </div>
             <div class="col-12 md:col-6">
               <span class="p-float-label w-full">
                 <InputText
+                    v-model="form.capacity"
                     id="area"
                     class="w-full mb-2"
+                    :disabled="form.capacity_missing"
                 />
                 <label for="area">Вместимость, чел.</label>
               </span>
@@ -61,13 +81,15 @@ export default defineComponent({
               <div class="flex justify-content-between">
                 <div>
                   <Checkbox
-                      binary
+                      v-model="form.capacity_missing"
+                      :binary="true"
                   />
                   <label class="ml-2">Вместимость отсутствует</label>
                 </div>
                 <div>
                   <Checkbox
-                      binary
+                      v-model="form.has_guests"
+                      :binary="true"
                   />
                   <label class="ml-2">Учет гостей</label>
                 </div>
@@ -100,11 +122,12 @@ export default defineComponent({
 
   <section class="py-2 mb-3">
     <div class="grid border-round-xl">
-      <div class="col-12 md:col-4 p-0" v-for="(inclusion, i) in inclusions" :key="i">
+      <div class="col-12 md:col-4 p-0" v-for="(inclusion, i) in formData.inclusions" :key="i">
         <div class="bg-white m-1 p-2">
           <Checkbox
-              :binnary="true"
+              v-model="inclusion.include"
               :name="`inclusion_${i}`"
+              :binary="true"
           />
           <label class="ml-3 font-bold" :for="`inclusion_${i}`">
             {{ inclusion.name_ru }}
@@ -116,7 +139,7 @@ export default defineComponent({
 
   <section class="py-2 mb-3">
     <MainCard title="Описание категории">
-      <Editor></Editor>
+      <Editor v-model="formData.description_ru"></Editor>
     </MainCard>
   </section>
 

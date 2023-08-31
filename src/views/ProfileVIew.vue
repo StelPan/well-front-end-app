@@ -2,7 +2,6 @@
 import {computed, defineComponent, onMounted, ref, reactive, watch} from "vue";
 import {useStore} from "vuex";
 import {useMeta} from "vue-meta";
-import {onBeforeRouteUpdate} from "vue-router";
 
 import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
 
@@ -11,10 +10,11 @@ import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import MainCard from "@/components/cards/MainCard";
 import FileUpload from "@/components/FileUpload.vue";
+import ButtonFileUpload from "@/components/buttons/ButtonFileUpload.vue";
 
 export default defineComponent({
   layout: { name: 'AdminLayout' },
-  components: {MainCard, Button, InputText, Dropdown, FileUpload},
+  components: {MainCard, Button, InputText, Dropdown, FileUpload, ButtonFileUpload},
   async beforeRouteEnter(to, from, next) {
     const store = useStore();
     await store.dispatch('fetchProfile');
@@ -136,7 +136,7 @@ export default defineComponent({
         <MainCard title="Фото профиля">
           <div class="grid">
             <div class="col-12">
-              <FileUpload label="Добавить аватар" />
+              <ButtonFileUpload label="Добавить фото" />
             </div>
           </div>
         </MainCard>

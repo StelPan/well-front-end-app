@@ -25,4 +25,27 @@ const loadRoomCategoryTariffs = async (segmentId, roomCategoryId) => {
     return response.data;
 };
 
-export default {loadRoomCategory, loadRoomCategoryTariffs, loadRoomCategories};
+const loadRoomCategoryServices = async (segmentId, roomCategoryId) => {
+    const response = await http.get(
+        '/api/company/v1/segment/' + segmentId + '/room-category/' + roomCategoryId + '/tariff'
+    );
+
+    return response.data;
+};
+
+const touchRoomCategoryTariff = async (segmentId, roomCategoryId, body = {}) => {
+    const response = await http.post(
+        '/api/company/v1/segment/' + segmentId + '/room-category/' + roomCategoryId + '/tariff',
+        body
+    );
+
+    return response.data;
+};
+
+export default {
+    loadRoomCategory,
+    loadRoomCategoryTariffs,
+    loadRoomCategories,
+    loadRoomCategoryServices,
+    touchRoomCategoryTariff
+};

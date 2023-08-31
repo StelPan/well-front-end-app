@@ -3,7 +3,10 @@ import {
     loadBuilding,
     createBuilding,
     destroyBuilding,
-    createBuildingLocationPoint
+    createBuildingLocationPoint,
+    updateBuildingLocationPoint,
+    updateBuilding,
+    changePointTypeLocationPoint,
 } from "@/services/buildings";
 
 const state = () => ({
@@ -23,12 +26,21 @@ const actions = {
         const {data: building} = await loadBuilding(id);
         commit('updateCurrentBuilding', building);
     },
+    async fetchUpdateBuilding({commit}, {id, body}) {
+        await updateBuilding(id, body)
+    },
     async fetchDestroyBuilding({commit}, id) {
         await destroyBuilding(id);
     },
     async fetchCreateBuildingLocationPoint({commit}, {id, body = {}}) {
         await createBuildingLocationPoint(id, body);
-    }
+    },
+    async fetchUpdateBuildingLocationPoint({commit}, {buildingId, pointId, body = {}}){
+        await updateBuildingLocationPoint(buildingId, pointId, body);
+    },
+    async fetchChangePointTypeLocationPoint({commit}, {buildingId, pointId, body}) {
+        await changePointTypeLocationPoint(buildingId, pointId, body);
+    },
 };
 
 const mutations = {

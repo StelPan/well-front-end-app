@@ -1,5 +1,5 @@
 <script>
-import {defineComponent} from "vue";
+import {defineComponent, ref} from "vue";
 
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
@@ -16,18 +16,31 @@ export default defineComponent({
       type: Array,
       required: true,
     }
+  },
+  setup(props, {emit}) {
+    const points = ref(props.locations);
+    const types = ref([...props.locationTypes]);
+
+    const change = ({id, point_type_id}) => {
+      emit('toggleChangePointType', {id, point_type_id});
+    };
+
+    return {change, points, types};
   }
 });
 </script>
 
 <template>
-  <DataTable :value="locations" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
+  <DataTable :value="points" showGridlines selectionMode="single">
     <Column field="name_ru" header="Название точки"></Column>
     <Column field="address_ru" header="Адрес"></Column>
     <Column field="type" header="Тип точки">
       <template #body="slotProps">
         <Dropdown
-            :options="locationTypes"
+            @change="change(slotProps.data)"
+            v-model="slotProps.data.point_type_id"
+            :options="types"
+            optionValue="id"
             optionLabel="name_ru"
             placeholder="Тип точки"
             class="w-full"

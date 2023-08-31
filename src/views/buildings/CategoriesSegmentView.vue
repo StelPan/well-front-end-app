@@ -49,6 +49,8 @@ export default defineComponent({
         id: route.params.segment,
         body: form.value,
       });
+
+      isUpdated.value = true;
     };
 
     onMounted(() => {

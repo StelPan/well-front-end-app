@@ -21,6 +21,17 @@ export default defineComponent({
   components: {
     Breadcrumb, MainCard, MultiSelect, InputText, Button, Dropdown, SelectPhoneModal, InputNumberPhone
   },
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const store = useStore();
+      await store.dispatch('fetchRoles');
+      await store.dispatch('fetchCountries');
+      store.commit('selectCountryByCountryName', "Russia")
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
     useMeta({
       title: 'Создание пользователя'
@@ -30,21 +41,15 @@ export default defineComponent({
     const errors = useError();
     const {languages} = useLanguages();
 
-    onMounted(async () => {
-      await store.dispatch('fetchRoles');
-    });
-
     const roles = computed(() => store.getters.getRolesList);
     const countries = computed(() => store.getters.getCountriesList);
     const country = computed(() => store.getters.getSelectCountry);
     const visible = ref(false);
 
-    const breadcrumbs = ref([{
-      label: 'Пользователи',
-      router: {name: 'users'}
-    }, {
-      label: 'Создание пользователя',
-    }]);
+    const breadcrumbs = ref([
+      {label: 'Пользователи', router: {name: 'users'}},
+      {label: 'Создание пользователя'}
+    ]);
 
     const toCreateUser = async () => {
       try {
@@ -55,7 +60,7 @@ export default defineComponent({
       } catch (e) {
         errors.setErrors(e.response.data.errors);
       }
-    }
+    };
 
     const formReactive = reactive({
       first_name: '',
@@ -117,6 +122,11 @@ export default defineComponent({
               <label for="last_name">Фамилия</label>
             </span>
 
+<!--            <p>-->
+<!--              <input id="input" type="text" required />-->
+<!--              <label for="input" alt="Before Typing" placeholder="After Typing"></label>-->
+<!--            </p>-->
+
             <span class="p-float-label mb-3 w-full">
               <InputText id="first_name" class="w-full" v-model="formReactive.first_name"/>
               <label for="first_name">Имя</label>
@@ -133,11 +143,11 @@ export default defineComponent({
         <MainCard title="Контактные данные" :styles="{'h-full': true }">
           <div class="flex flex-column gap-3">
             <div class="mb-3">
-               <InputNumberPhone
-                   v-model="formReactive.phone"
-                   :phone-code="country?.phone_code"
-                   @toggleChangePhoneCode="visible = !visible"
-               />
+              <InputNumberPhone
+                  v-model="formReactive.phone"
+                  :phone-code="country?.phone_code"
+                  @toggleChangePhoneCode="visible = !visible"
+              />
               <span class="color-red" v-if="errors?.phone_code">
                 <template v-for="(error, i) in errors.phone" :key="i">
                   {{ error }} <br>

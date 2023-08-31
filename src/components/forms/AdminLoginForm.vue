@@ -31,7 +31,7 @@ export default defineComponent({
       phone: { integer }
     };
 
-    const v$ = useVuelidate(rules, formLogin)
+    const v$ = useVuelidate(rules, formLogin);
 
     const toggleSelectPhone = () => {
       emit('toggleSelectPhone', true);

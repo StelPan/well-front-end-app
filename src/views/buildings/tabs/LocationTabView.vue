@@ -7,6 +7,7 @@ import Button from "primevue/button";
 import MainCard from "@/components/cards/MainCard";
 import FileUpload from "@/components/FileUpload";
 import BuilderLocationsTable from "@/components/tables/BuilderLocationsTable.vue";
+import {useStore} from "vuex";
 
 export default defineComponent({
   components: {Editor, MainCard, FileUpload, Button, BuilderLocationsTable},
@@ -33,14 +34,11 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
 
-    //
-    form.value.locations = [{
-      name: 'cnasdsad',
-      address: 'Кемерово 1',
-      type: {id: 1, label: 'Метро'},
-      lat: '55.656',
-      lon: '54.456'
-    }];
+    const points = ref(form.value.location_points);
+
+    const changePointEvent = (data) => {
+      emit('toggleChangePointLocationType', data);
+    }
 
     const toPointsEdit = async () => {
       try {
@@ -56,7 +54,7 @@ export default defineComponent({
 
     watch(form, () => emit('changeFormData', form));
 
-    return {form, toPointsEdit, toPointCreate};
+    return {form, toPointsEdit, toPointCreate, changePointEvent};
   }
 });
 </script>
@@ -90,7 +88,11 @@ export default defineComponent({
       </div>
     </section>
     <section class="py-2 mb-3">
-      <BuilderLocationsTable :location-types="locationTypes" :locations="locationPoints"/>
+      <BuilderLocationsTable
+          @toggleChangePointType="changePointEvent"
+          :location-types="locationTypes"
+          :locations="locationPoints"
+      />
     </section>
   </template>
 </template>

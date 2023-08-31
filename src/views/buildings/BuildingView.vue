@@ -1,7 +1,6 @@
-<script>var form;
-var form;
+<script>
 
-import {computed, defineComponent, onMounted, ref} from "vue";
+import {computed, defineComponent, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {useRoute, useRouter} from "vue-router";
 import {useMeta} from "vue-meta";
@@ -19,13 +18,14 @@ import LocationTabView from "@/views/buildings/tabs/LocationTabView.vue";
 import AttractionTabView from "@/views/buildings/tabs/AttractionTabView.vue";
 import DescriptionTabView from "@/views/buildings/tabs/DescriptionTabView.vue";
 import ConfirmationModal from "@/components/modals/ConfirmationModal";
+import ButtonSuccess from "@/components/buttons/ButtonSuccess.vue";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {
     SegmentsTabView, ImprovementTabView, InfrastructureTabView, DescriptionTabView,
     LocationTabView, AttractionTabView, Breadcrumb, TabMenu, Button,
-    Paginator, ConfirmationModal
+    Paginator, ConfirmationModal, ButtonSuccess,
   },
   async beforeRouteEnter(to, from, next) {
     try {
@@ -73,6 +73,7 @@ export default defineComponent({
     const activeTabIndex = ref(0);
     const first = ref(0);
     const visible = ref(false);
+    const isUpdated = ref(false);
 
     const activeTabComponent = computed(() => tabs.value[activeTabIndex.value]);
     const segments = computed(() => store.getters.getListBuildingSegments);
@@ -97,6 +98,35 @@ export default defineComponent({
       await router.push({name: 'building-segment-create', params: {id: building.value.id}});
     };
 
+    const updateBuildingLocationPoint = async ({id, point_type_id}) => {
+      await store.dispatch('fetchChangePointTypeLocationPoint', {
+        buildingId: building.value.id,
+        pointId: id,
+        body: {point_type_id},
+      });
+    };
+
+    const updateBuilding = async () => {
+      try {
+        await store.dispatch('fetchUpdateBuilding', {
+          id: building.value.id,
+          body: {
+            ...form.value,
+            name: form.value.name_ru,
+            description: form.value.description_ru,
+            address: form.value.address_ru
+          },
+        });
+
+        isUpdated.value = true;
+      } catch (e) {
+        errors.setErrors(e.response.data.errors);
+        console.error(e);
+      }
+    };
+
+    watch(form, () => isUpdated.value = false);
+
     onMounted(async () => {
       try {
         breadcrumbs.value = [
@@ -113,6 +143,7 @@ export default defineComponent({
     return {
       tabs,
       visible,
+      isUpdated,
       activeTabIndex,
       breadcrumbs,
       activeTabComponent,
@@ -124,6 +155,8 @@ export default defineComponent({
       destroyBuilding,
       changeFormData,
       toCreateSegment,
+      updateBuildingLocationPoint,
+      updateBuilding,
       errors: errors.errors
     };
   }
@@ -154,8 +187,9 @@ export default defineComponent({
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/" />
       <div class="flex">
-        <Button @click="toCreateSegment" label="Создать сегмент" class="btn-black-20-outlined font-light"/>
-        <Button label="Сохранить изменение" class="btn-primary font-light ml-2" />
+        <Button @click="toCreateSegment" label="Создать сегмент" class="btn-black-20-outlined font-light mr-2"/>
+        <ButtonSuccess v-if="isUpdated" label="Изменения сохранены" />
+        <Button v-if="!isUpdated" @click="updateBuilding" label="Сохранить изменение" class="btn-primary font-light" />
       </div>
     </div>
   </section>
@@ -191,6 +225,7 @@ export default defineComponent({
 
   <template v-else-if="activeTabComponent.component === 'LocationTabView'">
     <LocationTabView
+        @toggleChangePointLocationType="updateBuildingLocationPoint"
         :errors="errors"
         :form-data="form"
         :location-types="locationTypes"

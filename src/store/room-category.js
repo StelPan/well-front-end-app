@@ -3,6 +3,7 @@ import RoomCategoryService from "@/services/room-category";
 const state = () => ({
     currentRoomCategory: [],
     roomCategoryTariffsList: [],
+    roomCategoryServicesList: [],
     roomRoomCategoriesList: [],
 });
 
@@ -15,9 +16,16 @@ const actions = {
         const {data: tariffs} = await RoomCategoryService.loadRoomCategoryTariffs(segmentId, roomCategoryId);
         commit('updateRoomCategoryTariffsList', tariffs);
     },
+    async fetchRoomCategoryServices({commit}, {segmentId, roomCategoryId}) {
+        const {data: services} = await RoomCategoryService.loadRoomCategoryServices(segmentId, roomCategoryId);
+        commit('updateRoomCategoryServicesList', services);
+    },
     async fetchRoomCategories({commit}, {segmentId, params}) {
         const categories = await RoomCategoryService.loadRoomCategories(segmentId, params);
         commit('updateRoomCategoriesList', categories);
+    },
+    async fetchTouchRoomCategoryTariff({commit}, {segmentId, roomCategoryId, body}){
+        await RoomCategoryService.touchRoomCategoryTariff(segmentId, roomCategoryId, body);
     }
 };
 
@@ -30,6 +38,9 @@ const mutations = {
     },
     updateRoomCategoriesList(state, categories) {
         state.roomRoomCategoriesList = categories;
+    },
+    updateRoomCategoryServicesList(state, services) {
+        state.roomCategoryServicesList = services;
     }
 };
 
@@ -42,6 +53,9 @@ const getters = {
     },
     getRoomCategoriesList(state) {
         return state.roomRoomCategoriesList;
+    },
+    getRoomCategoryServicesList(state) {
+        return state.roomCategoryServicesList;
     }
 };
 
