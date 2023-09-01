@@ -108,7 +108,7 @@ export default defineComponent({
                     <label for="short_name">Краткое наименование *</label>
                   </span>
                   <span v-if="v$.data.short_name.$errors.length" class="text-xs color-error">
-                    {{ v$.data.short_name.$errors[0].message }}
+                    {{ v$.data.short_name.$errors[0].$message }}
                 </span>
                 </div>
 

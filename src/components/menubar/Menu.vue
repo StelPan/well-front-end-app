@@ -9,12 +9,14 @@ import Button from "primevue/button";
 import Avatar from "primevue/avatar";
 import Menu from "primevue/menu";
 import TieredMenu from "primevue/tieredmenu"
+import {useProfile} from "@/hooks/profile";
 
 export default defineComponent({
   components: {Menubar, InputText, Button, Avatar, Menu, TieredMenu},
   setup() {
     const store = useStore();
     const router = useRouter();
+    const {profile} = useProfile();
 
     const changeToggleState = () => {
       store.dispatch('changeToggle');
@@ -48,6 +50,7 @@ export default defineComponent({
       menu,
       items,
       toggle,
+      profile,
       redirect,
       changeToggleState,
       visibleConfirmationModal,
@@ -75,7 +78,8 @@ export default defineComponent({
         />
 
         <Avatar
-            image="https://primefaces.org/cdn/primevue/images/organization/walter.jpg" class="mr-2 ml-2"
+            image="https://primefaces.org/cdn/primevue/images/organization/walter.jpg"
+            class="mr-2 ml-2"
             shape="circle"
             aria-haspopup="true"
             aria-controls="overlay_menu"

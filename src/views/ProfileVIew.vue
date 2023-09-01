@@ -4,7 +4,8 @@ import {useStore} from "vuex";
 import {useMeta} from "vue-meta";
 import {useVuelidate} from '@vuelidate/core';
 import {required, email, minLength, helpers} from '@vuelidate/validators';
-import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
+import {useProfile} from "@/hooks/profile";
+import {useLanguages} from "@/hooks/useLanguages";
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -15,12 +16,13 @@ import FileUpload from "@/components/FileUpload.vue";
 import ButtonFileUpload from "@/components/buttons/ButtonFileUpload.vue";
 import ButtonSuccess from "@/components/buttons/ButtonSuccess";
 
+
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {MainCard, Button, InputText, Dropdown, FileUpload, ButtonFileUpload, Avatar, ButtonSuccess},
   async beforeRouteEnter(to, from, next) {
-    const store = useStore();
-    await store.dispatch('fetchProfile');
+    const {loadProfile} = useProfile();
+    await loadProfile();
     next();
   },
   setup(globalConfig) {
@@ -28,7 +30,19 @@ export default defineComponent({
       title: 'Профиль'
     });
 
-    const store = useStore();
+    const {
+      clearAvatarFile,
+      deleteAvatar,
+      choose,
+      updateProfile,
+      profile,
+      filesChoose,
+      form: reactiveForm,
+      isUpdated,
+      v$,
+    } = useProfile();
+
+    const {languages} = useLanguages();
 
     const changeConfirmationStateModal = () => {
       store.dispatch('changeStateModal', {
@@ -37,99 +51,19 @@ export default defineComponent({
       })
     };
 
-    const profile = computed(() => store.getters.getProfile);
-
-    const reactiveForm = ref(profile.value);
-    const isUpdate = ref(false);
-
-    const message = 'Поле обязательно для заполнения';
-    const emailErrorMessage = 'Некорректный email';
-    const rules = {
-      first_name: {required: helpers.withMessage(message, required)},
-      last_name: {required: helpers.withMessage(message, required)},
-      email: {
-        required: helpers.withMessage(emailErrorMessage, required),
-        email: helpers.withMessage(emailErrorMessage, email),
-      },
-      phone: {required: helpers.withMessage(message, required)},
-      roles: {required: helpers.withMessage(message, required)},
-      language: {required: helpers.withMessage(message, required)},
-    }
-
-    const v$ = useVuelidate(rules, reactiveForm);
-
-    const languages = [{
-      label: 'Русский',
-      value: 'ru'
-    }, {
-      label: 'Английский',
-      value: 'en'
-    }, {
-      label: 'Китайский',
-      value: 'ch'
-    }];
-
-    const filesChoose = ref(false);
-    const choose = (files) => {
-      filesChoose.value = files;
-    };
-
-    const toggleUpdateProfile = async () => {
-      try {
-        const result = await v$.value.$validate();
-        if (!result) {
-          return false;
-        }
-
-        const formData = new FormData();
-
-        for (let key in reactiveForm) {
-          formData.set(key, reactiveForm[key]);
-        }
-
-        if (filesChoose.value?.files) {
-          formData.set('avatar', filesChoose.value.files[0]);
-        }
-
-        await store.dispatch("fetchUpdateProfile", {
-          id: profile.value.id,
-          body: formData,
-        });
-
-        isUpdate.value = true;
-      } catch (e) {
-        console.error(e);
-      }
-    };
-
-    watch(reactiveForm, () => isUpdate.value = false);
-
-    const destroyAvatar = async () => {
-      if (filesChoose.value?.files) {
-        filesChoose.value = false;
-      } else {
-        // TODO: Destroy avatar
-      }
-    };
-
-    const changeAvatar = async (files) => {
-      if (files?.files) {
-        filesChoose.value = false;
-      }
-
-      // TODO: loadFiles
-    };
 
     return {
       v$,
       changeConfirmationStateModal,
-      toggleUpdateProfile,
+      clearAvatarFile,
+      updateProfile,
+      deleteAvatar,
       choose,
       reactiveForm,
       filesChoose,
       languages,
       profile,
-      isUpdate,
+      isUpdated,
     };
   }
 })
@@ -142,12 +76,12 @@ export default defineComponent({
       <div class="flex">
         <Button label="Выйти" @click="changeConfirmationStateModal" class="btn-error-outlined font-light mr-3"/>
         <Button
-            v-if="!isUpdate"
+            v-if="!isUpdated"
             label="Сохранить изменения"
-            @click="toggleUpdateProfile"
+            @click="updateProfile"
             class="btn-primary font-light"
         />
-        <ButtonSuccess v-if="isUpdate" label="Изменения сохранены" />
+        <ButtonSuccess v-if="isUpdated" label="Изменения сохранены"/>
       </div>
     </div>
   </section>
@@ -249,10 +183,35 @@ export default defineComponent({
                 </div>
 
                 <div class="flex justify-content-between w-full ml-2">
-                  <Button label="Изменить" class="btn-primary w-full font-light"/>
-                  <Button label="Удалить" class="btn-primary-outlined w-full ml-2"/>
+                  <ButtonFileUpload
+                      @chooseFiles="choose"
+                      label="Изменить"
+                      :classes="{'w-full': true}"
+                  />
+
+                  <Button @click="clearAvatarFile" label="Удалить" class="btn-primary-outlined w-full ml-2"/>
                 </div>
               </div>
+
+              <div v-else-if="profile.avatar" class="flex">
+                <div class="w-2">
+                  <Avatar
+                      :image="profile.avatar.original_url"
+                      shape="circle"
+                      size="large"
+                  />
+                </div>
+
+                <div class="flex justify-content-between w-full ml-2">
+                  <ButtonFileUpload
+                      @chooseFiles="choose"
+                      label="Изменить"
+                      :classes="{'w-full': true}"
+                  />
+                  <Button @click="deleteAvatar" label="Удалить" class="btn-primary-outlined w-full ml-2"/>
+                </div>
+              </div>
+
               <ButtonFileUpload v-else @chooseFiles="choose" label="Добавить фото"/>
             </div>
           </div>

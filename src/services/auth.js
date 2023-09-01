@@ -30,9 +30,16 @@ const fetchProfile = async () => {
     return response.data;
 };
 
-const fetchUpdateProfile = async (id, body) => {
-    const response = await http.post('/api/company/v1/user/' + id, body);
+const fetchDeleteAvatar = async (id) => {
+    const response = await http.get('/api/company/v1/user/' + id + '/avatar/delete');
     return response.data;
 }
 
-export default { fetchProfile, fetchAuthorization, fetchLogout, fetchRefreshToken, fetchVerifyCode, fetchUpdateProfile}
+export default {
+    fetchProfile,
+    fetchAuthorization,
+    fetchLogout,
+    fetchRefreshToken,
+    fetchVerifyCode,
+    fetchDeleteAvatar
+}

@@ -26,6 +26,10 @@ export default defineComponent({
     clearFilesAfterSelect: {
       type: Boolean,
       required: false,
+    },
+    classes: {
+      type: Object,
+      required: false
     }
   },
   setup(props, {emit}) {
@@ -58,5 +62,5 @@ export default defineComponent({
         ref="upload"
     />
   </div>
-  <Button :label="label" @click="upload.choose()" class="btn-primary font-light" />
+  <Button :label="label" @click="upload.choose()" :class="classes ? classes : {}" class="btn-primary font-light" />
 </template>

@@ -25,8 +25,8 @@ const actions = {
         const { data } = await AuthService.fetchProfile();
         commit('updateProfile', data);
     },
-    async fetchUpdateProfile({commit}, {id, body}) {
-        await AuthService.fetchUpdateProfile(id, body);
+    async fetchDeleteAvatar({commit}, id) {
+        await AuthService.fetchDeleteAvatar(id);
     },
     async fetchUpdateAuth({commit}, auth) {
         commit('updateAuth', !!auth);

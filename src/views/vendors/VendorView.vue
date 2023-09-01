@@ -87,7 +87,8 @@ export default defineComponent({
 
     const updateVendor = async () => {
       try {
-        const result = v$.value.$validate();
+        const result = await v$.value.$validate();
+        console.log(result);
         if (!result) {
           return;
         }
