@@ -54,27 +54,27 @@ export default defineComponent({
 <template>
   <div class="w-full">
     <div class="flex flex-column">
-      <div>
+      <div class="px-4 mb-2">
         <span class="p-input-icon-left w-full">
         <i class="pi pi-search"/>
         <InputText v-model="writeCountry" class="w-full" placeholder="Поиск"/>
       </span>
       </div>
 
-      <div class="h-max overflow-x-hidden">
+      <div>
         <DataView :value="countries">
           <template #list="slotProps">
-            <div class="col-12 cursor-pointer" @click="toSelectedCountry(slotProps.data.id)">
-              <div class="hover:bg-neutral flex justify-content-start xl:flex-row xl:align-items-start p-4 gap-4">
+            <div class="col-12 hover:bg-neutral cursor-pointer px-4" @click="toSelectedCountry(slotProps.data.id)">
+              <div class="flex justify-content-start xl:flex-row xl:align-items-start py-3 gap-4">
                 <div class="w-9 sm:w-4rem xl:w-2rem border-round flex align-items-center">
                   <img style="width: 25px" :src="CountryFlagsImage(slotProps.data.name)" alt="">
                 </div>
-                <div class="w-9 sm:w-4rem xl:w-5rem border-round flex justify-content-start align-items-center">
-                  {{ slotProps.data.phone_code }}
+                <div class="w-9 sm:w-4rem xl:w-3rem border-round flex justify-content-start align-items-center">
+                  <span class="font-bold">{{ slotProps.data.phone_code }}</span>
                 </div>
 
                 <div class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
-                  <span>{{ slotProps.data.name }}</span>
+                  <span class="font-bold">{{ slotProps.data.name }}</span>
                 </div>
               </div>
             </div>
@@ -85,9 +85,10 @@ export default defineComponent({
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .p-inputtext {
   border-width: 2px ;
   border-radius: 17px !important;
 }
+
 </style>

@@ -36,7 +36,7 @@ export default defineComponent({
       modal
       :close-on-escape="true"
       :closable="false"
-      :style="{ 'max-width': '400px', 'border-radius': '20px' }"
+      :style="{ 'max-width': '400px', 'border-radius': '25px' }"
   >
     <template #default>
       <div class="flex justify-content-center py-2">

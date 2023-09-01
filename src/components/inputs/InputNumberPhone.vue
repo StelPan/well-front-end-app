@@ -61,11 +61,11 @@ export default defineComponent({
             class="w-full color-black-80"
             :class="classes"
             style="font-family: 'RF Dewi', sans-serif;"
-            :style="`padding-left:${2.5   + (phoneCode.length) / 2}em !important`"
+            :style="`padding-left:${2.5   + (phoneCode.length) / 1.85}rem !important`"
             v-model="phone"
         />
         <label
-            :style="`padding-left:${1.5   + (phoneCode.length) / 2}em !important`"
+            :style="`padding-left:${1.5   + (phoneCode.length) / 2}rem !important`"
             class="left-number-label"
             for="phone"
         >Контактный телефон</label>
