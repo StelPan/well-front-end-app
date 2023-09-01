@@ -26,7 +26,7 @@ const uploadVendorRequests = async (id, body) => {
 };
 
 const destroyVendorRequests = async (id) => {
-    const response = await http.post('api/company/v1/vendor/' + id + '/payment/delete', body);
+    const response = await http.post('api/company/v1/vendor/' + id + '/payment/delete');
     return response.data;
 };
 

@@ -1,5 +1,11 @@
 export default {
     "errors": {
-        "email": "Некорректный email"
+        "email": "Некорректный email",
+
+        "vendor": {
+            "ogrn": "",
+            "inn": "",
+            "ogrn_date": ""
+        }
     }
 };

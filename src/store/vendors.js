@@ -21,7 +21,7 @@ const actions = {
         await VendorService.createVendor(body);
     },
     async fetchUploadVendorPayment({commit}, {id, body}) {
-        await VendorService.updateVendor(id, body);
+        await VendorService.uploadVendorRequests(id, body);
     },
     async fetchDestroyVendorPayment({commit}, id) {
         await VendorService.destroyVendorRequests(id);

@@ -12,7 +12,19 @@ export default defineComponent({
       required: true,
     },
     mode: {
-      type: 'String',
+      type: String,
+      required: false,
+    },
+    accept: {
+      type: String,
+      required: false,
+    },
+    multiple: {
+      type: Boolean,
+      required: false,
+    },
+    clearFilesAfterSelect: {
+      type: Boolean,
       required: false,
     }
   },
@@ -22,6 +34,11 @@ export default defineComponent({
 
     const toSelect = (files) => {
       files.value = files;
+
+      if (props.clearFilesAfterSelect === true) {
+        upload.value.clear();
+      }
+
       emit('chooseFiles' , files.value);
     }
 
@@ -33,9 +50,10 @@ export default defineComponent({
 <template>
   <div class="hidden">
     <FileUpload
+        :mode="mode ? mode : 'advanced'"
+        :accept="accept ? accept : 'image/*'"
+        :multiple="multiple ?? true"
         name="demo[]"
-        :multiple="true"
-        accept="image/*"
         @select="toSelect"
         ref="upload"
     />

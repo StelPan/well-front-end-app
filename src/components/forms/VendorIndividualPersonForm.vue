@@ -1,19 +1,24 @@
 <script>
 import {computed, defineComponent, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
-import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
+
+import {useVuelidate} from '@vuelidate/core';
+import {required, email, helpers} from '@vuelidate/validators';
 
 import Breadcrumb from "@/components/Breadcrumb";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import Calendar from "primevue/calendar";
 import InputText from "primevue/inputtext";
+import Checkbox from "primevue/checkbox";
 import MainCard from "@/components/cards/MainCard";
 import InputNumberPhone from "@/components/inputs/InputNumberPhone";
 import SelectPhoneModal from "@/components/modals/SelectPhoneModal";
 
 export default defineComponent({
-  components: {Breadcrumb, Button, Dropdown, Calendar, InputText, MainCard, InputNumberPhone, SelectPhoneModal},
+  components: {
+    Breadcrumb, Button, Dropdown, Calendar, InputText, MainCard, InputNumberPhone, SelectPhoneModal, Checkbox
+  },
   props: {
     form: {
       type: Object,
@@ -33,6 +38,50 @@ export default defineComponent({
 
     const formData = ref(props.form);
 
+    const requiredMessage = 'Поле обязательно для заполнения';
+    const rules = {
+      inn: {required: helpers.withMessage(requiredMessage, required)},
+      data: {
+        full_name: {required: helpers.withMessage(requiredMessage, required)},
+        oktmo: {required: helpers.withMessage(requiredMessage, required)},
+        kpp: {required: helpers.withMessage(requiredMessage, required)},
+        ogrn_place: {required: helpers.withMessage(requiredMessage, required)},
+        ogrn: {required: helpers.withMessage(requiredMessage, required)},
+      },
+      postcode: {required: helpers.withMessage(requiredMessage, required)},
+      region: {required: helpers.withMessage(requiredMessage, required)},
+      region_fact: {required: helpers.withMessage(requiredMessage, required)},
+      city: {required: helpers.withMessage(requiredMessage, required)},
+      city_fact: {required: helpers.withMessage(requiredMessage, required)},
+      street: {required: helpers.withMessage(requiredMessage, required)},
+      street_fact: {required: helpers.withMessage(requiredMessage, required)},
+      house_fact: {required: helpers.withMessage(requiredMessage, required)},
+    };
+
+    const v$ = useVuelidate(rules, formData);
+
+    const isMatch = computed(() => {
+      return (formData.value.postcode === formData.value.postcode_fact) &&
+          (formData.value.building === formData.value.building_fact) &&
+          (formData.value.city === formData.value.city_fact) &&
+          (formData.value.corps === formData.value.corps_fact) &&
+          (formData.value.floor === formData.value.floor_fact) &&
+          (formData.value.region === formData.value.region_fact) &&
+          (formData.value.room === formData.value.room_fact) &&
+          (formData.value.street === formData.value.street_fact);
+    });
+
+    const mergeAddresses = () => {
+      formData.value.postcode_fact = formData.value.postcode
+      formData.value.building_fact = formData.value.building
+      formData.value.city_fact = formData.value.city
+      formData.value.corps_fact = formData.value.corps
+      formData.value.floor_fact = formData.value.floor
+      formData.value.region_fact = formData.value.region
+      formData.value.room_fact = formData.value.room
+      formData.value.street_fact = formData.value.street
+    }
+
     watch(formData, () => {
       emit('formChange', formData.value);
     });
@@ -41,7 +90,7 @@ export default defineComponent({
       emit('changeVisible', data);
     }
 
-    return {formData, changeVisible, selectCountry, legalForms};
+    return {formData, changeVisible, selectCountry, legalForms, mergeAddresses, isMatch};
   }
 });
 </script>
@@ -411,6 +460,19 @@ export default defineComponent({
     <div class="grid mb-2">
       <div class="col-12">
         <MainCard title="Фактический адрес">
+          <template v-slot:title-action>
+            <div class="flex align-items-center">
+              <Checkbox
+                  @click="mergeAddresses"
+                  :model-value="isMatch"
+                  :binary="true"
+                  name="match-address"
+                  class="mr-2"
+              />
+              <label for="match-address">Совпадает с юридическим адресом</label>
+            </div>
+          </template>
+
           <div class="grid">
             <div class="col-12 md:col-4">
               <div class="grid gap-4 m-0 flex-column">

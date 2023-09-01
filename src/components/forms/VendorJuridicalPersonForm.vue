@@ -1,9 +1,10 @@
 <script>
-import {computed, defineComponent, reactive, ref, watch} from "vue";
+import {computed, defineComponent, ref} from "vue";
 import {useStore} from "vuex";
 
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
+import Checkbox from "primevue/checkbox";
 import Calendar from "primevue/calendar";
 import InputText from "primevue/inputtext";
 import MainCard from "@/components/cards/MainCard";
@@ -11,7 +12,16 @@ import InputNumberPhone from "@/components/inputs/InputNumberPhone";
 import SelectPhoneModal from "@/components/modals/SelectPhoneModal";
 
 export default defineComponent({
-  components: {Button, Dropdown, Calendar, InputText, MainCard, InputNumberPhone, SelectPhoneModal},
+  components: {
+    Button,
+    Dropdown,
+    Calendar,
+    InputText,
+    MainCard,
+    InputNumberPhone,
+    SelectPhoneModal,
+    Checkbox
+  },
   props: {
     form: {
       type: Object,
@@ -20,6 +30,10 @@ export default defineComponent({
     errors: {
       type: Object,
       required: false
+    },
+    v$: {
+      type: Object,
+      required: false,
     }
   },
   setup(props, {emit}) {
@@ -30,15 +44,33 @@ export default defineComponent({
 
     const formData = ref(props.form);
 
-    watch(formData, () => {
-      emit('formChange', formData.value);
+    const isMatch = computed(() => {
+       return (formData.value.postcode === formData.value.postcode_fact) &&
+           (formData.value.building === formData.value.building_fact) &&
+           (formData.value.city === formData.value.city_fact) &&
+           (formData.value.corps === formData.value.corps_fact) &&
+           (formData.value.floor === formData.value.floor_fact) &&
+           (formData.value.region === formData.value.region_fact) &&
+           (formData.value.room === formData.value.room_fact) &&
+           (formData.value.street === formData.value.street_fact);
     });
+
+    const mergeAddresses = () => {
+      formData.value.postcode_fact = formData.value.postcode
+      formData.value.building_fact = formData.value.building
+      formData.value.city_fact = formData.value.city
+      formData.value.corps_fact = formData.value.corps
+      formData.value.floor_fact = formData.value.floor
+      formData.value.region_fact = formData.value.region
+      formData.value.room_fact = formData.value.room
+      formData.value.street_fact = formData.value.street
+    };
 
     const changeVisible = (data) => {
       emit('changeVisible', data);
     }
 
-    return {formData, changeVisible, selectCountry, legalForms};
+    return {formData, changeVisible, selectCountry, legalForms, isMatch, mergeAddresses};
   }
 });
 </script>
@@ -57,39 +89,39 @@ export default defineComponent({
                         v-model="formData.data.full_name"
                         id="full_name"
                         class="w-full"
-                        :class="{'p-invalid': errors?.full_name}"
+                        :class="{'p-invalid': v$.data.full_name.$errors.length}"
                     />
                     <label for="last_name">Полное наименование  *</label>
                   </span>
-                  <span v-if="errors?.full_name" class="text-xs color-error">
-                    {{ errors.full_name[0] }}
+                  <span v-if="v$.data.full_name.$errors.length" class="text-xs color-error">
+                    {{ v$.data.full_name.$errors[0].$message }}
                   </span>
                 </div>
                 <div>
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.data.short_name"
-                        :class="{'p-invalid': errors?.short_name}"
+                        :class="{'p-invalid': v$.data.short_name.$errors.length}"
                         id="short_name"
                         class="w-full"
                     />
                     <label for="short_name">Краткое наименование *</label>
                   </span>
-                  <span v-if="errors?.short_name" class="text-xs color-error">
-                    {{ errors.short_name[0] }}
+                  <span v-if="v$.data.short_name.$errors.length" class="text-xs color-error">
+                    {{ v$.data.short_name.$errors[0].message }}
                 </span>
                 </div>
 
                 <Dropdown
                     v-model="formData.data.legal_form"
-                    :class="{'p-invalid': errors?.legal_form}"
+                    :class="{'p-invalid': v$.data.legal_form.$errors.length}"
                     :options="legalForms"
                     optionLabel="label"
                     optionValue="label"
                     placeholder="Организационно-правовая форма *"
                     class="w-full"/>
-                <span v-if="errors?.legal_form" class="text-xs color-error">
-                  {{ errors.legal_form[0] }}
+                <span v-if="v$.data.legal_form.$errors.length" class="text-xs color-error">
+                  {{ v$.data.legal_form.$errors[0].$message }}
                 </span>
               </div>
             </div>
@@ -99,14 +131,14 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                       <InputText
                           v-model="formData.inn"
-                          :class="{'p-invalid': errors?.legal_form}"
+                          :class="{'p-invalid': v$.inn.$errors.length}"
                           id="inn"
                           class="w-full"
                       />
                       <label for="inn">ИНН *</label>
                   </span>
-                  <span v-if="errors?.inn" class="text-xs color-error">
-                    {{ errors.inn[0] }}
+                  <span v-if="v$.inn.$errors.length" class="text-xs color-error">
+                    {{ v$.inn.$errors[0].$message }}
                   </span>
                 </div>
 
@@ -114,14 +146,14 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.data.ogrn"
-                        :class="{'p-invalid': errors?.ogrn}"
+                        :class="{'p-invalid': v$.data.ogrn.$errors.length}"
                         id="ogrn"
                         class="w-full"
                     />
                     <label for="ogrn">ОГРН *</label>
                   </span>
-                  <span v-if="errors?.ogrn" class="text-xs color-error">
-                    {{ errors.ogrn[0] }}
+                  <span v-if="v$.data.ogrn.$errors.length" class="text-xs color-error">
+                    {{ v$.data.ogrn.$errors[0].$message }}
                   </span>
                 </div>
 
@@ -129,27 +161,27 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.data.ogrn_place"
-                        :class="{'p-invalid': errors?.ogrn_place}"
+                        :class="{'p-invalid': v$.data.ogrn.$errors.length}"
                         id="ogrn"
                         class="w-full"
                     />
-                    <label for="ogrn">ОГРН PLACE *</label>
+                    <label for="ogrn">МЕСТО ВЫДАЧИ ОГРН *</label>
                   </span>
-                  <span v-if="errors?.ogrn_place" class="text-xs color-error">
-                    {{ errors.ogrn_place[0] }}
+                  <span v-if="v$.data.ogrn_place.$errors.length" class="text-xs color-error">
+                    {{ v$.data.ogrn.$errors[0].$message }}
                   </span>
                 </div>
 
                 <div class="w-full">
                   <Calendar
                       v-model="formData.data.ogrn_date"
-                      :class="{'p-invalid': errors?.ogrn_date}"
+                      :class="{'p-invalid': v$.data.ogrn_date.$errors.length}"
                       placeholder="Дата присвоения ОГРН (после 2002 года) *"
                       showIcon
                       class="w-full"
                   />
-                  <span v-if="errors?.ogrn_date" class="text-xs color-error">
-                    {{ errors.ogrn_date[0] }}
+                  <span v-if="v$.data.ogrn_date.$errors.length" class="text-xs color-error">
+                    {{ v$.data.ogrn_date.$errors[0].$message }}
                 </span>
                 </div>
               </div>
@@ -160,28 +192,24 @@ export default defineComponent({
                 <div class="w-full">
                   <Calendar
                       v-model="formData.data.reg_date"
-                      :class="{'p-invalid': errors?.reg_date}"
                       placeholder="Дата регистрации организации (до 2002 года) *"
                       showIcon
                       class="w-full"
                   />
-                  <span v-if="errors?.reg_date" class="text-xs color-error">
-                    {{ errors.reg_date[0] }}
-                  </span>
                 </div>
 
                 <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.data.kpp"
-                        :class="{'p-invalid': errors?.kpp}"
+                        :class="{'p-invalid': v$.data.kpp.$errors.length}"
                         id="kpp"
                         class="w-full"
                     />
                     <label for="kpp">КПП</label>
                   </span>
-                  <span v-if="errors?.kpp" class="text-xs color-error">
-                    {{ errors.kpp[0] }}
+                  <span v-if="v$.data.kpp.$errors.length" class="text-xs color-error">
+                    {{ v$.data.kpp.$errors[0].$message }}
                   </span>
                 </div>
 
@@ -189,14 +217,14 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.data.oktmo"
-                        :class="{'p-invalid': errors?.oktmo}"
+                        :class="{'p-invalid': v$.data.kpp.$errors.length}"
                         id="oktmo"
                         class="w-full"
                     />
                     <label for="oktmo">ОКТМО *</label>
                   </span>
-                  <span v-if="errors?.oktmo" class="text-xs color-error">
-                    {{ errors.oktmo[0] }}
+                  <span v-if="v$.data.kpp.$errors.length" class="text-xs color-error">
+                    {{ v$.data.kpp.$errors[0].$message }}
                   </span>
                 </div>
               </div>
@@ -216,14 +244,14 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.postcode"
-                        :class="{'p-invalid': errors?.postcode}"
+                        :class="{'p-invalid': v$.postcode.$errors.length}"
                         id="postcode"
                         class="w-full"
                     />
                     <label for="postcode">Индекс</label>
                   </span>
-                  <span v-if="errors?.postcode" class="text-xs color-error">
-                    {{ errors.postcode[0] }}
+                  <span v-if="v$.postcode.$errors.length" class="text-xs color-error">
+                    {{ v$.postcode.$errors[0].$message }}
                   </span>
                 </div>
 
@@ -231,14 +259,14 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.region"
-                        :class="{'p-invalid': errors?.region}"
+                        :class="{'p-invalid': v$.region.$errors.length}"
                         id="region"
                         class="w-full"
                     />
                     <label for="region">Регион</label>
                   </span>
-                  <span v-if="errors?.region" class="text-xs color-error">
-                    {{ errors.region[0] }}
+                  <span v-if="v$.region.$errors.length" class="text-xs color-error">
+                    {{ v$.region.$errors[0].$message }}
                   </span>
                 </div>
 
@@ -246,14 +274,14 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.city"
-                        :class="{'p-invalid': errors?.city}"
+                        :class="{'p-invalid': v$.region.$errors.length}"
                         id="city"
                         class="w-full"
                     />
                     <label for="city">Город</label>
                   </span>
-                  <span v-if="errors?.city" class="text-xs color-error">
-                    {{ errors.city[0] }}
+                  <span v-if="v$.region.$errors.length" class="text-xs color-error">
+                    {{ v$.region.$errors[0].$message }}
                   </span>
                 </div>
               </div>
@@ -264,43 +292,42 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.street"
-                        :class="{'p-invalid': errors?.street}"
+                        :class="{'p-invalid': v$.street.$errors.length}"
                         id="street"
                         class="w-full"
                     />
                     <label for="street">Улица *</label>
                   </span>
-                  <span v-if="errors?.street" class="text-xs color-error">
-                    {{ errors.street[0] }}
+                  <span v-if="v$.street.$errors.length" class="text-xs color-error">
+                    {{ v$.street.$errors[0].$message }}
                   </span>
                 </div>
                 <div>
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.house"
-                        :class="{'p-invalid': errors?.house}"
+                        :class="{'p-invalid': v$.house.$errors.length}"
                         id="house"
                         class="w-full"
                     />
                     <label for="house">Дом *</label>
                   </span>
-                  <span v-if="errors?.house" class="text-xs color-error">
-                    {{ errors.house[0] }}
+                  <span v-if="v$.house.$errors.length" class="text-xs color-error">
+                    {{ v$.house.$errors[0].$message }}
                   </span>
                 </div>
                 <div>
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.building"
-                        :class="{'p-invalid': errors?.building}"
                         id="street"
                         class="w-full"
                     />
                     <label for="street">Номер здания, строение и т.д...</label>
                   </span>
-                  <span v-if="errors?.building" class="text-xs color-error">
-                    {{ errors.building[0] }}
-                  </span>
+<!--                  <span v-if="v$.building.$errors.length" class="text-xs color-error">-->
+<!--                    {{ v$.building.$errors[0].$message }}-->
+<!--                  </span>-->
                 </div>
               </div>
             </div>
@@ -358,6 +385,19 @@ export default defineComponent({
     <div class="grid mb-2">
       <div class="col-12">
         <MainCard title="Фактический адрес">
+          <template v-slot:title-action>
+            <div class="flex align-items-center">
+              <Checkbox
+                  @click="mergeAddresses"
+                  :model-value="isMatch"
+                  :binary="true"
+                  name="match-address"
+                  class="mr-2"
+              />
+              <label for="match-address">Совпадает с юридическим адресом</label>
+            </div>
+          </template>
+
           <div class="grid">
             <div class="col-12 md:col-4">
               <div class="grid gap-4 m-0 flex-column">
