@@ -1,5 +1,5 @@
 <script>
-import {, defineComponent, onMounted, ref, watch} from "vue";
+import {defineComponent, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {useFlat} from "@/hooks/flat";
