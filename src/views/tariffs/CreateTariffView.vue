@@ -2,6 +2,7 @@
 import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {useError} from "@/hooks/useErrors";
+import {useTariff} from "@/hooks/tariff";
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -25,53 +26,22 @@ const TARIFF_NAMES = {
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {Button, InputText, Dropdown, Editor, Breadcrumb, MainCard, ConfirmationModal, ButtonSuccess},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const {loadTypeTariffs} = useTariff();
+      await loadTypeTariffs();
+      next();
+    } catch (e) {
+      console.error(e);
+    }
+  },
   setup() {
-    const store = useStore();
-    const errors = useError();
+    const {form, v$, toggleSetDefault, toggleCreateTariff, isCreated, typeTariffs} = useTariff();
 
-    const form = reactive({
-      name_ru: '',
-      description_ru: '',
-      short_description_ru: '',
-      period: '',
-      cost: '',
-    });
-
-    const isCreated = ref(false);
-
-    watch(
-        form,
-        () => errors.clearErrors()
-    )
-
-    const typeTariffs = computed(() => {
-      const tariffs = store.getters.getListTypeTariffs;
-      return tariffs.map(tariff => {
-        return {...tariff, name_ru: TARIFF_NAMES[tariff.name]}
-      });
-    });
-
-    const breadcrumbs = [{label: 'Тарифы', router: {name: 'tariffs'}}, {label: 'Создание тарифа'}];
-
-    const toggleCreateTariff = async () => {
-      try {
-        await store.dispatch('fetchCreateTariff', form);
-        isCreated.value = true;
-      } catch (e) {
-        errors.setErrors(e.response.data.errors);
-      }
-    };
-
-    const toggleSetDefault = () => {
-      isCreated.value = false;
-      for (let key in form) {
-        form[key] = ""
-      }
-    };
-
-    onMounted(async () => {
-      await store.dispatch('fetchTypeTariffs');
-    });
+    const breadcrumbs = [
+      {label: 'Тарифы', router: {name: 'tariffs'}},
+      {label: 'Создание тарифа'}
+    ];
 
     return {
       TARIFF_NAMES,
@@ -79,9 +49,9 @@ export default defineComponent({
       typeTariffs,
       breadcrumbs,
       toggleCreateTariff,
-      errors: errors.errors,
       isCreated,
-      toggleSetDefault
+      toggleSetDefault,
+      v$,
     };
   }
 });
@@ -92,7 +62,7 @@ export default defineComponent({
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
       <Button v-if="!isCreated" label="Создать тариф" @click="toggleCreateTariff" class="btn-primary font-light"/>
-      <ButtonSuccess v-if="isCreated" label="Тариф создан" @click="toggleSetDefault" />
+      <ButtonSuccess v-if="isCreated" label="Тариф создан" @click="toggleSetDefault"/>
     </div>
   </section>
 
@@ -103,13 +73,16 @@ export default defineComponent({
           <div class="grid">
             <div class="col-12">
              <span class="p-float-label w-full">
-              <InputText v-model="form.name_ru" id="name" class="w-full" :class="{'p-invalid': !!errors?.name_ru}"/>
+              <InputText
+                  :class="{'p-invalid': v$.name_ru.$errors.length}"
+                  v-model="form.name_ru"
+                  id="name"
+                  class="w-full"
+              />
               <label for="name">Имя *</label>
              </span>
-              <span class="color-error" v-if="errors?.name_ru">
-                <template v-for="(error, i) in errors.name_ru" :key="i">
-                  {{ error }} <br>
-                </template>
+              <span class="color-error text-xs" v-if="v$.name_ru.$errors.length">
+                {{ v$.name_ru.$errors[0].$message }}
               </span>
             </div>
           </div>
@@ -121,12 +94,16 @@ export default defineComponent({
             <div class="col-12">
               <Dropdown
                   v-model="form.period"
+                  :class="{'p-invalid': v$.period.$errors.length}"
                   optionLabel="name_ru"
                   optionValue="name"
                   :options="typeTariffs"
                   placeholder="Тип тарифа"
                   class="w-full">
               </Dropdown>
+              <span class="color-error text-xs" v-if="v$.period.$errors.length">
+                {{ v$.period.$errors[0].$message }}
+              </span>
             </div>
           </div>
         </MainCard>
@@ -136,13 +113,16 @@ export default defineComponent({
           <div class="grid">
             <div class="col-12">
              <span class="p-float-label w-full">
-              <InputText v-model="form.cost" id="name" class="w-full" :class="{'p-invalid': !!errors?.cost}"/>
+              <InputText
+                  :class="{'p-invalid': v$.cost.$errors.length}"
+                  v-model="form.cost"
+                  id="name"
+                  class="w-full"
+              />
               <label for="name">Cтоимость, руб. *</label>
              </span>
-              <span class="color-error" v-if="errors?.cost">
-                <template v-for="(error, i) in errors.cost" :key="i">
-                  {{ error }} <br>
-                </template>
+              <span class="color-error text-xs" v-if="v$.cost.$errors.length">
+                {{ v$.cost.$errors[0].$message }}
               </span>
             </div>
           </div>
@@ -160,10 +140,11 @@ export default defineComponent({
               <div class="mb-1">
                 <span class="text-xl font-bold">Полное описание</span>
               </div>
+
               <Editor v-model="form.description_ru" class="w-full"/>
 
-              <span v-if="errors.description_ru" :class="{'color-error': errors.description_ru }">
-                {{ errors.description_ru[0] }}
+              <span v-if="v$.description_ru.$errors.length" class="color-error text-xs">
+                {{ v$.description_ru.$errors[0].$message }}}
               </span>
             </div>
             <div class="col-12">
@@ -172,8 +153,8 @@ export default defineComponent({
               </div>
               <Editor v-model="form.short_description_ru" class="w-full"/>
 
-              <span v-if="errors.short_description_ru" :class="{'color-error': errors.short_description_ru }">
-                {{ errors.short_description_ru[0] }}
+              <span v-if="v$.short_description_ru.$errors.length" class="color-error text-xs">
+                {{ v$.short_description_ru.$errors[0].$message }}}
               </span>
             </div>
           </div>

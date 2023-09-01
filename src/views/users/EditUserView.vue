@@ -4,6 +4,9 @@ import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {useError} from "@/hooks/useErrors";
 import {useLanguages} from "@/hooks/useLanguages";
+import {useCountries} from "@/hooks/countries";
+import {useRoles} from "@/hooks/role";
+import {useUsers} from "@/hooks/user";
 import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
 import {useMeta} from "vue-meta";
 
@@ -28,14 +31,15 @@ export default defineComponent({
   },
   async beforeRouteEnter(to, from, next) {
     try {
-      const store = useStore();
-      await store.dispatch('fetchUser', to.params.id);
-      await store.dispatch('fetchRoles');
-      await store.dispatch('fetchCountries');
-      store.commit(
-          'selectCountryByPhoneCode',
-          store.getters.getCurrentUser.phone_code
-      );
+      const {loadRoles} = useRoles();
+      const {loadCountries, toSelectCountryByPhoneCode} = useCountries();
+      const {loadUser} = useUsers();
+
+      await loadUser(to.params.id);
+      await loadRoles();
+      await loadCountries();
+
+      toSelectCountryByPhoneCode();
       next();
     } catch (e) {
       console.error(e);
@@ -50,6 +54,7 @@ export default defineComponent({
     const route = useRoute();
     const errors = useError();
     const {languages} = useLanguages();
+    const {countries, selectCountry: country} = useCountries();
 
     let formReactive = reactive({
       first_name: '',
@@ -104,8 +109,6 @@ export default defineComponent({
 
     const user = computed(() => store.getters.getCurrentUser);
     const roles = computed(() => store.getters.getRolesList);
-    const countries = computed(() => store.getters.getCountriesList);
-    const country = computed(() => store.getters.getSelectCountry);
 
     return {
       user,

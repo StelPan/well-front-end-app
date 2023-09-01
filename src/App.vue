@@ -7,6 +7,7 @@ import {useRouter} from "vue-router";
 import TokenService from "@/services/token";
 
 export default defineComponent({
+
   setup() {
     const store = useStore();
     const route = useRoute();

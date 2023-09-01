@@ -10,20 +10,23 @@ const state = () => ({
 })
 
 const actions = {
-    async fetchAuthorization({ commit }, phone){
+    async fetchAuthorization({commit}, phone) {
         const response = await AuthService.fetchAuthorization(phone);
         commit('updatePhone', phone);
     },
-    async fetchVerificationCode({ commit }, { phone, code, phoneCode }) {
+    async fetchVerificationCode({commit}, {phone, code, phoneCode}) {
         const response = await AuthService.fetchVerifyCode(phone, code, phoneCode);
-        const { data: { access_token }, user } = response;
+        const {data: {access_token}, user} = response;
 
         commit('updateProfile', user);
         TokenService.setAccessToken(access_token);
     },
     async fetchProfile({commit}) {
-        const { data } = await AuthService.fetchProfile();
+        const {data} = await AuthService.fetchProfile();
         commit('updateProfile', data);
+    },
+    async fetchUpdateProfile({commit}, {id, body = {}}) {
+        await AuthService.fetchUpdateProfile(id, body);
     },
     async fetchDeleteAvatar({commit}, id) {
         await AuthService.fetchDeleteAvatar(id);
@@ -69,4 +72,4 @@ const getters = {
     }
 };
 
-export default { state, actions, mutations, getters };
+export default {state, actions, mutations, getters};

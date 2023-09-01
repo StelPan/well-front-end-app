@@ -41,9 +41,9 @@ export default defineComponent({
     }
 
     const items = ref([
-      { label: 'Настройки', route: { name: 'profile' } },
-      { separator: true },
-      { label: 'Выйти', class: ['color-error'], action: changeConfirmationStateModal }
+      {label: 'Настройки', route: {name: 'profile'}},
+      {separator: true},
+      {label: 'Выйти', class: ['color-error'], action: changeConfirmationStateModal}
     ]);
 
     return {
@@ -78,11 +78,22 @@ export default defineComponent({
         />
 
         <Avatar
-            image="https://primefaces.org/cdn/primevue/images/organization/walter.jpg"
-            class="mr-2 ml-2"
+            v-if="profile?.avatar"
+            :image="profile?.avatar?.original_url"
+            class="mx-2"
             shape="circle"
             aria-haspopup="true"
             aria-controls="overlay_menu"
+            @click="toggle"
+        />
+
+        <Avatar
+            v-else
+            aria-haspopup="true"
+            aria-controls="overlay_menu"
+            icon="pi pi-user"
+            shape="circle"
+            class="mx-2"
             @click="toggle"
         />
 

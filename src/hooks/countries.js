@@ -11,9 +11,17 @@ export function useCountries() {
         await store.dispatch('fetchCountries');
     };
 
+    const toSelectCountryByPhoneCode = () => {
+        store.commit(
+            'selectCountryByPhoneCode',
+            store.getters.getCurrentUser.phone_code
+        );
+    }
+
     return {
         countries,
         selectCountry,
         loadCountries,
+        toSelectCountryByPhoneCode
     };
 }

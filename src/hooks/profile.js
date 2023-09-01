@@ -41,6 +41,7 @@ export function useProfile() {
 
     const v$ = useVuelidate(rules, form);
 
+    const isUpdated = ref(false);
     const updateProfile = async () => {
         const result = await v$.value.$validate();
         if (!result) {
@@ -64,9 +65,11 @@ export function useProfile() {
             id: profile.value.id,
             body: formData,
         });
+
+        isUpdated.value = true;
     };
 
-    const isUpdated = ref(false);
+    watch(filesChoose, () => isUpdated.value = false);
     watch(form, () => isUpdated.value = false);
 
     const clearAvatarFile = () => {

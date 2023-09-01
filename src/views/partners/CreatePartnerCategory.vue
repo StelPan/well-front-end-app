@@ -4,7 +4,7 @@ import {useRoute} from "vue-router";
 import {useStore} from "vuex";
 import {useError} from "@/hooks/useErrors";
 import {useVuelidate} from '@vuelidate/core'
-import {required, email} from '@vuelidate/validators'
+import {required, email, helpers} from '@vuelidate/validators'
 
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
@@ -21,7 +21,7 @@ export default defineComponent({
     const errors = useError();
 
     const form = reactive({name_ru: ''});
-    const rules = {name_ru: {required}};
+    const rules = {name_ru: {required: helpers.withMessage('Поле обязательно для заполнения', required)}};
 
     const v$ = useVuelidate(rules, form);
 
@@ -78,11 +78,16 @@ export default defineComponent({
         <div class="grid">
           <div class="col-12">
             <span class="p-float-label w-full">
-              <InputText v-model="form.name_ru" id="last_name" class="w-full" :class="{'p-invalid': errors.name_ru}"/>
+              <InputText
+                  :class="{'p-invalid': v$.name_ru.$errors.length}"
+                  v-model="form.name_ru"
+                  id="last_name"
+                  class="w-full"
+              />
               <label for="last_name">Наименование категории *</label>
             </span>
 
-            <span class="text-xs color-error" v-if="v$.name_ru.$errors">
+            <span class="text-xs color-error" v-if="v$.name_ru.$errors.length">
               {{ v$.name_ru.$errors[0].$message }}
             </span>
 

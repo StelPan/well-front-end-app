@@ -33,6 +33,11 @@ const fetchProfile = async () => {
 const fetchDeleteAvatar = async (id) => {
     const response = await http.get('/api/company/v1/user/' + id + '/avatar/delete');
     return response.data;
+};
+
+const fetchUpdateProfile = async (id, body = {}) => {
+    const response = await http.post('/api/company/v1/user/' + id, body);
+    return response.data;
 }
 
 export default {
@@ -41,5 +46,6 @@ export default {
     fetchLogout,
     fetchRefreshToken,
     fetchVerifyCode,
-    fetchDeleteAvatar
+    fetchDeleteAvatar,
+    fetchUpdateProfile
 }
