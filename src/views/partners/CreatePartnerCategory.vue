@@ -1,10 +1,10 @@
 <script>
-import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
+import {defineComponent, onMounted, reactive, ref} from "vue";
 import {useRoute} from "vue-router";
 import {useStore} from "vuex";
 import {useError} from "@/hooks/useErrors";
 import {useVuelidate} from '@vuelidate/core'
-import {required, email, helpers} from '@vuelidate/validators'
+import {required, helpers} from '@vuelidate/validators'
 
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";

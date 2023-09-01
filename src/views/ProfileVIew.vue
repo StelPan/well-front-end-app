@@ -1,9 +1,6 @@
 <script>
-import {computed, defineComponent, onMounted, ref, reactive, watch} from "vue";
-import {useStore} from "vuex";
+import {defineComponent} from "vue";
 import {useMeta} from "vue-meta";
-import {useVuelidate} from '@vuelidate/core';
-import {required, email, minLength, helpers} from '@vuelidate/validators';
 import {useProfile} from "@/hooks/profile";
 import {useLanguages} from "@/hooks/useLanguages";
 

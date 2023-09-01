@@ -1,7 +1,5 @@
 <script>
-import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
-import {useStore} from "vuex";
-import {useError} from "@/hooks/useErrors";
+import {defineComponent} from "vue";
 import {useTariff} from "@/hooks/tariff";
 
 import Button from "primevue/button";
