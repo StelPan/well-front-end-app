@@ -3,6 +3,7 @@ import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {useI18n} from "vue-i18n";
+import {useBanks} from "@/hooks/banks";
 
 import InputText from "primevue/inputtext";
 import Checkbox from "primevue/checkbox";
@@ -18,21 +19,23 @@ export default defineComponent({
   components: {InputText, Checkbox, Button, MainCard, Breadcrumb, ImageCard, Dropdown, FileUpload},
   async beforeRouteEnter(to, from, next) {
     try {
-      const store = useStore();
-      await store.dispatch('fetchBanks');
+      const {loadBanks} = useBanks();
+      await loadBanks();
       next();
     } catch (e) {
       console.error(e);
     }
+
+    next();
   },
   setup() {
     const {t} = useI18n();
-    const store = useStore();
+    const {banks} = useBanks();
     const route = useRoute();
 
     const breadcrumb = ref( [
-      {label: 'Услуги', router: {name: 'services'}},
-      {label: 'Создание категории'}
+      {label: t('menu.services'), router: {name: 'services'}},
+      {label: t('labels.service-category-creating')}
     ]);
 
     const form = reactive({
@@ -46,7 +49,6 @@ export default defineComponent({
     const banner = ref();
     const selectBank = ref();
 
-    const banks = computed(() => store.getters.getListBanks);
     const acquiring = computed(() => store.getters.getListAcquiring);
 
     const loadAcquiring = async () => {

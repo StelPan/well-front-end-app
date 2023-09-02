@@ -26,7 +26,6 @@ export default defineComponent({
           }
         }
 
-
         if (!prev) {
           if (!next.pick && curr.pick) {
             return true;
@@ -87,7 +86,6 @@ export default defineComponent({
         }"
         class="btn-non-background flex align-items-center justify-content-between"
         @click="pick(a)"
-
     >
       {{i.label}}
     </Button>

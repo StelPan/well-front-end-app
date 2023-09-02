@@ -54,6 +54,7 @@ export default {
         "service-create": "Создать услугу",
         "service-update": 'Обновить услугу',
         "service-category-create": 'Создать категорию',
+        "service-category-creating": 'Создание категории',
         "name-category": 'Наименование категории',
         "write-name-category": "Введите наименование категории",
     },
