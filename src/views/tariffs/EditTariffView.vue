@@ -1,9 +1,9 @@
 <script>
-import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
+import {defineComponent, onMounted, ref, unref, watch, computed} from "vue";
 import {useStore} from "vuex";
 import {useRoute, useRouter} from "vue-router";
-import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
-import {useError} from "@/hooks/useErrors";
+import {useI18n} from "vue-i18n";
+import {useTariff} from "@/hooks/tariff";
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -12,6 +12,8 @@ import Dropdown from "primevue/dropdown";
 import Editor from "primevue/editor";
 import Breadcrumb from "@/components/Breadcrumb.vue";
 import MainCard from "@/components/cards/MainCard.vue";
+import ButtonSuccess from "@/components/buttons/ButtonSuccess";
+
 import ConfirmationModal from "@/components/modals/ConfirmationModal.vue";
 
 const DAILY_TYPE = 'daily';
@@ -26,12 +28,12 @@ const TARIFF_NAMES = {
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {Button, Breadcrumb, MainCard, InputText, Dropdown, Editor, ConfirmationModal, InputNumber},
-  async beforeRouteEnter (to, from, next) {
+  components: {Button, Breadcrumb, MainCard, InputText, Dropdown, Editor, ConfirmationModal, InputNumber, ButtonSuccess},
+  async beforeRouteEnter(to, from, next) {
     try {
-      const store = useStore();
-      await store.dispatch('fetchTariff', to.params.id);
-      await store.dispatch('fetchTypeTariffs');
+      const {loadTariff, loadTypeTariffs} = useTariff();
+      await loadTariff(to.params.id);
+      await loadTypeTariffs();
       next();
     } catch (e) {
       console.error(e);
@@ -41,25 +43,12 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter()
     const store = useStore();
-    const errors = useError();
+    const {form, tariff, typeTariffs, isUpdated, updateTariff, destroyTariff, v$} = useTariff();
+    const {t} = useI18n();
 
-    const form = reactive({
-      short_description_ru: '',
-      description_ru: '',
-      name_ru: '',
-      period: '',
-      cost: '',
-      daily_cost: ''
-    });
+    form.value = {...unref(tariff)};
 
     const visibleConfirmationModal = computed(() => store.getters.getConfirmationDestroyTariffModal);
-    const tariff = computed(() => store.getters.getCurrentTariff);
-    const typeTariffs = computed(() => {
-      const tariffs = store.getters.getListTypeTariffs;
-      return tariffs.map(tariff => {
-        return {...tariff, name_ru: TARIFF_NAMES[tariff.name]}
-      });
-    });
 
     const breadcrumbs = ref([]);
 
@@ -72,38 +61,37 @@ export default defineComponent({
 
     const toggleUpdateTariff = async () => {
       try {
-        await store.dispatch('fetchUpdateTariff', {
-          id: route.params.id,
-          body: form
-        });
+        await updateTariff(tariff.value.id, form.value);
       } catch (e) {
-        errors.setErrors(e.response.data.errors);
+        console.error(e);
       }
     };
 
     const toggleDestroyTariff = async () => {
       try {
-        // TODO: DELETE TARIFF
         await changeConfirmationStateModal();
-        await store.dispatch('fetchDestroyTariff', route.params.id);
+        await destroyTariff(route.params.id);
         await router.push({name: 'tariffs-periods-list', params: {period: MONTHLY_TYPE}});
       } catch (e) {
         console.error(e);
       }
     };
 
-    watch(form, () => errors.clearErrors());
+    watch(tariff, () => {
+      form.value = {...unref(tariff)};
+      breadcrumbs.value = [
+        {label: t('menu.tariffs'), router: {name: 'tariffs'}},
+        {label: form.value.name_ru}
+      ];
+      isUpdated.value = false
+    })
 
     onMounted(async () => {
-      useCreateReactiveCopy(form, tariff.value);
-
       breadcrumbs.value = [
-        {label: 'Тарифы', router: {name: 'tariffs'}},
-        {label: tariff.value.name_ru}
+        {label: t('menu.tariffs'), router: {name: 'tariffs'}},
+        {label: form.value.name_ru}
       ];
     });
-
-    watch(form, () => errors.clearErrors());
 
     return {
       breadcrumbs,
@@ -114,7 +102,9 @@ export default defineComponent({
       changeConfirmationStateModal,
       toggleUpdateTariff,
       toggleDestroyTariff,
-      errors: errors.errors
+      isUpdated,
+      t,
+      v$
     };
   }
 });
@@ -123,17 +113,18 @@ export default defineComponent({
 <template>
   <ConfirmationModal v-model:visible="visibleConfirmationModal">
     <template #header>
-      Удалить тариф
+      {{ t('modals.tariff-destroy.header') }}
     </template>
 
     <template #default>
-      <span>Вы уверены, что хотите удалить тариф? Это действие будет невозможно отменить</span>
+      <span>{{ t('modals.tariff-destroy.text') }}</span>
     </template>
 
     <template #footer>
       <div class="flex justify-content-between">
-        <Button label="Отменить" @click="changeConfirmationStateModal" class="btn-primary-outlined font-light w-12"/>
-        <Button label="Удалить" @click="toggleDestroyTariff" class="btn-primary font-light ml-3 w-12"/>
+        <Button :label="t('labels.cancel')" @click="changeConfirmationStateModal"
+                class="btn-primary-outlined font-light w-12"/>
+        <Button :label="t('labels.destroy')" @click="toggleDestroyTariff" class="btn-primary font-light ml-3 w-12"/>
       </div>
     </template>
   </ConfirmationModal>
@@ -141,14 +132,17 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
-      <Button label="Сохранить изменения" @click="toggleUpdateTariff" class="btn-primary font-light"/>
+      <div class="flex">
+        <ButtonSuccess v-if="isUpdated" :label="t('labels.changes-saved')" />
+        <Button :if="!isUpdated" :label="t('labels.save-changes')" @click="toggleUpdateTariff" class="btn-primary font-light ml-2"/>
+      </div>
     </div>
   </section>
 
   <section class="py-2 mb-3">
     <div class="grid h-max">
       <div class="col-12 md:col-4">
-        <MainCard :styles="{'h-full': true}" title="Наименование тарифа">
+        <MainCard :styles="{'h-full': true}" :title="t('card-names.tariff-name')">
           <div class="grid">
             <div class="col-12">
              <span class="p-float-label w-full">
@@ -156,19 +150,19 @@ export default defineComponent({
                   v-model="form.name_ru"
                   id="name"
                   class="w-full"
-                  :class="{'p-invalid': errors.name_ru}"
+                  :class="{'p-invalid': v$.name_ru.$errors.length}"
               />
-              <label for="name">Имя *</label>
+              <label for="name">{{ t('card-names.name') }} *</label>
              </span>
-              <span v-if="errors.name_ru" class="color-error text-xs">
-                {{ errors.name_ru[0] }}
+              <span v-if="v$.name_ru.$errors.length" class="color-error text-xs">
+                {{ v$.name_ru.$errors[0].$message }}
               </span>
             </div>
           </div>
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
-        <MainCard :styles="{'h-full': true}" title="Тип тарифа">
+        <MainCard :styles="{'h-full': true}" :title="t('card-names.type-tariff')">
           <div class="grid">
             <div class="col-12">
               <div class="grid flex-column gap-4">
@@ -177,7 +171,7 @@ export default defineComponent({
                     optionLabel="name"
                     optionValue="name"
                     :options="typeTariffs"
-                    placeholder="Тип тарифа"
+                    :placeholder="t('card-names.type-tariff')"
                     class="w-full">
                   <template #option="{ option }">
                     {{ TARIFF_NAMES[option.name] }}
@@ -192,14 +186,10 @@ export default defineComponent({
                   <span v-if="form.period === 'monthly'" class="p-float-label w-full">
                     <InputNumber
                         v-model="form.daily_cost"
-                        id="daily_costname"
-                        :class="{'p-invalid': errors.daily_cost}"
+                        id="daily_cost"
                         class="w-full"
                     />
-                    <label for="name">Суточная стоимость *</label>
-                  </span>
-                  <span v-if="errors.daily_cost" class="text-xs color-error">
-                    {{ errors.daily_cost[0] }}
+                    <label for="daily_cost">{{ t('labels.daily_cost') }} *</label>
                   </span>
                 </div>
               </div>
@@ -208,15 +198,20 @@ export default defineComponent({
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
-        <MainCard :styles="{'h-full': true}" title="Стоимость тарифа / платежа">
+        <MainCard :styles="{'h-full': true}" :title="t('card-names.tariff-cost')">
           <div class="grid">
             <div class="col-12">
              <span class="p-float-label w-full">
-              <InputText v-model="form.cost" id="name" class="w-full" :class="{'p-invalid': errors.cost}"/>
-              <label for="name">Cтоимость, руб. *</label>
+              <InputText
+                  v-model="form.cost"
+                  :class="{'p-invalid': v$.cost.$errors.length}"
+                  class="w-full"
+                  id="name"
+              />
+              <label for="name">{{ t('tables.tariffs.cost') }} *</label>
              </span>
-              <span v-if="errors.cost" class="color-error text-xs">
-                {{ errors.cost[0] }}
+              <span v-if="v$.cost.$errors.length" class="color-error text-xs">
+                {{ v$.cost.$errors[0].$message }}
               </span>
             </div>
           </div>
@@ -228,20 +223,20 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="grid">
       <div class="col-12">
-        <MainCard title="Описание тарифа / платежа">
+        <MainCard :title="t('card-names.tariff-cost-description')">
           <div class="grid">
             <div class="col-12">
-              <span class="text-xl font-bold">Полное описание</span>
+              <span class="text-xl font-bold">{{ t('labels.full-description') }}</span>
               <Editor v-model="form.description_ru" class="w-full"/>
             </div>
             <div class="col-12">
-              <span class="text-xl font-bold">Краткое описание</span>
+              <span class="text-xl font-bold">{{ t('labels.short-description') }}</span>
               <Editor
                   v-model="form.short_description_ru"
                   class="w-full p-invalid"
               />
-              <span v-if="errors.short_description_ru" :class="{'color-error': errors.short_description_ru }">
-                {{ errors.short_description_ru[0] }}
+              <span v-if="v$.short_description_ru.$errors.length" class="color-error text-xs">
+                {{ v$.short_description_ru.$errors[0].$message }}
               </span>
             </div>
           </div>
@@ -253,13 +248,8 @@ export default defineComponent({
   <section class="py-2 mb-4">
     <div class="flex justify-content-end">
       <span class="color-error underline cursor-pointer" @click="changeConfirmationStateModal">
-        Удалить тариф
+        {{ t('modals.tariff-destroy.header') }}
       </span>
     </div>
   </section>
 </template>
-
-
-<style scoped>
-
-</style>

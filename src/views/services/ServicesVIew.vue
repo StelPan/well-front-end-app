@@ -1,7 +1,7 @@
 <script>
 import {computed, defineComponent, ref} from "vue";
-import {useStore} from "vuex";
 import {useRouter, useRoute} from "vue-router";
+import {useI18n} from "vue-i18n";
 
 import Button from "primevue/button";
 import DataView from "primevue/dataview";
@@ -11,6 +11,7 @@ export default defineComponent({
   layout: { name: 'AdminLayout' },
   components: {Button, DataView, TabMenu},
   setup() {
+    const {t} = useI18n();
     const router = useRouter();
     const route = useRoute();
 
@@ -53,7 +54,7 @@ export default defineComponent({
       await router.push(routes.value)
     }
 
-    return {items, action, redirect};
+    return {items, action, redirect, t};
   }
 });
 
@@ -62,10 +63,10 @@ export default defineComponent({
 <template>
   <section class="py-2 mb-3">
     <div class="flex justify-content-between mb-3">
-      <h1>Услуги</h1>
+      <h1>{{ t('menu.services') }}</h1>
 
-      <Button v-if="action !== 'categories'" @click="redirect" label="Создать услугу" class="btn-primary font-light ml-3" />
-      <Button v-if="action === 'categories'" @click="redirect" label="Создать категорию" class="btn-primary font-light ml-3" />
+      <Button v-if="action !== 'categories'" @click="redirect" :label="t('labels.service-create')" class="btn-primary font-light ml-3" />
+      <Button v-if="action === 'categories'" @click="redirect" :label="t('labels.service-category-create')" class="btn-primary font-light ml-3" />
     </div>
 
     <div class="flex">

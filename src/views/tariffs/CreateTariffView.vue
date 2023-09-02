@@ -80,7 +80,7 @@ export default defineComponent({
                   id="name"
                   class="w-full"
               />
-              <label for="name">{{ t('labels.name') }} *</label>
+              <label for="name">{{ t('card-names.name') }} *</label>
              </span>
               <span class="color-error text-xs" v-if="v$.name_ru.$errors.length">
                 {{ v$.name_ru.$errors[0].$message }}
@@ -90,7 +90,7 @@ export default defineComponent({
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
-        <MainCard :styles="{'h-full': true}" :title="t('labels.type-tariff')">
+        <MainCard :styles="{'h-full': true}" :title="t('card-names.type-tariff')">
           <div class="grid">
             <div class="col-12">
               <Dropdown
@@ -135,7 +135,7 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="grid">
       <div class="col-12">
-        <MainCard :styles="{'h-full': true}" :title="t('tariff-cost-description')">
+        <MainCard :styles="{'h-full': true}" :title="t('card-names.tariff-cost-description')">
           <div class="grid">
             <div class="col-12">
               <div class="mb-1">

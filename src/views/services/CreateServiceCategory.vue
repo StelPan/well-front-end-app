@@ -2,7 +2,7 @@
 import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
-import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
+import {useI18n} from "vue-i18n";
 
 import InputText from "primevue/inputtext";
 import Checkbox from "primevue/checkbox";
@@ -26,6 +26,7 @@ export default defineComponent({
     }
   },
   setup() {
+    const {t} = useI18n();
     const store = useStore();
     const route = useRoute();
 
@@ -54,7 +55,7 @@ export default defineComponent({
 
     watch(selectBank, async () => await loadAcquiring());
 
-    return {breadcrumb, form, selectBank, acquiring, banks};
+    return {breadcrumb, form, selectBank, acquiring, banks, t};
   }
 });
 </script>
@@ -63,17 +64,17 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumb" separator="/"/>
-      <Button label="Сохранить изменения" class="btn-primary font-light" />
+      <Button :label="t('labels.save-changes')" class="btn-primary font-light" />
     </div>
   </section>
   <section class="py-2 mb-3">
     <div class="grid h-max">
       <div class="col-12 md:col-5">
         <div class="mb-2">
-          <MainCard title="Наименование категории">
+          <MainCard :title="t('labels.name-category')">
           <span class="p-float-label w-full">
-            <InputText v-model="form.name_ru" id="patronymic" class="w-full"/>
-            <label for="patronymic">Введите наименование категории *</label>
+            <InputText v-model="form.name_ru" id="name-category" class="w-full"/>
+            <label for="name-category">{{ t('labels.write-name-categoryy') }} *</label>
           </span>
           </MainCard>
         </div>
@@ -81,8 +82,8 @@ export default defineComponent({
         <div class="mb-2">
           <MainCard title="Изображения иконки">
           <span class="p-float-label w-full">
-            <InputText v-model="form.name_ru" id="patronymic" class="w-full"/>
-            <label for="patronymic">Введите наименование категории *</label>
+            <InputText v-model="form.name_ru" id="image-icon" class="w-full"/>
+            <label for="image-icon">Введите наименование категории *</label>
           </span>
           </MainCard>
         </div>
@@ -112,9 +113,6 @@ export default defineComponent({
       <div class="col-12 md:col-7">
         <MainCard title="Изображения категории" :styles="{'h-full': true}">
           <div class="grid col-12 md:col-6">
-<!--            <div class="mb-2">-->
-<!--              <ImageCard :src="category.banner ?? ''" :handle="() => category.banner" />-->
-<!--            </div>-->
             <Button label="Изменить изображение" class="btn-primary font-light w-full" />
           </div>
         </MainCard>

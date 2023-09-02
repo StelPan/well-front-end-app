@@ -2,36 +2,44 @@
 import {defineComponent, computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
+import {useI18n} from "vue-i18n";
+import {useServices} from "@/hooks/services";
 
 import Button from "primevue/button";
 import DataView from "primevue/dataview";
 import Paginator from "primevue/paginator";
+
 
 export default defineComponent({
   layout: { name: 'AdminLayout'},
   components: {Button, DataView, Paginator},
   async beforeRouteEnter(to, from, next) {
     try {
-      const store = useStore();
-      await store.dispatch('fetchServices');
-      next();
+      const {loadServices} = useServices();
+      await loadServices({
+        page: 1,
+        type: to.params.type,
+      });
     } catch (e) {
       console.error(e);
     }
+
+    next();
   },
   setup() {
+    const {services, loadServices} = useServices();
+    const {t} = useI18n();
+
     const store = useStore();
     const route = useRoute();
 
     const first = ref(0);
-    const services = computed(() => store.getters.getListServices);
 
-    const loadServices = async () => {
-      await store.dispatch('fetchServices', {
+    const load = async () => {
+      await loadServices({
         type: route.params.type,
         page: ((first.value / (services.value?.data?.pagination?.per_page ?? 1)) + 1)
       });
-
       window.scrollTo(0,0);
     };
 
@@ -39,11 +47,11 @@ export default defineComponent({
         () => route.params.type,
         async (type) => {
           if (!type) return;
-          await loadServices()
+          await load()
         }
     );
 
-    return {services, first};
+    return {services, first, t};
   }
 });
 
@@ -79,7 +87,7 @@ export default defineComponent({
                     <span class="color-black-80 text-xl font-bold">{{ slotProps.data.cost }} Р.</span>
                   </template>
                   <template v-else>
-                    <span class="color-black-80 text-xl font-bold">Стоимость, Р</span>
+                    <span class="color-black-80 text-xl font-bold">{{ t('tables.tariffs.cost') }}</span>
                     <span>Указывается в категории</span>
                   </template>
                 </div>
@@ -100,7 +108,7 @@ export default defineComponent({
   <template v-else>
     <section class="py-2 mb-3">
       <div class="flex justify-content-center">
-        <span>Данные для отображения отсутствуют</span>
+        <span>{{ t('empty-data') }}</span>
       </div>
     </section>
   </template>

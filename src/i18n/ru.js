@@ -3,6 +3,7 @@ export default {
     "validations": {
         "email": "Некорректный email",
         "required": 'Поле обязательно для заполнения',
+        "numeric": 'Поле должно содержать только числа',
         "vendor": {
             "ogrn": "",
             "inn": "",
@@ -11,6 +12,12 @@ export default {
     },
     headers: {
         'tariff-create': 'Создание тарифа',
+    },
+    modals: {
+        'tariff-destroy': {
+            header: 'Удалить тариф',
+            text: 'Вы уверены, что хотите удалить тариф? Это действие будет невозможно отменить',
+        }
     },
     "card-names": {
         "basic-registration-information": 'Основные регистрационные сведения',
@@ -41,6 +48,14 @@ export default {
         "cost": "Стоимость",
         "short-description": 'Краткое описание',
         "full-description": 'Полное описание',
+        'cancel': 'Отменить',
+        'destroy': 'Удалить',
+        'daily_cost': 'Суточная стоимость',
+        "service-create": "Создать услугу",
+        "service-update": 'Обновить услугу',
+        "service-category-create": 'Создать категорию',
+        "name-category": 'Наименование категории',
+        "write-name-category": "Введите наименование категории",
     },
     actions: {
         'create-user': 'Создать пользователя',
@@ -57,6 +72,11 @@ export default {
         tariffs: {
             "name": "Наименование",
             "cost": "Стоимость, руб."
+        },
+        'service-categories': {
+            "name": "Наименование категории",
+            "view": "Видимость",
+            "view-started-screen": "Показывать на стартовом экране"
         }
     },
     "pages-names": {

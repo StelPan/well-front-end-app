@@ -2,7 +2,7 @@ import {useStore} from "vuex";
 import {computed, reactive, ref, watch} from "vue";
 
 import {useVuelidate} from "@vuelidate/core";
-import {required, numeric, helpers} from "@vuelidate/validators";
+import {required, email, numeric} from "@/utils/i18n-validators";
 
 const DAILY_TYPE = 'daily';
 const HOURLY_TYPE = 'hourly';
@@ -18,6 +18,8 @@ const TARIFF_NAMES = {
 export function useTariff() {
     const store = useStore();
 
+    const tariff = computed(() => store.getters.getCurrentTariff);
+
     const form = ref({
         name_ru: '',
         description_ru: '',
@@ -27,20 +29,22 @@ export function useTariff() {
     });
 
     const rules = {
-        name_ru: {required: helpers.withMessage('Поле обязательно для заполнения', required)},
-        description_ru: {required: helpers.withMessage('Поле обязательно для заполнения', required)},
-        short_description_ru: {required: helpers.withMessage('Поле обязательно для заполнения', required)},
-        period: {required: helpers.withMessage('Поле обязательно для заполнения', required)},
-        cost: {
-            required: helpers.withMessage('Поле обязательно для заполнения', required),
-            numeric: helpers.withMessage('Только числовой формат', numeric),
-        },
+        name_ru: {required},
+        description_ru: {required},
+        short_description_ru: {required},
+        period: {required},
+        cost: {required, numeric},
     };
 
     const v$ = useVuelidate(rules, form);
 
     const isCreated = ref(false);
-    watch(form, () => isCreated.value = false);
+    const isUpdated = ref(false);
+
+    watch(form, () => {
+        isCreated.value = false;
+        isUpdated.value = false;
+    });
 
     const typeTariffs = computed(() => {
         const tariffs = store.getters.getListTypeTariffs;
@@ -48,6 +52,10 @@ export function useTariff() {
             return {...tariff, name_ru: TARIFF_NAMES[tariff.name]}
         });
     });
+
+    const loadTariff = async (id) => {
+        await store.dispatch('fetchTariff', id);
+    };
 
     const loadTypeTariffs = async () => {
         await store.dispatch('fetchTypeTariffs');
@@ -70,13 +78,33 @@ export function useTariff() {
         }
     };
 
+    const updateTariff = async (id, body) => {
+        const result = await v$.value.$validate();
+        if (!result) {
+            return;
+        }
+
+        await store.dispatch('fetchUpdateTariff', {id, body});
+
+        isUpdated.value = true;
+    };
+
+    const destroyTariff = async (id) => {
+        await store.dispatch('fetchDestroyTariff', id);
+    };
+
     return {
         form,
         v$,
         typeTariffs,
         isCreated,
+        isUpdated,
+        tariff,
         toggleCreateTariff,
         toggleSetDefault,
-        loadTypeTariffs
+        loadTypeTariffs,
+        loadTariff,
+        updateTariff,
+        destroyTariff,
     };
 }

@@ -14,7 +14,6 @@ export default defineComponent({
   async beforeRouteEnter (to, from, next) {
     try {
       const store = useStore();
-      const route = useRoute();
       await store.dispatch('fetchTariffs', {
         period: to.params.period,
         page: 1
