@@ -1,5 +1,6 @@
 <script>
 import {defineComponent} from "vue";
+import {useI18n} from "vue-i18n";
 
 export default defineComponent({
   props: {
@@ -9,52 +10,54 @@ export default defineComponent({
     }
   },
   setup() {
+    const {t} = useI18n();
+
     const menus = [{
-      label: "Пользователи",
+      label: t('menu.users'),
       svg: 'images/icons/Users.svg',
       route: {name: "users"}
     }, {
-      label: "Состояния",
+      label: t('menu.states'),
       svg: 'images/icons/States.svg',
       route: {name: "state-constructor"}
     }, {
-      label: "Структура",
+      label: t('menu.structure'),
       svg: 'images/icons/Structure.svg',
       route: {name: "buildings"}
     }, {
-      label: "Объекты",
+      label: t('menu.objects'),
       svg: 'images/icons/Objects.svg',
       route: {name: "objects"}
     }, {
-      label: "Тарифы",
+      label: t('menu.tariffs'),
       svg: 'images/icons/Tariffs.svg',
       route: {name: "tariffs"}
     }, {
-      label: "Услуги",
+      label: t('menu.services'),
       svg: 'images/icons/Services.svg',
       route: {name: "services"},
     }, {
-      label: "Контрагенты",
+      label: t('menu.counterparties'),
       svg: 'images/icons/Counterparties.svg',
       route: {name: "counterparties"}
     }, {
-      label: "Отзывы",
+      label: t('menu.reviews'),
       svg: 'images/icons/Reviews.svg',
       route: {name: "reviews"}
     }, {
-      label: "Партнеры",
+      label: t('menu.partners'),
       svg: 'images/icons/Partners.svg',
       route: {name: "partners-list"}
     }, {
-      label: "Уведомления",
+      label: t('menu.notices'),
       svg: 'images/icons/Notices.svg',
       route: {name: "notices"}
     }, {
-      label: "Реквизиты",
+      label: t('menu.requests'),
       svg: 'images/icons/Requests.svg',
       route: {name: "vendors-list"}
     }, {
-      label: "Поддержка",
+      label: t('menu.support'),
       svg: 'images/icons/Supports.svg',
       route: {name: "support"}
     }];

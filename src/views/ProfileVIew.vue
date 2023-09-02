@@ -1,6 +1,7 @@
 <script>
 import {defineComponent} from "vue";
 import {useMeta} from "vue-meta";
+import {useI18n} from "vue-i18n";
 import {useProfile} from "@/hooks/profile";
 import {useLanguages} from "@/hooks/useLanguages";
 
@@ -12,7 +13,7 @@ import MainCard from "@/components/cards/MainCard";
 import FileUpload from "@/components/FileUpload.vue";
 import ButtonFileUpload from "@/components/buttons/ButtonFileUpload.vue";
 import ButtonSuccess from "@/components/buttons/ButtonSuccess";
-
+import {useStore} from "vuex";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
@@ -23,9 +24,12 @@ export default defineComponent({
     next();
   },
   setup(globalConfig) {
+    const store = useStore();
     useMeta({
       title: 'Профиль'
     });
+
+    const {t} = useI18n();
 
     const {
       clearAvatarFile,
@@ -61,6 +65,7 @@ export default defineComponent({
       languages,
       profile,
       isUpdated,
+      t,
     };
   }
 })
@@ -69,7 +74,7 @@ export default defineComponent({
 <template>
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
-      <h1>Профиль</h1>
+      <h1>{{ t('pages.profile.header') }}</h1>
       <div class="flex">
         <Button label="Выйти" @click="changeConfirmationStateModal" class="btn-error-outlined font-light mr-3"/>
         <Button

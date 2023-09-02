@@ -2,6 +2,7 @@
 import {defineComponent, ref, onMounted, computed, watch} from "vue";
 import {useStore} from "vuex";
 import {useRouter} from 'vue-router';
+import {useNotices} from "@/hooks/notices";
 
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
@@ -11,17 +12,26 @@ import NoticesTable from "@/components/tables/NoticesTable";
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {Button, Dropdown, NoticesTable, Paginator},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const {loadNotices, loadTypeNotices} = useNotices();
+      await Promise.all([loadNotices(), loadTypeNotices()]);
+    } catch (e) {
+      console.error(e);
+    }
+
+    next();
+  },
   setup() {
     const store = useStore();
     const router = useRouter();
+    const {notices, typeNotices: types, loadNotices} = useNotices();
 
     const first = ref(0);
 
     const selectType = ref('');
-    const notices = computed(() => store.getters.getListNotices);
-    const types = computed(() => store.getters.getListTypeNotices);
 
-    const loadNotices = async () => {
+    const filterNotices = async () => {
       const filterObject = {
         page: ((first.value / (notices.value?.data?.pagination?.per_page ?? 1)) + 1),
       };
@@ -30,13 +40,8 @@ export default defineComponent({
         filterObject['type'] = selectType.value.id;
       }
 
-      await store.dispatch('fetchNotices', filterObject);
+      await loadNotices(filterObject);
     };
-
-    onMounted(async () => {
-      await store.dispatch('fetchTypeNotices');
-      await loadNotices();
-    });
 
     const toNoticeCreate = async () => {
       await router.push({name: 'notice-create'});

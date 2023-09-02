@@ -1,6 +1,7 @@
 <script>
-import {computed, defineComponent, onMounted, ref} from "vue";
+import {computed, defineComponent, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
+import {usePartner} from "@/hooks/partner";
 
 import Paginator from "primevue/paginator";
 import PartnersTable from "@/components/tables/PartnersTable";
@@ -8,21 +9,27 @@ import PartnersTable from "@/components/tables/PartnersTable";
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {PartnersTable, Paginator},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const {loadPartners} = usePartner();
+      await loadPartners({page: 1});
+    } catch (e) {
+      console.error(e);
+    }
+
+    next();
+  },
   setup() {
     const store = useStore();
+    const {partners, loadPartners} = usePartner();
 
-    const partners = computed(() => store.getters.getListPartners);
     const first = ref(0);
 
-    const loadPartners = async () => {
-      await store.dispatch('fetchPartners', {
-        page: ((first.value / (partners.value?.data?.pagination?.per_page ?? 1)) + 1)
-      });
+    const load = async () => {
+      await loadPartners({page: ((first.value / (partners.value?.data?.pagination?.per_page ?? 1)) + 1)});
     };
 
-    onMounted(async () => {
-      await loadPartners();
-    });
+    watch(first, async () => await load());
 
     return {partners, first};
   }

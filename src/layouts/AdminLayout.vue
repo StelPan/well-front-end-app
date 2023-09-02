@@ -68,6 +68,3 @@ export default defineComponent({
     </div>
   </div>
 </template>
-
-<style>
-</style>

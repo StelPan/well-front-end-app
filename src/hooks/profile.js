@@ -2,7 +2,7 @@ import {ref, computed, watch} from "vue";
 import {useStore} from "vuex";
 
 import {useVuelidate} from '@vuelidate/core';
-import {email, helpers, required} from "@vuelidate/validators";
+import {required, email} from "@/utils/i18n-validators";
 
 export function useProfile() {
     const store = useStore();
@@ -25,18 +25,15 @@ export function useProfile() {
         filesChoose.value = files;
     };
 
-
-    const message = 'Поле обязательно для заполнения';
-    const emailErrorMessage = 'Некорректный email';
     const rules = {
-        first_name: {required: helpers.withMessage(message, required)},
-        last_name: {required: helpers.withMessage(message, required)},
+        first_name: {required},
+        last_name: {required},
         email: {
-            required: helpers.withMessage(emailErrorMessage, required),
-            email: helpers.withMessage(emailErrorMessage, email),
+            required,
+            email,
         },
-        phone: {required: helpers.withMessage(message, required)},
-        language: {required: helpers.withMessage(message, required)},
+        phone: {required},
+        language: {required},
     };
 
     const v$ = useVuelidate(rules, form);

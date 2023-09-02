@@ -2,6 +2,8 @@
 import {computed, defineComponent, onMounted, reactive, ref, toRaw, watch} from "vue";
 import {useStore} from "vuex";
 import {useError} from "@/hooks/useErrors";
+import {useRoles} from "@/hooks/role";
+import {useNotices} from "@/hooks/notices";
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -24,9 +26,29 @@ export default defineComponent({
     Checkbox, MultiSelect, Button,
     Editor, ConfirmationModal, ButtonSuccess
   },
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const {loadRoles} = useRoles();
+      const {loadTypeNotices} = useNotices();
+      await Promise.all([loadTypeNotices(), loadRoles()]);
+    } catch (e) {
+      console.error(e);
+    }
+
+    next();
+  },
   setup() {
     const store = useStore();
     const errors = useError();
+    const {roles} = useRoles();
+    const {
+      isCreate,
+      typeNotices,
+      formCreateNotice: form,
+      createNotice: create,
+      createNoticeAsDraft,
+      v$
+    } = useNotices();
 
     const breadcrumbs = ref([
       {label: 'Уведомления', router: {name: 'notices'}},
@@ -34,27 +56,6 @@ export default defineComponent({
     ]);
 
     const isSaveDraft = ref(false);
-    const isSave = ref(false);
-
-    const roles = computed(() => store.getters.getRolesList);
-    const typeNotices = computed(() => store.getters.getListTypeNotices);
-
-    const form = reactive({
-      push_type_id: '',
-      send_date: '',
-      send_time: '',
-      send_now: 0,
-      senders_all_roles: 0,
-      text: '',
-      title: '',
-      roles: []
-    });
-
-    watch(form, () => {
-      isSaveDraft.value = false;
-      isSave.value = false;
-      errors.clearErrors();
-    });
 
     const noticeTypeForm = reactive({
       name: ''
@@ -74,49 +75,23 @@ export default defineComponent({
 
     const createNotice = async () => {
       try {
-        const date = toRaw(form.send_date) instanceof Date ? new Date(form.send_date) : false;
-        const send_date = date ?
-            `${date.getDate()}.${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}.${date.getFullYear()}`
-            : '';
-
-        const formatterForm = {
-          ...form,
-          send_date
-        };
-        await store.dispatch('fetchCreateNotice', formatterForm);
-        isSave.value = true;
+        await create();
       } catch (e) {
-        errors.setErrors(e.response.data.errors);
+        console.error(e);
       }
-    };
+    }
 
     const saveAsDraft = async () => {
       try {
-        const {push_type_id, text, title, roles} = form;
-        const formatterForm = {push_type_id, text, title, roles, send_now: 0};
-        await store.dispatch('fetchCreateNotice', formatterForm);
+        await createNoticeAsDraft();
         isSaveDraft.value = true;
       } catch (e) {
         errors.setErrors(e.response.data.errors);
       }
     };
 
-    watch(
-        () => form.senders_all_roles,
-        (val) => {
-          if (val) {
-            form.roles = roles.value.map(role => role.id);
-          } else {
-            form.roles = [];
-          }
-        });
-
-    onMounted(async () => {
-      await store.dispatch('fetchRoles');
-      await store.dispatch('fetchTypeNotices');
-    });
-
     return {
+      v$,
       breadcrumbs,
       roles,
       typeNotices,
@@ -128,7 +103,7 @@ export default defineComponent({
       createNotice,
       saveAsDraft,
       isSaveDraft,
-      isSave,
+      isCreate,
       errors: errors.errors
     };
   },
@@ -161,13 +136,13 @@ export default defineComponent({
       <Breadcrumb :data="breadcrumbs" separator="/"/>
 
       <div class="flex">
-        <template v-if="!isSave">
+        <template v-if="!isCreate">
           <ButtonSuccess v-if="isSaveDraft" label="Черновик сохранен"/>
-          <Button @click="saveAsDraft" label="Сохранить как черновик" class="btn-error-outlined font-light ml-2"/>
+          <Button @click="saveAsDraft" label="Сохранить как черновик" class="btn-black-20-outlined font-light ml-2"/>
           <Button @click="createNotice" label="Запланировать отправку" class="btn-primary font-light ml-2"/>
         </template>
-        <template v-if="isSave">
-          <ButtonSuccess label="Уведомление создано" />
+        <template v-if="isCreate">
+          <ButtonSuccess label="Уведомление создано"/>
         </template>
       </div>
     </div>
@@ -178,27 +153,32 @@ export default defineComponent({
       <div class="col-12">
         <MainCard title="Наименование уведомления">
           <span class="p-float-label w-full">
-            <InputText v-model="form.title" id="name" class="w-full" :class="{'p-invalid': errors.title}"/>
+            <InputText
+                v-model="form.title"
+                id="name"
+                class="w-full"
+                :class="{'p-invalid': v$.title.$errors.length}"
+            />
             <label for="name">Наименование</label>
           </span>
-          <span v-if="errors.title" class="text-xs color-error">
-            {{ errors.title[0] }}
+          <span v-if="v$.title.$errors.length" class="text-xs color-error">
+            {{ v$.title.$errors[0].$message }}
           </span>
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
         <MainCard title="Выберите или создайте тип уведомления">
-          <div class="w-full">
+          <div class="w-full mb-2">
             <Dropdown
                 v-model="form.push_type_id"
-                :class="{'p-invalid': errors.push_type_id}"
+                :class="{'p-invalid': v$.push_type_id.$errors.length}"
                 :options="typeNotices"
                 optionLabel="name"
                 option-value="id"
                 placeholder="Тип уведомления"
-                class="w-full mb-2"/>
-            <span v-if="errors.push_type_id" class="text-xs color-error">
-              {{ errors.push_type_id[0] }}
+                class="w-full"/>
+            <span v-if="v$.push_type_id.$errors.length" class="text-xs color-error">
+              {{ v$.push_type_id.$errors[0].$message }}
             </span>
           </div>
 
@@ -245,19 +225,20 @@ export default defineComponent({
 
       <div class="col-12 md:col-4">
         <MainCard title="Получатели уведомления">
-          <div class="w-full">
+          <div class="w-full mb-2">
             <MultiSelect
                 v-model="form.roles"
+                :class="{'p-invalid': v$.roles.$errors.length}"
                 display="chip"
                 :options="roles"
                 optionLabel="name_ru"
                 option-value="id"
                 placeholder="Выберите получателя"
-                class="w-full mb-2"
+                class="w-full"
                 :disabled="!!form.senders_all_roles"
             />
-            <span v-if="errors.roles" class="text-xs color-error">
-              {{ errors.roles[0] }}
+            <span v-if="v$.roles.$errors.length" class="text-xs color-error">
+              {{ v$.roles.$errors[0].$message }}
             </span>
           </div>
 
@@ -273,15 +254,11 @@ export default defineComponent({
       <div class="col-12">
         <MainCard title="Текст уведомления">
           <Editor v-model="form.text" class="w-full"/>
-          <span class="text-xs color-error" v-if="errors.text">
-            {{ errors.text[0] }}
+          <span class="text-xs color-error" v-if="v$.text.$errors.length">
+            {{ v$.text.$errors[0].$message }}
           </span>
         </MainCard>
       </div>
     </div>
   </section>
 </template>
-
-<style scoped>
-
-</style>

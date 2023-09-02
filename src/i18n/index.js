@@ -1,8 +1,5 @@
 import ru from './ru';
+import en from './en';
 
-const defaultLanguage = 'ru';
-
-export default {
-    messages: {ru},
-    defaultLanguage,
-};
+export const defaultLanguage = 'ru';
+export const messages = {ru, en};

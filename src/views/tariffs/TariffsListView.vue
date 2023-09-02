@@ -1,7 +1,8 @@
 <script>
 import {computed, defineComponent, onMounted, watch, ref} from "vue";
 import {useStore} from "vuex";
-import {useRoute} from "vue-router"
+import {useRoute} from "vue-router";
+import {useI18n} from "vue-i18n";
 
 import Button from "primevue/button";
 import Paginator from "primevue/paginator";
@@ -24,6 +25,7 @@ export default defineComponent({
     }
   },
   setup() {
+    const {t} = useI18n();
     const store = useStore();
     const route = useRoute();
 
@@ -51,7 +53,7 @@ export default defineComponent({
       await loadTariffs();
     });
 
-    return {tariffs, first};
+    return {tariffs, first, t};
   }
 });
 </script>
@@ -75,7 +77,7 @@ export default defineComponent({
   <template v-else>
     <section class="py-2 mb-3">
       <div class="flex justify-content-center">
-        <span>Данные для отображения отсутствуют</span>
+        <span>{{ t('empty-data') }}</span>
       </div>
     </section>
   </template>

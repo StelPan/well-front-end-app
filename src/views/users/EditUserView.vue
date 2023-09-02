@@ -1,13 +1,11 @@
 <script>
-import {defineComponent, onMounted, computed, ref, watch, reactive} from "vue";
-import {useStore} from "vuex";
+import {defineComponent, onMounted, ref, watch, unref} from "vue";
 import {useRoute} from "vue-router";
-import {useError} from "@/hooks/useErrors";
 import {useLanguages} from "@/hooks/useLanguages";
 import {useCountries} from "@/hooks/countries";
 import {useRoles} from "@/hooks/role";
 import {useUsers} from "@/hooks/user";
-import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
+import {useI18n} from "vue-i18n";
 import {useMeta} from "vue-meta";
 
 import InputText from "primevue/inputtext";
@@ -40,57 +38,51 @@ export default defineComponent({
       await loadCountries();
 
       toSelectCountryByPhoneCode();
+
       next();
     } catch (e) {
       console.error(e);
     }
   },
   setup() {
+    const {t} = useI18n();
+
     useMeta({
       title: 'Редактирование пользователя'
     });
 
-    const store = useStore();
     const route = useRoute();
-    const errors = useError();
+    const {roles} = useRoles();
     const {languages} = useLanguages();
     const {countries, selectCountry: country} = useCountries();
+    const {updateUser, user, v$, form: formReactive, isUpdated} = useUsers();
 
-    let formReactive = reactive({
-      first_name: '',
-      last_name: '',
-      patronymic: '',
-      roles: [],
-      email: '',
-      phone: '',
-      language: ''
-    });
+    formReactive.value = {...unref(user)};
 
-    let isUpdated = ref(false);
     let visible = ref(false);
 
     const saveUserData = async () => {
       try {
-        await store.dispatch(
-            'fetchSaveUserData',
-            {
-              id: route.params.id,
-              data: {...formReactive, phone_code: country.value.phone_code},
-            }
-        );
+        const data = {};
+        for (let key in formReactive.value) {
+          if (key === 'avatar') continue;
+          data[key] = formReactive.value[key];
+        }
 
-        isUpdated.value = true;
+        await updateUser({
+          id: route.params.id,
+          data
+        });
       } catch (e) {
-        errors.setErrors(e.response.data.errors)
+        console.error(e);
       }
     };
 
-    const breadcrumbs = ref([]);
-
     watch(formReactive, () => {
       isUpdated.value = false;
-      errors.setErrors()
     });
+
+    const breadcrumbs = ref([]);
 
     onMounted(async () => {
       const label = ((user.value.last_name ? user.value.last_name + ' ' : '') ?? ' -')
@@ -98,17 +90,12 @@ export default defineComponent({
           + ((user.value.patronymic ? user.value.patronymic + ' ' : '') ?? ' -');
 
       breadcrumbs.value = [
-        {label: 'Пользователи', router: {name: 'users'}},
+        {label: t('pages-names.edit-user'), router: {name: 'users'}},
         {label}
       ];
 
-      useCreateReactiveCopy(formReactive, store.getters.getCurrentUser);
-
-      formReactive.roles = store.getters.getCurrentUser.roles.map(role => role.id);
+      formReactive.value.roles = user.value.roles.map(role => role.id);
     });
-
-    const user = computed(() => store.getters.getCurrentUser);
-    const roles = computed(() => store.getters.getRolesList);
 
     return {
       user,
@@ -121,7 +108,8 @@ export default defineComponent({
       languages,
       countries,
       country,
-      errors: errors.errors,
+      t,
+      v$,
     };
   }
 })
@@ -137,15 +125,14 @@ export default defineComponent({
     <div class="flex justify-content-between mb-3">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
       <div class="flex">
-        <Button v-if="!isUpdated" label="Сохранить изменения" class="btn-primary font-light" @click="saveUserData"/>
-        <ButtonSuccess v-if="isUpdated" label="Изменения сохранены"/>
+        <Button v-if="!isUpdated" :label="t('labels.save-changes')" class="btn-primary font-light" @click="saveUserData"/>
+        <ButtonSuccess v-if="isUpdated" :label="t('labels.changes-saved')"/>
       </div>
     </div>
     <div class="flex justify-content-between mb-3">
       <span class="color-black-40">
         <template v-for="(role, i) in user?.roles" :key="i">
           {{ role.name_ru }}
-
           <template v-if="i !== user.roles.length - 1"> + </template>
         </template>
       </span>
@@ -153,70 +140,73 @@ export default defineComponent({
 
     <div class="grid mb-3 h-max">
       <div class="col-12 md:col-4">
-        <MainCard :styles="{'h-full': true}" title="Основные регистрационные сведения">
-          <div class="flex flex-column gap-3 ">
+        <MainCard :styles="{'h-full': true}" :title="t('card-names.basic-registration-information')">
+          <div class="flex flex-column gap-3">
             <div class="mb-3">
               <span class="p-float-label w-full">
                 <InputText
-                    id="last_name" class="w-full"
-                    :class="{'p-invalid': errors.last_name}"
-                    v-model="formReactive.last_name"/>
-                <label for="last_name">Фамилия</label>
+                    v-model="formReactive.last_name"
+                    :class="{'p-invalid': v$.last_name.$errors.length}"
+                    id="last_name"
+                    class="w-full"
+                />
+                <label for="last_name">{{ t('labels.last-name') }}</label>
               </span>
-              <span v-if="errors.last_name" class="color-red text-xs">
-                {{ errors.last_name[0] }}
+              <span v-if="v$.last_name.$errors.length" class="color-red text-xs">
+                {{ v$.last_name.$errors[0].$message }}
               </span>
             </div>
             <div class="mb-3">
               <span class="p-float-label w-full">
                 <InputText
                     id="first_name" class="w-full"
-                    :class="{'p-invalid': errors.first_name}"
+                    :class="{'p-invalid': v$.first_name.$errors.length}"
                     v-model="formReactive.first_name"/>
-                <label for="first_name">Имя</label>
+                <label for="first_name">{{ t('labels.first-name') }}</label>
               </span>
-              <span v-if="errors.first_name" class="color-red text-xs">
-                {{ errors.first_name[0] }}
+              <span v-if="v$.first_name.$errors.length" class="color-red text-xs">
+                {{ v$.first_name.$errors[0].$message }}
               </span>
             </div>
             <div class="mb-3">
               <span class="p-float-label w-full">
                 <InputText
                     id="patronymic" class="w-full"
-                    :class="{'p-invalid': errors.patronymic}"
                     v-model="formReactive.patronymic"/>
-                <label for="patronymic">Отчество</label>
-              </span>
-              <span v-if="errors.patronymic" class="color-red text-xs">
-                {{ errors.patronymic[0] }}
+                <label for="patronymic">{{ t('labels.patronymic') }}</label>
               </span>
             </div>
           </div>
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
-        <MainCard :styles="{'h-full': true}" title="Контактные данные">
+        <MainCard :styles="{'h-full': true}" :title="t('card-names.contact-data')">
           <div class="flex flex-column gap-3">
             <div class="mb-3">
               <InputNumberPhone
                   v-model="formReactive.phone"
+                  :class="{'p-invalid': v$.phone.$errors.length}"
                   @toggleChangePhoneCode="visible = !visible"
-                  :class="{'p-invalid': errors.phone}"
                   :phone-code="country?.phone_code ? country.phone_code : '+7'"
                   :country="country?.name"
               />
-              <span v-if="errors.phone" class="color-red text-xs">
-                {{ errors.phone[0] }}
+              <span v-if="v$.phone.$errors.length" class="color-red text-xs">
+                {{ v$.phone.$errors[0].$message }}
               </span>
             </div>
 
             <div class="mb-3">
-              <span class="p-float-label mb-3 w-full">
-                <InputText id="phone" class="w-full" :class="{'p-invalid': errors.email}" v-model="formReactive.email"/>
-                <label for="phone">E-mail (для уведомлений) *</label>
+              <span class="p-float-label w-full">
+                <InputText
+                    id="email"
+                    class="w-full"
+                    :class="{'p-invalid': v$.email.$errors.length}"
+                    v-model="formReactive.email"
+                />
+                <label for="email">{{ t('labels.email-for-notices') }} *</label>
               </span>
-              <span v-if="errors.email" class="color-red text-xs">
-                {{ errors.phone[0] }}
+              <span v-if="v$.email.$errors.length" class="color-red text-xs">
+                {{ v$.email.$errors[0].$message }}
               </span>
             </div>
           </div>
@@ -224,40 +214,40 @@ export default defineComponent({
       </div>
       <div class="col-12 md:col-4">
         <div class="flex flex-column gap-3">
-          <MainCard title="Роль">
+          <MainCard :title="t('card-names.role')">
             <MultiSelect
                 v-model="formReactive.roles"
-                :class="{'p-invalid': errors.roles}"
+                :class="{'p-invalid': v$.roles.$errors.length}"
                 display="chip"
                 :options="roles"
                 optionLabel="name_ru"
                 option-value="id"
-                placeholder="Роли"
+                :placeholder="t('placeholders.roles')"
                 class="w-full"
             />
 
-            <span v-if="errors.roles" class="color-error text-xs">
-              {{ errors.roles[0] }}
+            <span v-if="v$.roles.$errors.length" class="color-error text-xs">
+              {{ v$.roles.$errors[0].$message }}
             </span>
           </MainCard>
 
-          <MainCard title="Язык">
+          <MainCard :title="t('card-names.language')">
             <Dropdown
                 v-model="formReactive.language"
-                :class="{'p-invalid': errors.language}"
+                :class="{'p-invalid': v$.language.$errors.length}"
                 :options="languages"
                 optionLabel="label"
                 option-value="value"
-                placeholder="Язык"
+                :placeholder="t('card-names.language')"
                 class="w-full"
             />
 
-            <span v-if="errors.language" class="color-error text-xs">
-              {{ errors.language[0] }}
+            <span v-if="v$.language.$errors.length" class="color-error text-xs">
+              {{ v$.language.$errors[0].$message }}
             </span>
           </MainCard>
 
-          <MainCard title="Быстрые ссылки"></MainCard>
+<!--          <MainCard title="Быстрые ссылки"></MainCard>-->
         </div>
       </div>
     </div>

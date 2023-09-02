@@ -31,11 +31,6 @@ export default defineComponent({
         (val) => uri.value = route.path
     );
 
-    watch(
-        () => route.path,
-        async (val) => uri.value = route.path
-    );
-
     const label = computed(() => {
       let l = '';
       switch (uri.value) {

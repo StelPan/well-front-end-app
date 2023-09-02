@@ -1,6 +1,7 @@
 <script>
-import {computed, defineComponent, onMounted, ref} from "vue";
+import {computed, defineComponent, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
+import {usePartner} from "@/hooks/partner";
 
 import Paginator from "primevue/paginator";
 import PartnerCategoriesTable from "@/components/tables/PartnerCategoriesTable";
@@ -8,21 +9,28 @@ import PartnerCategoriesTable from "@/components/tables/PartnerCategoriesTable";
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {PartnerCategoriesTable, Paginator},
-  setup() {
-    const store = useStore();
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const {loadPartnerCategories} = usePartner();
+      await loadPartnerCategories({page: 1});
+    } catch (e) {
+      console.error(e);
+    }
 
-    const categories = computed(() => store.getters.getListPartnerCategories);
+    next();
+  },
+  setup() {
+    const {partnerCategories: categories, loadPartnerCategories} = usePartner();
+
     const first = ref(0);
 
-    const loadPartnerCategories = async () => {
-      await store.dispatch('fetchPartnerCategories', {
-        page: ((first.value / (categories.value?.data?.pagination?.per_page ?? 1)) + 1)
-      });
+    const load = async () => {
+      await loadPartnerCategories({
+        page: ((first.value / (categories.value?.data?.pagination?.per_page ?? 1)) + 1)}
+      );
     };
 
-    onMounted(async () => {
-      await loadPartnerCategories();
-    });
+    watch(first, async () => await load());
 
     return {categories, first};
   }

@@ -2,6 +2,7 @@
 import {defineComponent, onMounted, ref} from "vue";
 import {useStore} from "vuex";
 import {useRouter, useRoute} from "vue-router";
+import {useI18n} from "vue-i18n";
 
 import Button from "primevue/button";
 import TabMenu from "primevue/tabmenu";
@@ -30,6 +31,7 @@ export default defineComponent({
     }
   },
   setup() {
+    const {t} = useI18n();
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
@@ -59,7 +61,7 @@ export default defineComponent({
       }
     });
 
-    return {typesTariffItems, toCreateTariff};
+    return {typesTariffItems, toCreateTariff, t};
   }
 });
 </script>
@@ -67,8 +69,8 @@ export default defineComponent({
 <template>
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
-      <h1>Тарифы</h1>
-      <Button label="Создать тариф" @click="toCreateTariff" class="btn-primary font-light" />
+      <h1>{{ t('menu.tariffs') }}</h1>
+      <Button :label="t('labels.tariff-create')" @click="toCreateTariff" class="btn-primary font-light" />
     </div>
   </section>
   <section class="py-2 mb-3">

@@ -1,9 +1,9 @@
 <script>
-import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
+import {computed, defineComponent, onMounted, ref} from "vue";
 import {useStore} from "vuex";
 import {useRoute, useRouter} from "vue-router";
 import {useError} from "@/hooks/useErrors";
-import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
+import {useNotices} from "@/hooks/notices";
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -16,83 +16,85 @@ import ButtonSuccess from "@/components/buttons/ButtonSuccess";
 import MainCard from "@/components/cards/MainCard";
 import Editor from "primevue/editor";
 import MultiSelect from "primevue/multiselect";
+import Badge from "primevue/badge";
+
+import {useRoles} from "@/hooks/role";
 
 export default defineComponent({
   layout: {name: "AdminLayout"},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const {loadNotice, loadTypeNotices} = useNotices();
+      const {loadRoles} = useRoles();
+      await loadRoles();
+      await loadNotice(to.params.id);
+      await loadTypeNotices();
+    } catch (e) {
+      console.log(e);
+    }
+
+    next();
+  },
   components: {
     Breadcrumb, Button, InputText,
     ButtonSuccess, MainCard, Checkbox,
     MultiSelect, Editor, Dropdown,
-    Calendar, InputMask
+    Calendar, InputMask, Badge
   },
   setup() {
-    const store = useStore();
     const route = useRoute();
     const router = useRouter();
-    const errors = useError();
+    const {notice, formCreateNotice, v$, updateNotice, loadNotice, typeNotices, deleteNotice} = useNotices();
+    const {roles} = useRoles();
 
-    const form = reactive({
-      title: '',
-      text: '',
-      roles: [],
-      type: '',
-      senders_all_roles: false
-    });
-
+    formCreateNotice.value  = {...notice.value};
 
     const breadcrumbs = ref([]);
-    const notice = computed(() => store.getters.getCurrentNotice);
-    const roles = computed(() => store.getters.getRolesList);
-    const typeNotices = computed(() => store.getters.getListTypeNotices);
-
-    watch(
-        () => form.senders_all_roles,
-        (val) => {
-          if (val) {
-            form.roles = roles.value.map(role => role.id);
-          } else {
-            form.roles = [];
-          }
-        });
 
     const toUpdateNotice = async () => {
-      await store.dispatch('fetchUpdateNotice', {
-        id: route.params.id,
-        body: form
-      });
+      try {
+        await updateNotice(
+            route.params.id,
+            formCreateNotice.value,
+        )
+
+      } catch (e) {
+        console.error(e);
+      }
+
+      await loadNotice(route.params.id);
     };
 
     const toDeclineNotice = async () => {
       try {
-        await store.dispatch('fetchDeleteNotice', route.params.id);
+        await deleteNotice(route.params.id);
         await router.push({name: 'notices'});
       } catch (e) {
         console.error(e);
       }
     };
 
-    onMounted(async () => {
-      try {
-        await store.dispatch('fetchNotice', route.params.id);
-        await store.dispatch('fetchTypeNotices');
-        await store.dispatch('fetchRoles');
+    onMounted(() => {
+      formCreateNotice.value.roles = notice.value.roles.map(role => role.id);
+      formCreateNotice.value.push_type_id = formCreateNotice.value.type.id;
+      formCreateNotice.value.send_now = 0;
 
-        useCreateReactiveCopy(form, notice.value, {
-          type: type => type.id,
-        });
-
-        form.roles = form.roles.map(role => role.id);
-
-        breadcrumbs.value = [
-          {label: 'Уведомления', router: {name: 'notices'}},
-          {label: notice.value.id}
-        ];
-      } catch (e) {
-        console.error(e);
-      }
+      breadcrumbs.value = [
+        {label: 'Уведомления', router: {name: 'notices'}},
+        {label: notice.value.id}
+      ];
     });
 
-    return {toUpdateNotice, toDeclineNotice, breadcrumbs, roles, typeNotices, notice, form, errors: errors.errors};
+    return {
+      toUpdateNotice,
+      toDeclineNotice,
+      breadcrumbs,
+      roles,
+      typeNotices,
+      notice,
+      formCreateNotice,
+      v$,
+    };
   }
 });
 </script>
@@ -103,12 +105,35 @@ export default defineComponent({
       <div class="flex align-items-center">
         <Breadcrumb :data="breadcrumbs" separator="/"/>
         <span class="lowercase text-3xl" v-if="notice?.type">&nbsp;({{ notice.type.name }})</span>
+
+        <Badge
+            v-if="notice.state.code === 'draft'"
+            class="ml-2 btn-black-20 border-round-2xl"
+            size="large"
+        >Черновик</Badge>
+
+        <Badge
+            v-if="notice.state.code === 'pending'"
+            class="ml-2 border-round-2xl"
+            size="large"
+        >Ожидает отправки</Badge>
+
+        <Badge
+            v-if="notice.state.code === 'sent'"
+            class="ml-2 btn-success border-round-2xl"
+            size="large"
+        >Отправлено</Badge>
       </div>
 
       <div class="flex">
         <Button v-if="notice?.state?.code === 'draft'" label="Удалить черновик" @click="toDeclineNotice"
                 class="btn-error-outlined font-light"/>
-        <Button @click="toUpdateNotice" label="Запланировать отправку" class="btn-primary font-light ml-3"/>
+        <Button
+            v-if="notice?.state?.code === 'draft'"
+            @click="toUpdateNotice"
+            label="Запланировать отправку"
+            class="btn-primary font-light ml-3"
+        />
       </div>
     </div>
   </section>
@@ -118,27 +143,32 @@ export default defineComponent({
       <div class="col-12">
         <MainCard title="Наименование уведомления">
           <span class="p-float-label w-full">
-            <InputText v-model="form.title" id="name" class="w-full" :class="{'p-invalid': errors.title}"/>
+            <InputText
+                v-model="formCreateNotice.title"
+                id="name"
+                class="w-full"
+                :class="{'p-invalid': v$.title.$errors.length}"
+            />
             <label for="name">Наименование</label>
           </span>
-          <span v-if="errors.title" class="text-xs color-error">
-            {{ errors.title[0] }}
+          <span v-if=" v$.title.$errors.length" class="text-xs color-error">
+            {{  v$.title.$errors[0].$message }}
           </span>
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
         <MainCard title="Выберите или создайте тип уведомления">
-          <div class="w-full">
+          <div class="w-full mb-2">
             <Dropdown
-                v-model="form.type"
-                :class="{'p-invalid': errors.push_type_id}"
+                v-model="formCreateNotice.push_type_id"
+                :class="{'p-invalid': v$.push_type_id.$errors.length}"
                 :options="typeNotices"
                 optionLabel="name"
                 option-value="id"
                 placeholder="Тип уведомления"
-                class="w-full mb-2"/>
-            <span v-if="errors.push_type_id" class="text-xs color-error">
-              {{ errors.push_type_id[0] }}
+                class="w-full"/>
+            <span v-if="v$.push_type_id.$errors.length" class="text-xs color-error">
+              {{ v$.push_type_id.$errors[0].$message }}
             </span>
           </div>
 
@@ -153,55 +183,57 @@ export default defineComponent({
           <div class="grid">
             <div class="col-12 md:col-6">
               <Calendar
-                  v-model="form.send_date"
-                  :class="{'p-invalid': errors.send_date}"
+                  v-model="formCreateNotice.send_date"
+                  :disabled="formCreateNotice.send_now"
                   date-format="d.m.yy"
                   placeholder="Дата"
                   showIcon
                   class="w-full"
               />
-              <span v-if="errors.send_date" class="text-xs color-error">
-                {{ errors.send_date[0] }}
-              </span>
             </div>
             <div class="col-12 md:col-6">
               <div class="w-full">
                 <span class="p-input-icon-left p-float-label w-full">
                   <i class="pi pi-search"/>
-                  <InputMask id="time" v-model="form.send_time" class="w-full" mask="99:99" placeholder="12:00"/>
+                  <InputMask
+                      id="time"
+                      v-model="formCreateNotice.send_time"
+                      :disabled="formCreateNotice.send_now"
+                      class="w-full"
+                      mask="99:99"
+                      placeholder="12:00"
+                  />
                   <label for="time">Время</label>
-                </span>
-                <span v-if="errors.send_time" class="text-xs color-error">
-                  {{ errors.send_time[0] }}
                 </span>
               </div>
             </div>
           </div>
 
-          <Checkbox v-model="form.send_now" :binary="true" name="send_now" id="send_now"/>
+          <Checkbox v-model="formCreateNotice.send_now" :binary="true" name="send_now" id="send_now"/>
           <label for="send_now" class="ml-1">Отправить немедленно</label>
         </MainCard>
       </div>
 
       <div class="col-12 md:col-4">
         <MainCard title="Получатели уведомления">
-          <div class="w-full">
+          <div class="w-full mb-2">
             <MultiSelect
-                v-model="form.roles"
+                v-model="formCreateNotice.roles"
+                :class="{'p-invalid': v$.roles.$errors.length}"
                 display="chip"
                 :options="roles"
                 optionLabel="name_ru"
                 option-value="id"
                 placeholder="Выберите получателя"
-                class="w-full mb-2"
-                :disabled="!!form.senders_all_roles"
+                class="w-full"
+                :disabled="!!formCreateNotice.senders_all_roles"
             />
-            <span v-if="errors.roles" class="text-xs color-error">
-              {{ errors.roles[0] }}
+            <span v-if="v$.roles.$errors.length" class="text-xs color-error">
+              {{ v$.roles.$errors[0].$message }}
             </span>
           </div>
 
-          <Checkbox v-model="form.senders_all_roles" :binary="true" name="senders_all_roles" id="senders_all_roles"/>
+          <Checkbox v-model="formCreateNotice.senders_all_roles" :binary="true" name="senders_all_roles" id="senders_all_roles"/>
           <label for="senders_all_roles" class="ml-1">Получатели - все роли</label>
         </MainCard>
       </div>
@@ -212,10 +244,10 @@ export default defineComponent({
     <div class="grid">
       <div class="col-12">
         <MainCard title="Текст уведомления">
-          <Editor v-model="form.text" class="w-full"/>
+          <Editor v-model="formCreateNotice.text" class="w-full"/>
         </MainCard>
-        <span class="text-xs color-error" v-if="errors.text">
-          {{ errors.text[0] }}
+        <span class="text-xs color-error" v-if="v$.text.$errors.length">
+          {{ v$.text.$errors[0].$message }}
         </span>
       </div>
     </div>

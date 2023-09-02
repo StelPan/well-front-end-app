@@ -3,6 +3,7 @@ import {defineComponent, reactive, ref, computed, onMounted, watch} from "vue";
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
 import {useMeta} from "vue-meta";
+import {useI18n} from "vue-i18n";
 
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
@@ -33,6 +34,7 @@ export default defineComponent({
 
     const store = useStore();
     const router = useRouter();
+    const {t} = useI18n();
 
     const visibleModal = computed(() => store.getters.getUserFilterModal);
     const users = computed(() => store.getters.getUsersList);
@@ -77,7 +79,7 @@ export default defineComponent({
       router.push({name: 'user-create'});
     };
 
-    return {selectedRole, roles, users, toCreateUsers, first, visibleModal, showUserFilterModal};
+    return {selectedRole, roles, users, toCreateUsers, first, visibleModal, showUserFilterModal, t};
   }
 });
 </script>
@@ -91,18 +93,18 @@ export default defineComponent({
 
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
-      <h1 class="font-normal">Пользователи</h1>
+      <h1 class="font-normal">{{ t('pages.users.header') }}</h1>
 
       <div class="flex gap-2">
         <Dropdown
             v-model="selectedRole"
             :options="roles"
             optionLabel="name_ru"
-            placeholder="Роли"
+            :placeholder="t('pages.users.elements.dropdown-roles')"
             class="w-full md:w-14rem border-radius-15"
         />
 
-        <Button label="Создать пользователя" class="btn-primary font-light" @click="toCreateUsers"/>
+        <Button :label="t('pages.users.actions.create')" class="btn-primary font-light" @click="toCreateUsers"/>
 
         <Button icon="pi pi-filter" aria-label="Submit" class="btn-primary font-light" @click="showUserFilterModal"/>
       </div>
@@ -112,14 +114,14 @@ export default defineComponent({
   <section class="mb-3 py-2">
     <div v-if="!users?.data?.data" class="flex justify-content-center align-items-center center-text-screen">
       <span class="color-black-40">
-        Здесь пока ничего нет
+        {{ t('pages.users.empty-data') }}
       </span>
     </div>
 
     <div v-if="Array.isArray(users?.data?.data) ? users.data.data.length : false">
       <DataTable :value="users.data.data" showGridlines tableStyle="min-width: 50rem" selectionMode="single">
         <Column field="id" header="ID" class="text-center"/>
-        <Column field="first_name" header="ФИО">
+        <Column field="first_name" :header="t('tables.users.full-name')">
           <template #body="slotProps">
             <router-link :to="{ name: 'user-edit', params: { id: slotProps.data.id }}"
                          class="color-black-80 color-primary-hover">
@@ -127,12 +129,12 @@ export default defineComponent({
             </router-link>
           </template>
         </Column>
-        <Column field="role" header="Роль">
+        <Column field="role" :header="t('tables.users.roles')">
           <template #body="slotProps">
             {{ slotProps.data.roles[0].name_ru }}
           </template>
         </Column>
-        <Column field="phone" header="Контактный номер">
+        <Column field="phone" :header="t('tables.users.contact-number')">
           <template #body="slotProps">
             {{ slotProps.data.phone_code }}{{ slotProps.data.phone }}
           </template>

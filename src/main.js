@@ -1,5 +1,5 @@
 import {createApp} from 'vue';
-import {createI18n} from 'vue-i18n';
+import {createI18n, useI18n} from 'vue-i18n';
 import uuid from "vue3-uuid";
 import VueRouterMiddleware from 'vue-router-middleware';
 import {createMetaManager} from "vue-meta";
@@ -12,22 +12,21 @@ import "./App.css";
 
 import PrimeVue from 'primevue/config';
 
-import * as Messages from "./i18n";
-const {messages, defaultLanguage} = Messages;
+import {messages, defaultLanguage} from "./i18n";
 const i18n = createI18n({
-    messages: {
-        ru: {
-            errors: {
-                email: 'Неверно указан email'
-            }
-        }
-    },
     fallbackLocale: 'en',
-    legacy: false,
+    globalInjection: true,
     locale: defaultLanguage,
+    legacy: false,
+    messages,
 });
 
-createApp(App)
+createApp(App, {
+    setup() {
+        const {t} = useI18n();
+        return {t};
+    }
+})
     .use(i18n)
     .use(uuid)
     .use(store)

@@ -3,6 +3,7 @@ import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
 import {useRoute} from "vue-router";
 import {useStore} from "vuex";
 import {useError} from "@/hooks/useErrors";
+import {usePartnerCategory} from "@/hooks/partner-category";
 
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
@@ -13,40 +14,37 @@ import Breadcrumb from "@/components/Breadcrumb.vue";
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {InputText, Button, MainCard, Breadcrumb, ButtonSuccess},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const {loadPartnerCategory} = usePartnerCategory();
+      await loadPartnerCategory(to.params.id);
+    } catch (e) {
+      console.error(e);
+    }
+
+    next();
+  },
   setup() {
-    const store = useStore();
+    const {category, form, updatePartnerCategory: update, v$} = usePartnerCategory();
     const route = useRoute();
-    const errors = useError();
 
-    const category = computed(() => store.getters.getCurrentPartnerCategory);
-
-    const form = reactive({name_ru: ''});
+    form.value = {...category.value};
 
     const breadcrumbs = ref([]);
     const isUpdated = ref(false);
 
-    const loadPartnerCategory = async () => {
-      await store.dispatch('fetchPartnerCategory', route.params.id);
-    };
-
-
     const updatePartnerCategory = async () => {
       try {
-        await store.dispatch('fetchUpdatePartnerCategory', {
-          id: route.params.id,
-          body: form,
-        });
+        await update(route.params.id, form.value);
         isUpdated.value = true;
       } catch (e) {
-        errors.setErrors(e.response.data.errors);
+        console.error(e);
       }
     };
 
     watch(form, () => isUpdated.value = false);
 
-    onMounted(async () => {
-      await loadPartnerCategory();
-
+    onMounted( () => {
       breadcrumbs.value = [
         {label: 'Партнеры', router: {name: 'partners-categories'}},
         {label: category.value.name_ru}
@@ -55,7 +53,7 @@ export default defineComponent({
       form.name_ru = category.value.name_ru;
     });
 
-    return {category, form, breadcrumbs, updatePartnerCategory, errors: errors.errors, isUpdated};
+    return {category, form, breadcrumbs, updatePartnerCategory, isUpdated, v$};
   }
 })
 </script>
@@ -83,12 +81,17 @@ export default defineComponent({
         <div class="grid">
           <div class="col-12">
             <span class="p-float-label w-full">
-              <InputText v-model="form.name_ru" id="last_name" class="w-full" :class="{'p-invalid': errors.name_ru}"/>
+              <InputText
+                  v-model="form.name_ru"
+                  id="last_name"
+                  class="w-full"
+                  :class="{'p-invalid': v$.name_ru.$errors.length}"
+              />
               <label for="last_name">Наименование категории *</label>
             </span>
 
-            <span v-if="errors.name_ru" class="text-xs color-error">
-              {{ errors.name_ru[0] }}
+            <span v-if="v$.name_ru.$errors.length" class="text-xs color-error">
+              {{ v$.name_ru.$errors[0].$message }}
             </span>
           </div>
         </div>

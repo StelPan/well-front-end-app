@@ -10,6 +10,7 @@ import Breadcrumb from "@/components/Breadcrumb.vue";
 import MainCard from "@/components/cards/MainCard.vue";
 import ConfirmationModal from "@/components/modals/ConfirmationModal.vue";
 import ButtonSuccess from "@/components/buttons/ButtonSuccess";
+import {useI18n} from "vue-i18n";
 
 const DAILY_TYPE = 'daily';
 const HOURLY_TYPE = 'hourly';
@@ -34,14 +35,16 @@ export default defineComponent({
     }
   },
   setup() {
+    const {t} = useI18n();
     const {form, v$, toggleSetDefault, toggleCreateTariff, isCreated, typeTariffs} = useTariff();
 
     const breadcrumbs = [
-      {label: 'Тарифы', router: {name: 'tariffs'}},
-      {label: 'Создание тарифа'}
+      {label: t('menu.tariffs'), router: {name: 'tariffs'}},
+      {label: t('headers.tariff-create')}
     ];
 
     return {
+      t,
       TARIFF_NAMES,
       form,
       typeTariffs,
@@ -59,15 +62,15 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
-      <Button v-if="!isCreated" label="Создать тариф" @click="toggleCreateTariff" class="btn-primary font-light"/>
-      <ButtonSuccess v-if="isCreated" label="Тариф создан" @click="toggleSetDefault"/>
+      <Button v-if="!isCreated" :label="t('labels.tariff-create')" @click="toggleCreateTariff" class="btn-primary font-light"/>
+      <ButtonSuccess v-if="isCreated" :label="t('labels.tariff-created')" @click="toggleSetDefault"/>
     </div>
   </section>
 
   <section class="py-2 mb-3">
     <div class="grid h-max">
       <div class="col-12 md:col-4">
-        <MainCard :styles="{'h-full': true}" title="Наименование тарифа">
+        <MainCard :styles="{'h-full': true}" :title="t('card-names.tariff-name')">
           <div class="grid">
             <div class="col-12">
              <span class="p-float-label w-full">
@@ -77,7 +80,7 @@ export default defineComponent({
                   id="name"
                   class="w-full"
               />
-              <label for="name">Имя *</label>
+              <label for="name">{{ t('labels.name') }} *</label>
              </span>
               <span class="color-error text-xs" v-if="v$.name_ru.$errors.length">
                 {{ v$.name_ru.$errors[0].$message }}
@@ -87,7 +90,7 @@ export default defineComponent({
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
-        <MainCard :styles="{'h-full': true}" title="Тип тарифа">
+        <MainCard :styles="{'h-full': true}" :title="t('labels.type-tariff')">
           <div class="grid">
             <div class="col-12">
               <Dropdown
@@ -96,7 +99,7 @@ export default defineComponent({
                   optionLabel="name_ru"
                   optionValue="name"
                   :options="typeTariffs"
-                  placeholder="Тип тарифа"
+                  :placeholder="t('placeholders.type-tariff')"
                   class="w-full">
               </Dropdown>
               <span class="color-error text-xs" v-if="v$.period.$errors.length">
@@ -107,7 +110,7 @@ export default defineComponent({
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
-        <MainCard title="Стоимость тарифа / платежа">
+        <MainCard :title="t('card-names.tariff-cost')">
           <div class="grid">
             <div class="col-12">
              <span class="p-float-label w-full">
@@ -117,7 +120,7 @@ export default defineComponent({
                   id="name"
                   class="w-full"
               />
-              <label for="name">Cтоимость, руб. *</label>
+              <label for="name">{{ t('labels.cost') }} руб. *</label>
              </span>
               <span class="color-error text-xs" v-if="v$.cost.$errors.length">
                 {{ v$.cost.$errors[0].$message }}
@@ -132,11 +135,11 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <div class="grid">
       <div class="col-12">
-        <MainCard :styles="{'h-full': true}" title="Описание тарифа / платежа">
+        <MainCard :styles="{'h-full': true}" :title="t('tariff-cost-description')">
           <div class="grid">
             <div class="col-12">
               <div class="mb-1">
-                <span class="text-xl font-bold">Полное описание</span>
+                <span class="text-xl font-bold">{{ t('labels.full-description') }}</span>
               </div>
 
               <Editor v-model="form.description_ru" class="w-full"/>
@@ -147,7 +150,7 @@ export default defineComponent({
             </div>
             <div class="col-12">
               <div class="mb-1">
-                <span class="text-xl font-bold">Краткое описание</span>
+                <span class="text-xl font-bold">{{ t('labels.short-description') }}</span>
               </div>
               <Editor v-model="form.short_description_ru" class="w-full"/>
 

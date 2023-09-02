@@ -5,13 +5,8 @@
 </template>
 
 <style>
-body {
+.main-login {
   overflow-x: hidden !important;
   overflow-y: hidden !important;
-}
-
-.main-login {
-  overflow-x: hidden;
-  overflow-y: hidden;
 }
 </style>
