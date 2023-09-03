@@ -37,7 +37,7 @@ export default defineComponent({
     const legalForms = ref([{label: 'ООО'}, {label: 'ИП'}]);
 
     const formData = ref(props.form);
-    formdata.type = 'fl';
+    formData.type = 'fl';
 
     const requiredMessage = 'Поле обязательно для заполнения';
     const rules = {
