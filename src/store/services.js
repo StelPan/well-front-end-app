@@ -3,6 +3,7 @@ import ServiceService from "../services/services";
 const state = () => ({
     listServices: [],
     currentService: {},
+    createService: {},
 });
 
 const actions = {
@@ -17,12 +18,19 @@ const actions = {
     async fetchUpdateService({commit}, {id, body}) {
         await ServiceService.updateService(id, body);
     },
+    async fetchUploadServicePhoto({commit}, {id, body}) {
+        await ServiceService.uploadServicePhoto(id, body);
+    },
     async fetchDestroyServicePhoto({commit}, {id, uuid}) {
         await ServiceService.destroyServicePhoto(id, uuid);
         commit('deletePhotoCurrentService');
     },
     async fetchCreateService({commit}, body = {}) {
-        await ServiceService.createService(body);
+        const {data: service} = await ServiceService.createService(body);
+        commit('updateCreateService', service);
+    },
+    async fetchCreateServiceCategory({commit}, body = {}) {
+        await ServiceService.createServiceCategory(body);
     }
 };
 
@@ -35,6 +43,9 @@ const mutations = {
     },
     deletePhotoCurrentService(state, {id, uuid}) {
         state.currentService.photos = state.currentService.photos.filter(photo => photo.uuid !== uuid);
+    },
+    updateCreateService(state, service) {
+        state.createService = service;
     }
 };
 
@@ -44,6 +55,9 @@ const getters = {
     },
     getCurrentService(state) {
         return state.currentService;
+    },
+    getCreateService(state) {
+        return state.createService;
     }
 };
 

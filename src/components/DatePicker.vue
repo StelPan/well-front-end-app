@@ -16,6 +16,8 @@ export default defineComponent({
 
     const pick = (i) => {
       pickers.value[i].pick = !pickers.value[i].pick;
+
+      emit('togglePick', pickers.value[i]);
     };
 
     const classMethods = {

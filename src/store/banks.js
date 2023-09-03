@@ -16,7 +16,7 @@ const actions = {
         const bank = banks.find(b => b.id === id);
         commit('updateCurrentBank', bank);
     },
-    async fetchAcquiring({commit}, bankId) { // return []
+    async fetchAcquiring({commit}, bankId) {
         const {data: acquiring} = await BankService.loadAcquiring(bankId);
         commit('updateListAcquiring', acquiring);
     },

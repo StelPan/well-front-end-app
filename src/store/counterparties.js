@@ -3,6 +3,7 @@ import CounterpartyService from "../services/counterparties";
 const state = () => ({
     counterpartiesList: [],
     currentCounterparty: {},
+    createCounterparty: {},
 });
 
 const actions = {
@@ -13,6 +14,13 @@ const actions = {
     async fetchCounterparty({commit}, id) {
         const {data: counterparty} = await CounterpartyService.loadCounterparty(id);
         commit('updateCurrentCounterparty', counterparty);
+    },
+    async fetchCreateCounterparty({commit}, body = {}) {
+        const {data} = await CounterpartyService.createCounterparty(body);
+        commit('updateCreateCounterparty', data);
+    },
+    async fetchUploadCounterpartyPhoto({commit}, {id, data}) {
+        await CounterpartyService.uploadCounterpartyPhoto(id, data);
     }
 };
 
@@ -23,6 +31,9 @@ const mutations = {
     updateCurrentCounterparty(state, counterparty) {
         state.currentCounterparty = counterparty;
     },
+    updateCreateCounterparty(state, counterparty) {
+        state.createCounterparty = counterparty;
+    }
 };
 
 const getters = {
@@ -31,6 +42,9 @@ const getters = {
     },
     getCurrentCounterparty(state) {
         return state.currentCounterparty;
+    },
+    getCreateCounterparty(state) {
+        return state.createCounterparty;
     }
 };
 

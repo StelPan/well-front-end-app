@@ -4,6 +4,7 @@ export default {
         "email": "Некорректный email",
         "required": 'Поле обязательно для заполнения',
         "numeric": 'Поле должно содержать только числа',
+        'minLength': 'Длина поля должна быть равна {min} символов',
         "vendor": {
             "ogrn": "",
             "inn": "",
@@ -55,6 +56,7 @@ export default {
         "service-update": 'Обновить услугу',
         "service-category-create": 'Создать категорию',
         "service-category-creating": 'Создание категории',
+        "service-category-created": "Категория создана",
         "name-category": 'Наименование категории',
         "write-name-category": "Введите наименование категории",
     },

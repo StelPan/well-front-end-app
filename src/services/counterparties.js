@@ -10,10 +10,14 @@ const loadCounterparty = async (id) => {
     return response.data;
 };
 
-const createCounterparty = async (type, data = {}) => {
-    const assignData = Object.assign({ type }, data);
-    const response = await http.post('/api/company/v1/contractor/', assignData);
+const createCounterparty = async (data = {}) => {
+    const response = await http.post('/api/company/v1/contractor', data);
     return response.data;
 };
 
-export default { loadCounterparty, loadCounterparties, createCounterparty };
+const uploadCounterpartyPhoto = async (id, body) => {
+    const response = await http.post(`/api/company/v1/contractor/${id}/photo/upload`, body);
+    return response.data;
+};
+
+export default { loadCounterparty, loadCounterparties, createCounterparty, uploadCounterpartyPhoto};

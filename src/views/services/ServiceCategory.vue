@@ -1,9 +1,9 @@
 <script>
-import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
+import {computed, defineComponent, onMounted, reactive, ref, unref, watch} from "vue";
 import {useStore} from "vuex";
 import {useRoute, useRouter} from "vue-router";
+import {useServiceCategory} from "@/hooks/service-category";
 
-import {useError} from "@/hooks/useErrors";
 import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
 
 import InputText from "primevue/inputtext";
@@ -16,6 +16,8 @@ import MainCard from "@/components/cards/MainCard";
 import Breadcrumb from "@/components/Breadcrumb";
 import ImageCard from "@/components/cards/ImageCard";
 import ConfirmationModal from "@/components/modals/ConfirmationModal";
+import ButtonFileUpload from "@/components/buttons/ButtonFileUpload";
+import {useBanks} from "@/hooks/banks";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
@@ -23,80 +25,53 @@ export default defineComponent({
     InputText, Checkbox, Button,
     MainCard, Breadcrumb, ImageCard,
     Dropdown, FileUpload, ConfirmationModal,
-    ButtonSuccess
+    ButtonSuccess, ButtonFileUpload
   },
   async beforeRouteEnter(to, from, next) {
     try {
-      const store = useStore();
-      await store.dispatch('fetchServiceCategory', to.params.id);
-      await store.dispatch('fetchBanks');
-      next();
+      const {loadServiceCategory} = useServiceCategory();
+      const {loadBanks} = useBanks();
+
+      await loadServiceCategory(to.params.id);
+      await loadBanks();
     } catch (e) {
       console.error(e);
     }
+
+    next();
   },
   setup() {
+    const {
+      category, form, updateServiceCategory,
+      selectIconFile, selectBannerFile,
+      isUpdate, v$,
+      icon, banner,
+      files, vf$
+    } = useServiceCategory();
+
+    const {selectBank, banks, loadAcquiring, acquiring} = useBanks();
+
+    form.value = unref(Object.assign({
+      ...category.value,
+      acquiring_id: category.value?.acquiring?.id ?? ''
+    }));
+
     const store = useStore();
     const route = useRoute();
     const router = useRouter();
 
-    const breadcrumb = ref([]);
-
-    const form = reactive({
-      name_ru: '',
-      name_en: '',
-      name_ch: '',
-      acquiring_id: '',
-      quick_access: '',
-    });
-
-    const icon = ref(false);
-    const banner = ref(false);
-    const selectBank = ref();
-    const isUpdated = ref(false);
+    const breadcrumb = ref([
+      {label: 'Услуги', router: {name: 'services'}},
+      {label: category.value.name_ru}
+    ]);
 
     const visible = computed(() => store.getters.getConfirmationDestroyServiceCategoryModal);
-    const category = computed(() => store.getters.getCurrentServiceCategory);
-    const acquiring = computed(() => store.getters.getListAcquiring);
-    const banks = computed(() => store.getters.getListBanks);
 
     const changeVisibleModal = () => {
       store.dispatch('changeStateModal', {
         type: 'confirmationDestroyServiceCategoryModal',
         bool: !visible.value
       });
-    };
-
-    const onSelectFiles = ({files, originalEvent}) => {
-      banner.value = files;
-    };
-
-    const loadAcquiring = async () => {
-      await store.dispatch('fetchAcquiring', selectBank.value);
-    };
-
-    const updateServiceCategory = async () => {
-      const body = new FormData();
-
-      const data = {
-        ...form,
-        quick_access: Number(form.quick_access)
-      };
-
-      for (let key in data) {
-        body.set(key, data[key]);
-      }
-
-      if (banner.value) {
-        body.append('banner', banner.value);
-      }
-
-      await store.dispatch('fetchUpdateServiceCategory', {
-        id: route.params.id,
-        body,
-      });
-
-      isUpdated.value = true;
     };
 
     const destroyServiceCategory = async () => {
@@ -106,30 +81,24 @@ export default defineComponent({
 
     watch(selectBank, async () => await loadAcquiring());
 
-    watch([form, banner, icon], () => isUpdated.value = false);
-
-    onMounted(async () => {
-      useCreateReactiveCopy(form, category.value, {quick_access: (q) => !!q});
-      breadcrumb.value = [
-        {label: 'Услуги', router: {name: 'services'}},
-        {label: category.value.name_ru}
-      ];
-    });
-
     return {
+      files,
+      selectIconFile,
+      selectBannerFile,
+      icon,
+      banner,
       category,
       breadcrumb,
       form,
       selectBank,
       acquiring,
       banks,
-      onSelectFiles,
       updateServiceCategory,
       changeVisibleModal,
       destroyServiceCategory,
-      banner,
       visible,
-      isUpdated
+      isUpdate,
+      v$
     };
   }
 });
@@ -148,7 +117,7 @@ export default defineComponent({
     <template #footer>
       <div class="flex justify-content-between">
         <Button label="Отменить" @click="changeVisibleModal" class="btn-primary-outlined font-light w-12"/>
-        <Button label="Удалить" @click="destroyServiceCategory"  class="btn-primary font-light ml-3 w-12"/>
+        <Button label="Удалить" @click="destroyServiceCategory" class="btn-primary font-light ml-3 w-12"/>
       </div>
     </template>
   </ConfirmationModal>
@@ -157,8 +126,8 @@ export default defineComponent({
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumb" separator="/"/>
       <div class="flex">
-        <ButtonSuccess v-if="isUpdated" label="Изменения сохранены"></ButtonSuccess>
-        <Button @click="updateServiceCategory" label="Сохранить изменения" class="ml-2 btn-primary font-light" />
+        <ButtonSuccess v-if="isUpdate" label="Изменения сохранены"></ButtonSuccess>
+        <Button v-else @click="updateServiceCategory" label="Сохранить изменения" class="ml-2 btn-primary font-light"/>
       </div>
     </div>
   </section>
@@ -167,19 +136,44 @@ export default defineComponent({
       <div class="col-12 md:col-5">
         <div class="mb-2">
           <MainCard title="Наименование категории">
-          <span class="p-float-label w-full">
-            <InputText v-model="form.name_ru" id="patronymic" class="w-full"/>
-            <label for="patronymic">Введите наименование категории *</label>
-          </span>
+            <span class="p-float-label w-full">
+              <InputText
+                  v-model="form.name_ru"
+                  :class="{'p-invalid': v$.name_ru.$errors.length}"
+                  id="patronymic"
+                  class="w-full"
+              />
+              <label for="patronymic">Введите наименование категории *</label>
+            </span>
+            <span v-if="v$.name_ru.$errors.length" class="text-xs color-error">
+              {{ v$.name_ru.$errors[0].$message }}
+            </span>
           </MainCard>
         </div>
 
         <div class="mb-2">
           <MainCard title="Изображения иконки">
-          <span class="p-float-label w-full">
-            <InputText v-model="form.name_ru" id="patronymic" class="w-full"/>
-            <label for="patronymic">Введите наименование категории *</label>
-          </span>
+            <div class="flex">
+              <img
+                  v-if="files.icon"
+                  :src="files.icon.objectURL"
+                  class="mr-2 h-2rem w-2rem"
+                  alt=""
+              >
+
+              <img
+                  v-else-if="category.icon"
+                  :src="category.icon"
+                  class="mr-2 h-2rem w-2rem"
+                  alt=""
+              >
+
+              <ButtonFileUpload
+                  @chooseFiles="selectIconFile"
+                  :clear-files-after-select="true"
+                  :label="(category.icon || files.icon) ? 'Изменить изображение' : 'Добавить изображение'"
+              />
+            </div>
           </MainCard>
         </div>
 
@@ -208,25 +202,19 @@ export default defineComponent({
       <div class="col-12 md:col-7">
         <div class="mb-2">
           <MainCard title="Изображения категории">
-            <div class="grid col-12 md:col-6">
-              <div class="mb-2">
-                <ImageCard
-                    v-if="category.banner && !banner"
-                    :src="category.banner ?? ''"
-                    :handle="() => category.banner"
-                />
+            <div class="grid">
+              <div class="flex flex-column col-12 md:col-6">
+                <div class="mb-2">
+                  <img v-if="files.banner" :src="files.banner.objectURL" alt="" class="w-full mb-2 w-5rem">
+                  <img v-else-if="category.banner" :src="category.banner" alt="" class="w-full mb-2 w-5rem">
+                </div>
 
-                <ImageCard
-                    v-if="banner"
-                    :src="banner.objectURL"
-                    :handle="() => banner"
+                <ButtonFileUpload
+                    @chooseFiles="selectBannerFile"
+                    :clear-files-after-select="true"
+                    :label="(category.banner || files.banner) ? 'Изменить изображение' : 'Добавить изображение'"
                 />
               </div>
-
-              <FileUpload
-                  @selected="onSelectFiles"
-                  :multiple="false"
-              />
             </div>
           </MainCard>
         </div>

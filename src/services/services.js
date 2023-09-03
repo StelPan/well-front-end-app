@@ -23,6 +23,24 @@ const createService = async (body) => {
 const destroyServicePhoto = async (id, uuid) => {
     const response = await http.post('/api/company/v1/service/' + id + '/photo/delete', {uuid});
     return response.data;
-}
+};
 
-export default {loadService, loadServices, updateService, createService, destroyServicePhoto};
+const createServiceCategory = async (body = {}) => {
+    const response = await http.post('/api/company/v1/service-category', body);
+    return response.data;
+};
+
+const uploadServicePhoto = async (id, body) => {
+    const response = await http.post(`/api/company/v1/service/${id}/photo/upload`, body);
+    return response.data;
+};
+
+export default {
+    loadService,
+    loadServices,
+    updateService,
+    createService,
+    destroyServicePhoto,
+    createServiceCategory,
+    uploadServicePhoto
+};

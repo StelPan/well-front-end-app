@@ -1,4 +1,4 @@
-import {computed, ref} from "vue";
+import {computed, ref, unref} from "vue";
 import {useStore} from "vuex";
 import {useVuelidate} from "@vuelidate/core";
 import {required, numeric} from "@/utils/i18n-validators";
@@ -9,29 +9,51 @@ export function useServices () {
     const service = computed(() => store.getters.getCurrentService);
     const services = computed(() => store.getters.getListServices);
 
-    const form = ref({
-        name_ru: '',
-        service_category_id: '',
-        description_ru: '',
-        type: '',
-        cost_type: '',
-        has_days: false,
-        has_intervals: false,
-        variants: [],
-        subservices: [],
-    });
+    const isCreate = ref(false);
+    const isUpdate = ref(false);
+
+    const schema = {
+        service_category_id: '', name_ru: '', description_ru: '', persons: '',
+        type: '', cost_type: '', cost: '',
+        has_date: false, has_persons: false, has_intervals: false, variants: [],
+        subservices: [], intervals: [],
+        days: [],
+    };
+
+    const form = ref({...schema});
 
     const rules = {
+        cost: {required, numeric},
         name_ru: {required},
         service_category_id: {required},
         description_ru: {required},
         type: {required},
-        cost_type: required,
-        has_days: {required},
+        cost_type: {required},
+        has_date: {required},
         has_intervals: {required},
     };
 
     const v$ = useVuelidate(rules, form);
+
+    const files = ref({
+        photos: []
+    });
+
+    const intervalForm = ref({
+        start: '',
+        end: '',
+        duration: ''
+    });
+
+    const selectFiles = ({files: photos}) => {
+        for(let photo of photos) {
+            files.value.photos.push(photo);
+        }
+    };
+
+    const destroyFileLocal = (photo) => {
+        files.value.photos = files.value.photos.filter(p => p !== photo);
+    };
 
     const loadService = async (id) => {
         await store.dispatch('fetchService', id);
@@ -41,17 +63,169 @@ export function useServices () {
         await store.dispatch('fetchServices', params);
     };
 
-    const createService = async (body = {}) => {
-        await store.dispatch('fetchCreateService', body);
+    const uploadPhotoService = async (id, photo) => {
+        await store.dispatch('fetchUploadServicePhoto', {id, photo});
     };
 
-    const addSubService = ({name, cost}) => {
-        form.value.subservices.push({name, cost});
+    const createService = async () => {
+        const result = await v$.value.$validate();
+        if (!result) {
+            return;
+        }
+
+        const formData = new FormData();
+        for (let key in form.value) {
+            if (key === 'intervals') continue;
+
+            if (key === 'subservices') {
+                for (let key in form.value.subservices) {
+                    const subservice = form.value.subservices[key];
+                    for (let field in subservice) {
+                        formData.set(`subservices[${key}][${field}]`, subservice[field]);
+                    }
+                }
+
+                continue;
+            }
+
+            if (key === 'has_date' || key === 'has_intervals' || key === 'has_persons') {
+                formData.set(key, Number(form.value[key]));
+            } else {
+                formData.set(key, form.value[key]);
+            }
+        }
+
+        if (form.value.has_date) {
+            formData.set('intervals[start]', intervalForm.value.start);
+            formData.set('intervals[end]', intervalForm.value.end);
+            formData.set('intervals[duration]', intervalForm.value.duration);
+        }
+
+        await store.dispatch('fetchCreateService', formData);
+
+        const created = computed(() => store.getters.getCreateService);
+        if (files.value.photos) {
+            const requests = [];
+            for (let photo of files.value.photos) {
+                const data = new FormData();
+                data.set('photo', photo);
+                requests.push(store.dispatch('fetchUploadServicePhoto', {
+                    id: created.value.id,
+                    body: data,
+                }));
+            }
+
+            await Promise.all(requests);
+        }
+
+        isCreate.value = true;
+    };
+
+    const updateService = async () => {
+        const result = await v$.value.$validate();
+        if (!result) {
+            return;
+        }
+
+        const formData = new FormData();
+        for (let key in form.value) {
+            if (key === 'intervals') continue;
+
+            if (key === 'subservices') {
+                for (let key in form.value.subservices) {
+                    const subservice = form.value.subservices[key];
+                    for (let field in subservice) {
+                        formData.set(`subservices[${key}][${field}]`, subservice[field]);
+                    }
+                }
+
+                continue;
+            }
+
+            if (key === 'has_date' || key === 'has_intervals' || key === 'has_persons') {
+                formData.set(key, Number(form.value[key]));
+            } else {
+                formData.set(key, form.value[key]);
+            }
+        }
+
+        if (form.value.has_date) {
+            formData.set('intervals[start]', intervalForm.value.start);
+            formData.set('intervals[end]', intervalForm.value.end);
+            formData.set('intervals[duration]', intervalForm.value.duration);
+        }
+
+        await store.dispatch('fetchUpdateService', {
+            id: service.value.id,
+            body: formData
+        });
+
+        if (files.value.photos) {
+            const requests = [];
+            for (let photo of files.value.photos) {
+                const data = new FormData();
+                data.set('photo', photo);
+                requests.push(store.dispatch('fetchUploadServicePhoto', {
+                    id: service.value.id,
+                    body: data,
+                }));
+            }
+
+            await Promise.all(requests);
+        }
+
+
+        isUpdate.value = true;
+    };
+
+    const subServiceForm = ref({
+        name: '',
+        cost: ''
+    });
+
+    const subServiceRules = {
+        name: {required},
+        cost: {required, numeric}
+    };
+
+    const sv$ = useVuelidate(subServiceRules, subServiceForm);
+
+    const addSubService = async () => {
+        const result = await sv$.value.$validate();
+        if (!result) {
+            return;
+        }
+
+        const subservice = unref(subServiceForm);
+
+        form.value.subservices.push({...subservice});
+
+        subServiceForm.value.name = subServiceForm.value.cost = '';
+    };
+
+    const destroySubService = (subService) => {
+        form.value.subservices = form.value.subservices.filter(sub => sub.id !== subService.id);
     };
 
     const destroyService = async (id) => {
         //
     };
 
-    return {services, service, loadService, loadServices, createService, destroyService, v$};
+    const changeDays = ({day, pick}) => {
+        const find = form.value.days.find(d => d === day);
+        if (!pick && find) {
+            form.value.days = form.value.days.filter(d => d !== find);
+        }
+
+        if (pick && !find) {
+            form.value.days.push(day);
+        }
+    };
+
+    return {
+        services, service, form, subServiceForm, files, intervalForm, isCreate, isUpdate,
+        updateService, loadService, loadServices, createService, destroyFileLocal, changeDays,
+        destroyService, selectFiles, destroySubService, addSubService,
+        v$, sv$,
+    };
 }

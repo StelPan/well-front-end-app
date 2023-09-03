@@ -1,7 +1,8 @@
 <script>
 import {computed, defineComponent, onMounted, ref} from "vue";
 import {useStore} from "vuex";
-import {useRoute} from "vue-router";
+import {useCounterparties} from "@/hooks/counterparties";
+import {useFlat} from "@/hooks/flat";
 
 import Button from "primevue/button";
 import ButtonSuccess from "@/components/buttons/ButtonSuccess.vue";
@@ -21,18 +22,19 @@ export default defineComponent({
   },
   async beforeRouteEnter(to, from, next) {
     try {
-      const store = useStore();
-      await store.dispatch('fetchCounterparty', to.params.id);
-      next();
+      const {loadCounterparty} = useCounterparties();
+      await loadCounterparty(to.params.id);
     } catch (e) {
       console.error(e);
     }
+
+    next();
   },
   setup(props) {
     const store = useStore();
+    const {computedRules, counterparty} = useCounterparties();
 
-    const counterparty = computed(() => store.getters.getCurrentCounterparty);
-    const form = ref({...counterparty.value});
+    const form = ref({...useFlat(counterparty.value)});
     const breadcrumbs = ref([]);
 
     const tabSteps = ref(new Map([
@@ -48,7 +50,7 @@ export default defineComponent({
       ];
     });
 
-    return {counterparty, form, breadcrumbs, tabSteps};
+    return {counterparty, form, breadcrumbs, tabSteps, computedRules};
   }
 });
 </script>
@@ -62,5 +64,7 @@ export default defineComponent({
 
   <component
       :is="tabSteps.get(counterparty.type)"
+      :errors="computedRules"
+      :form="form"
   />
 </template>

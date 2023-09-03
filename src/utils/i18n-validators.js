@@ -10,3 +10,5 @@ export const required = withI18nMessage(validator.required);
 export const email = withI18nMessage(validator.email);
 
 export const numeric = withI18nMessage(validator.numeric);
+
+export const minLength = withI18nMessage(validator.minLength, {withArguments: true});

@@ -1,38 +1,45 @@
 <script>
 import {defineComponent, onMounted, ref, reactive, computed} from "vue";
 import {useStore} from "vuex";
+import {useCounterparies} from "@/hooks/counterparties";
 import {useRoute, useRouter} from "vue-router";
 
 import Button from "primevue/button";
 import Paginator from "primevue/paginator";
 import CounterpartyTable from "@/components/tables/CounterpartyTable";
+import {useCounterparties} from "@/hooks/counterparties";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {Button, CounterpartyTable, Paginator},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const {loadCounterparties} = useCounterparties();
+      await loadCounterparties({page: 1});
+    } catch (e) {
+      console.error(e);
+    }
+
+    next();
+  },
   setup() {
     const store = useStore();
     const router = useRouter();
-
-    const counterparties = computed(() => store.getters.getCounterpartiesList);
+    const {counterparties, loadCounterparties: load} = useCounterparties();
 
     const first = ref(0);
 
     const loadCounterparties = async () => {
-      const filterObject = {
-        page: ((first.value / (counterparties.value?.data?.pagination?.per_page ?? 1)) + 1),
-      };
-
-      await store.dispatch('fetchCounterparties', filterObject);
-    };
-
-    onMounted(async () => {
       try {
-        await loadCounterparties();
+        const filterObject = {
+          page: ((first.value / (counterparties.value?.data?.pagination?.per_page ?? 1)) + 1),
+        };
+
+        await load(filterObject);
       } catch (e) {
         console.error(e);
       }
-    });
+    };
 
     const toCounterpartyView = async () => {
       await router.push({name: 'counterparty-create'});
