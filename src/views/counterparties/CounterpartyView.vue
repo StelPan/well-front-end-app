@@ -49,8 +49,17 @@ export default defineComponent({
 
     const validator = computed(() => validators.value[counterparty.value.type]);
 
-
     form.value = useFlat(unref(counterparty));
+    if (form.value.reg_date)
+      form.value.reg_date = form.value.reg_date.split('.').reverse().join('/');
+    if (form.value.ogrn_date)
+      form.value.ogrn_date = form.value.ogrn_date.split('.').reverse().join('/');
+    if (form.value.birth_date)
+      form.value.birth_date = form.value.birth_date.split('.').reverse().join('/');
+    if (form.value.ogrnip_date)
+      form.value.ogrnip_date = form.value.ogrnip_date.split('.').reverse().join('/');
+    if (form.value.passport_date)
+      form.value.passport_date = form.value.passport_date.split('.').reverse().join('/');
 
     const destroyPhoto = async (photo) => {
       try {

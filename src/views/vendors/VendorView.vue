@@ -44,7 +44,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const route = useRoute();
-    const {vendor, formData, v$, vip$} = useVendor();
+    const {vendor, form, v$, vip$} = useVendor();
     const {countries, selectCountry} = useCountries();
 
     const formVendorTypes = {
@@ -55,6 +55,7 @@ export default defineComponent({
     const breadcrumbs = ref([]);
     const visible = ref(false);
     const isUpdated = ref(false);
+    form.value = useFlat(vendor.value);
 
     const changeVisible = () => {
       visible.value = !visible.value;
@@ -88,7 +89,6 @@ export default defineComponent({
     const updateVendor = async () => {
       try {
         const result = await v$.value.$validate();
-        console.log(result);
         if (!result) {
           return;
         }
@@ -125,11 +125,6 @@ export default defineComponent({
       ];
     });
 
-    watch(
-        formData,
-        () => isUpdated.value = false
-    );
-
     return {
       isUpdated,
       vendor,
@@ -138,11 +133,11 @@ export default defineComponent({
       changeVisible,
       countries,
       selectCountry,
-      formData,
       updateVendor,
       fileUpload,
       fileDestroy,
       formVendorTypes,
+      form,
       v$,
       vip$
     };
@@ -165,7 +160,7 @@ export default defineComponent({
   <template v-if="vendor?.type === 'ul'">
     <VendorJuridicalPersonForm
         :errors="v$"
-        :form="vendor"
+        :form="form"
         @changeVisible="changeVisible"
     />
   </template>
@@ -173,7 +168,7 @@ export default defineComponent({
   <template v-if="vendor?.type === 'ip'">
     <VendorIndividualPersonForm
         :errors="vip$"
-        :form="vendor"
+        :form="form"
         @changeVisible="changeVisible"
     />
   </template>
@@ -184,7 +179,7 @@ export default defineComponent({
         <div class="col-12 md:col-4">
           <span class="p-float-label w-full">
             <InputText
-                v-model="formData.discount"
+                v-model="form.discount"
                 id="discount"
                 class="w-full"
             />

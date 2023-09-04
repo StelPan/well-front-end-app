@@ -2,16 +2,26 @@ import {ref, computed} from 'vue';
 import {useStore} from "vuex";
 
 import {useVuelidate} from '@vuelidate/core';
-import {required, email, numeric, helpers} from '@vuelidate/validators';
-import {minLength} from "@/utils/i18n-validators";
-
-const inn = (val) => val.length === 10;
+import {
+    required, numeric, bik, checking_account,
+    email, minLength, inn,
+    ogrn, passport_series, passport_numbers
+} from "@/utils/i18n-validators";
 
 export function useVendor() {
     const store = useStore();
 
     const vendor = computed(() => store.getters.getCurrentVendor);
-    const formData = ref(vendor.value);
+
+
+    const file = ref(false);
+    const selectFileMemory = ({files}) => {
+        file.value = files[0];
+    };
+
+    const deleteFileMemory = ({files}) => {
+        file.value = false;
+    };
 
     const form = ref({
         email: '',
@@ -68,13 +78,13 @@ export function useVendor() {
     });
 
     const mainRulesUl = {
-        full_name: {required},
         type: {required},
+        full_name: {required},
         short_name: {required},
         legal_form: {required},
-        inn: {required, minLength: minLength(10)},
+        inn: {required, inn},
         kpp: {required, minLength: minLength(9)},
-        ogrn: {required, minLength: minLength(13)},
+        ogrn: {required, ogrn},
         ogrn_date: {required},
         ogrn_place: {required},
         reg_date: {required},
@@ -101,16 +111,16 @@ export function useVendor() {
         birth_city: {required},
         birth_date: {required},
         citizenship: {required},
-        inn: {required, minLength: minLength(12)},
+        inn: {required, inn},
         oktmo: {required},
-        ogrnip: {required, minLength: minLength(13)},
+        ogrnip: {required, ogrn},
         ogrnip_date: {required},
         ogrnip_place: {required},
         passport_issuer: {required},
         passport_issuer_code: {required},
         passport_date: {required},
-        passport_series: {required, minLength: minLength(4)},
-        passport_number: {required, minLength: minLength(6)},
+        passport_series: {required, passport_series},
+        passport_number: {required, passport_numbers},
         snils: {required, minLength: minLength(11)},
         postcode: {required, minLength: minLength(6)},
         region: {required},
@@ -127,18 +137,41 @@ export function useVendor() {
         discount: {required},
     }
 
-    const v$ = useVuelidate(mainRulesUl, form);
     const vip$ = useVuelidate(mainRulesIP, form);
+    const v$ = useVuelidate(mainRulesUl, form);
+
+    const isCreate = ref(false);
 
     const loadVendor = async (id) => {
         await store.dispatch('fetchVendor', id);
     };
 
+    const createVendor = async (type) => {
+        let result = null;
+
+        if (type === 'ul') result = await v$.value.$validate();
+        if (type === 'ip') result = await vip$.value.$validate();
+
+        console.log(result);
+        if (!result) {
+            return;
+        }
+
+        await store.dispatch('fetchCreateVendor', form.value);
+
+        isCreate.value = true;
+    };
+
     return {
+        selectFileMemory,
+        deleteFileMemory,
+        createVendor,
         loadVendor,
-        formData,
+        isCreate,
         vendor,
-        v$,
+        file,
+        form,
         vip$,
+        v$,
     }
 }

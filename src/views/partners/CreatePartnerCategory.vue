@@ -1,5 +1,5 @@
 <script>
-import {defineComponent, onMounted, reactive, ref} from "vue";
+import {defineComponent, onMounted, reactive, ref, watch} from "vue";
 import {useRoute} from "vue-router";
 import {useStore} from "vuex";
 import {useError} from "@/hooks/useErrors";
@@ -17,8 +17,6 @@ export default defineComponent({
   components: {InputText, Button, MainCard, Breadcrumb, ButtonSuccess},
   setup() {
     const store = useStore();
-    const route = useRoute();
-    const errors = useError();
 
     const form = reactive({name_ru: ''});
     const rules = {name_ru: {required: helpers.withMessage('Поле обязательно для заполнения', required)}};
@@ -28,6 +26,7 @@ export default defineComponent({
     const breadcrumbs = ref([]);
     const isCreated = ref(false);
 
+    const errors = ref(null)
     const createPartnerCategory = async () => {
       try {
         const result = await v$.value.$validate();
@@ -38,9 +37,12 @@ export default defineComponent({
         await store.dispatch('fetchCreatePartnerCategory', form);
         isCreated.value = true;
       } catch (e) {
+        errors.value = e.response.data.errors;
         // errors.setErrors(e.response.data.errors);
       }
     };
+
+    watch(form, () => errors.value = false);
 
     onMounted(async () => {
       breadcrumbs.value = [
@@ -49,7 +51,7 @@ export default defineComponent({
       ];
     });
 
-    return {form, breadcrumbs, createPartnerCategory, errors: errors.errors, isCreated, v$};
+    return {form, breadcrumbs, createPartnerCategory, errors, isCreated, v$};
   }
 })
 </script>
@@ -79,7 +81,7 @@ export default defineComponent({
           <div class="col-12">
             <span class="p-float-label w-full">
               <InputText
-                  :class="{'p-invalid': v$.name_ru.$errors.length}"
+                  :class="{'p-invalid': v$.name_ru.$errors.length || errors}"
                   v-model="form.name_ru"
                   id="last_name"
                   class="w-full"
@@ -91,7 +93,7 @@ export default defineComponent({
               {{ v$.name_ru.$errors[0].$message }}
             </span>
 
-            <span v-if="errors.name_ru" class="text-xs color-error">
+            <span v-if="errors" class="text-xs color-error">
               {{ errors.name_ru[0] }}
             </span>
           </div>

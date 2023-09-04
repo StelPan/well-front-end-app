@@ -4,6 +4,7 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useMeta} from "vue-meta";
 import {useError} from "@/hooks/useErrors";
+import {useCountries} from "@/hooks/countries";
 
 import AdminLoginForm from "@/components/forms/AdminLoginForm.vue";
 import SelectPhoneModal from "@/components/modals/SelectPhoneModal.vue";
@@ -19,6 +20,16 @@ export default defineComponent({
     SelectPhoneModal,
     EnterSmsCodeForm,
   },
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const {loadCountries} = useCountries();
+      await loadCountries();
+    } catch (e) {
+      console.error(e);
+    }
+
+    next();
+  },
   setup() {
     useMeta({
       title: 'Авторизация'
@@ -29,14 +40,13 @@ export default defineComponent({
     const errors = useError();
 
     const currentStep = ref(STEP_SMS_CHECK);
+    const countries = computed(() => store.getters.getCountriesList);
 
     const changeStep = (step) => {
       currentStep.value = step
     };
 
     const visible = ref(false);
-
-    const countries = computed(() => store.getters.getCountriesList);
 
     const toggleLoginHandler = async (phone) => {
       try {

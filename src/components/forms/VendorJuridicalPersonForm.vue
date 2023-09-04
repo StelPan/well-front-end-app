@@ -2,9 +2,6 @@
 import {computed, defineComponent, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 
-import {useVuelidate} from '@vuelidate/core';
-import {required, email, helpers} from '@vuelidate/validators';
-
 import Breadcrumb from "@/components/Breadcrumb";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";

@@ -15,7 +15,7 @@ export function useServices () {
     const schema = {
         service_category_id: '', name_ru: '', description_ru: '', persons: '',
         type: '', cost_type: '', cost: '',
-        has_date: false, has_persons: false, has_intervals: false, variants: [],
+        has_date: false, has_persons: false, has_intervals: true, variants: [],
         subservices: [], intervals: [],
         days: [],
     };
@@ -73,32 +73,31 @@ export function useServices () {
             return;
         }
 
-        const formData = new FormData();
+        const formData = {};
         for (let key in form.value) {
             if (key === 'intervals') continue;
 
             if (key === 'subservices') {
-                for (let key in form.value.subservices) {
-                    const subservice = form.value.subservices[key];
-                    for (let field in subservice) {
-                        formData.set(`subservices[${key}][${field}]`, subservice[field]);
-                    }
+                formData.subservices = [];
+                for (let subservice of form.value.subservices) {
+                    formData.subservices.push(subservice);
                 }
 
                 continue;
             }
 
             if (key === 'has_date' || key === 'has_intervals' || key === 'has_persons') {
-                formData.set(key, Number(form.value[key]));
+                formData[key] = Number(form.value[key]);
             } else {
-                formData.set(key, form.value[key]);
+                formData[key] = form.value[key]
             }
         }
 
-        if (form.value.has_date) {
-            formData.set('intervals[start]', intervalForm.value.start);
-            formData.set('intervals[end]', intervalForm.value.end);
-            formData.set('intervals[duration]', intervalForm.value.duration);
+        if (form.value.has_intervals) {
+            formData.intervals = {};
+            formData.intervals.start = intervalForm.value.start;
+            formData.intervals.end = intervalForm.value.end;
+            formData.intervals.duration = intervalForm.value.duration;
         }
 
         await store.dispatch('fetchCreateService', formData);
@@ -127,32 +126,31 @@ export function useServices () {
             return;
         }
 
-        const formData = new FormData();
+        const formData = {};
         for (let key in form.value) {
             if (key === 'intervals') continue;
 
             if (key === 'subservices') {
-                for (let key in form.value.subservices) {
-                    const subservice = form.value.subservices[key];
-                    for (let field in subservice) {
-                        formData.set(`subservices[${key}][${field}]`, subservice[field]);
-                    }
+                formData.subservices = [];
+                for (let subservice of form.value.subservices) {
+                    formData.subservices.push(subservice);
                 }
 
                 continue;
             }
 
             if (key === 'has_date' || key === 'has_intervals' || key === 'has_persons') {
-                formData.set(key, Number(form.value[key]));
+                formData[key] = Number(form.value[key]);
             } else {
-                formData.set(key, form.value[key]);
+                formData[key] = form.value[key]
             }
         }
 
-        if (form.value.has_date) {
-            formData.set('intervals[start]', intervalForm.value.start);
-            formData.set('intervals[end]', intervalForm.value.end);
-            formData.set('intervals[duration]', intervalForm.value.duration);
+        if (form.value.has_intervals) {
+            formData.intervals = {};
+            formData.intervals.start = intervalForm.value.start;
+            formData.intervals.end = intervalForm.value.end;
+            formData.intervals.duration = intervalForm.value.duration;
         }
 
         await store.dispatch('fetchUpdateService', {

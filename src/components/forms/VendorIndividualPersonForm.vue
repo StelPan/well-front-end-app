@@ -109,42 +109,14 @@ export default defineComponent({
                   </span>
                     </div>
                     <div class="w-full">
-                  <span class="p-float-label w-full">
-                    <InputText
-                        v-model="formData.patronymic"
-                        id="first_name"
-                        class="w-full"
-                    />
-                    <label for="first_name">Отчество  *</label>
-                  </span>
-                    </div>
-                    <div class="w-full">
-                  <span class="p-float-label w-full">
-                      <InputText
-                          v-model="formData.birth_country"
-                          :class="{'p-invalid': errors.birth_country.$errors.length}"
-                          id="inn"
-                          class="w-full"
-                      />
-                      <label for="inn">Место рождения (страна) *</label>
-                  </span>
-                      <span v-if="errors.birth_country.$errors.length" class="text-xs color-error">
-                    {{ errors.birth_country.$errors[0].$message }}
-                  </span>
-                    </div>
-                    <div class="w-full">
-                  <span class="p-float-label w-full">
-                      <InputText
-                          v-model="formData.birth_city"
-                          :class="{'p-invalid': errors.birth_city.$errors.length}"
-                          id="inn"
-                          class="w-full"
-                      />
-                      <label for="inn">Место рождения (город) *</label>
-                  </span>
-                      <span v-if="errors.birth_city.$errors.length" class="text-xs color-error">
-                    {{ errors.birth_city.$errors[0].$message }}
-                  </span>
+                      <span class="p-float-label w-full">
+                        <InputText
+                            v-model="formData.patronymic"
+                            id="first_name"
+                            class="w-full"
+                        />
+                        <label for="first_name">Отчество  *</label>
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -160,20 +132,6 @@ export default defineComponent({
                       />
                       <span v-if="errors.birth_date.$errors.length" class="text-xs color-error">
                     {{ errors.birth_date.$errors[0].$message }}
-                  </span>
-                    </div>
-                    <div class="w-full">
-                  <span class="p-float-label w-full">
-                    <InputText
-                        v-model="formData.citizenship"
-                        :class="{'p-invalid': errors.citizenship.$errors.length}"
-                        id="ogrn"
-                        class="w-full"
-                    />
-                    <label for="ogrn">Гражданство *</label>
-                  </span>
-                      <span v-if="errors.citizenship.$errors.length" class="text-xs color-error">
-                    {{ errors.citizenship.$errors[0].$message }}
                   </span>
                     </div>
                     <div class="w-full">

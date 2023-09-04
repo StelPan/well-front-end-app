@@ -1,5 +1,7 @@
 import http from "../plugins/axios";
 
+let timerRefresh = null;
+
 const fetchAuthorization = async (phone) => {
     const response = await http.post('/api/company/v1/auth/login', { phone });
     return response.data;
@@ -38,7 +40,11 @@ const fetchDeleteAvatar = async (id) => {
 const fetchUpdateProfile = async (id, body = {}) => {
     const response = await http.post('/api/company/v1/user/' + id, body);
     return response.data;
-}
+};
+
+const refreshInterval = (token, iat, callback) => {
+    if (!timerRefresh) timerRefresh = setInterval(async () => await callback())
+};
 
 export default {
     fetchProfile,
@@ -47,5 +53,6 @@ export default {
     fetchRefreshToken,
     fetchVerifyCode,
     fetchDeleteAvatar,
-    fetchUpdateProfile
+    fetchUpdateProfile,
+    refreshInterval,
 }

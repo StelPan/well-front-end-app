@@ -14,6 +14,10 @@ const actions = {
         const response = await AuthService.fetchAuthorization(phone);
         commit('updatePhone', phone);
     },
+    async fetchRefreshToken({commit}) {
+        const {data: {access_token} } = await AuthService.fetchRefreshToken();
+        TokenService.setAccessToken(access_token);
+    },
     async fetchVerificationCode({commit}, {phone, code, phoneCode}) {
         const response = await AuthService.fetchVerifyCode(phone, code, phoneCode);
         const {data: {access_token}, user} = response;
@@ -21,7 +25,8 @@ const actions = {
         commit('updateProfile', user);
         TokenService.setAccessToken(access_token);
     },
-    async fetchProfile({commit}) {
+
+    async fetchProfile({commit, dispatch}) {
         const {data} = await AuthService.fetchProfile();
         commit('updateProfile', data);
     },

@@ -1,8 +1,11 @@
 import {computed, ref} from "vue";
-import {email, minLength, required} from "@/utils/i18n-validators";
+import {
+    email, passport_series, passport_numbers,
+    inn, bik, ogrn, numeric, checking_account,
+    oktmo, minLength, required
+} from "@/utils/i18n-validators";
 import {useStore} from "vuex";
 import {useVuelidate} from "@vuelidate/core";
-
 export function useCounterparties() {
     const store = useStore();
 
@@ -61,19 +64,20 @@ export function useCounterparties() {
     });
 
     const mainRules = {
-        postcode: {required, minLength: minLength(6)},
+        postcode: {required, minLength: passport_numbers},
+        bank: {required},
         region: {required},
         city: {required},
         street: {required},
         house: {required},
-        postcode_fact: {required, minLength: minLength(6)},
+        postcode_fact: {required, minLength: passport_numbers},
         region_fact: {required},
         city_fact: {required},
         street_fact: {required},
         house_fact: {required},
         email: {required, email},
         phone: {required},
-        discount: {required},
+        discount: {required, numeric},
     };
 
     const ulRules = {
@@ -81,13 +85,13 @@ export function useCounterparties() {
         type: {required},
         short_name: {required},
         legal_form: {required},
-        inn: {required, minLength: minLength(10)},
+        inn: {required, inn},
         kpp: {required, minLength: minLength(9)},
-        ogrn: {required, minLength: minLength(13)},
+        ogrn: {required, ogrn},
         ogrn_date: {required},
         ogrn_place: {required},
         reg_date: {required},
-        oktmo: {required},
+        oktmo: {required, oktmo},
         ...mainRules
     };
 
@@ -99,12 +103,12 @@ export function useCounterparties() {
         birth_country: {required},
         birth_date: {required},
         citizenship: {required},
-        inn: {required, minLength: minLength(12)},
+        inn: {required, minLength: inn},
         passport_issuer: {required},
         passport_issuer_code: {required},
         passport_date: {required},
-        passport_series: {required, minLength: minLength(4)},
-        passport_number: {required, minLength: minLength(6)},
+        passport_series: {required, passport_series},
+        passport_number: {required, passport_numbers},
         birth_city: {required},
         snils: {required, minLength: minLength(11)},
         ...mainRules
@@ -119,9 +123,9 @@ export function useCounterparties() {
         birth_city: {required},
         birth_date: {required},
         citizenship: {required},
-        inn: {required, minLength: minLength(12)},
-        oktmo: {required},
-        ogrnip: {required, minLength: minLength(13)},
+        inn: {required, inn},
+        oktmo: {required, oktmo},
+        ogrnip: {required, ogrn},
         ogrnip_date: {required},
         ogrnip_place: {required},
         passport_issuer: {required},

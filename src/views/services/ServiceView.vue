@@ -55,8 +55,6 @@ export default defineComponent({
     const {categories} = useServiceCategory();
     const {banks, acquiring, loadAcquiring} = useBanks();
 
-    const store = useStore();
-
     form.value = unref(service);
     form.value.has_persons = Boolean(form.value.has_persons);
     form.value.has_intervals = Boolean(form.value.has_intervals);
@@ -68,8 +66,17 @@ export default defineComponent({
     }
 
     if (service.value.intervals) {
-      const {end, start, duration} = JSON.parse(service.value.intervals);
-      intervalForm.value = {end: end ?? '', start: start ?? '', duration: duration ?? ''};
+      console.log(service.value.intervals);
+      let {end, start, duration} = service.value.intervals;
+      if (!(end && start && duration)) {
+        intervalForm.value = {end: '', start: '', duration: ''};
+      } else {
+        const [e,s] = [end.split(':'), start.split(':')];
+        if (e.length < 2) end = '';
+        if (s.length < 2) start = '';
+        if (isNaN(Number(duration))) duration = '';
+        intervalForm.value = {end, start, duration};
+      }
     }
 
     const serviceTypes = [
@@ -364,9 +371,9 @@ export default defineComponent({
       <div class="col-12 md:col-6">
         <MainCard title="Период оказания услуги">
           <div class="flex w-100">
-            <InputText :disabled="form.has_intervals" v-model="intervalForm.start" placeholder="От" class="w-10rem"/>
-            <InputText :disabled="form.has_intervals" v-model="intervalForm.end" placeholder="До" class="ml-2 w-10rem"/>
-            <InputText :disabled="form.has_intervals" v-model="intervalForm.duration" placeholder="Продолжительность"
+            <InputText :disabled="!form.has_intervals" v-model="intervalForm.start" placeholder="От" class="w-10rem"/>
+            <InputText :disabled="!form.has_intervals" v-model="intervalForm.end" placeholder="До" class="ml-2 w-10rem"/>
+            <InputText :disabled="!form.has_intervals" v-model="intervalForm.duration" placeholder="Продолжительность"
                        class="ml-2 w-12rem"/>
           </div>
           <span

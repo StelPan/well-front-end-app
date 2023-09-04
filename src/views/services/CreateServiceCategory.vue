@@ -123,12 +123,16 @@ export default defineComponent({
 
             <Dropdown
                 v-model="form.acquiring_id"
+                :class="{'p-invalid': v$.acquiring_id.$errors.length}"
                 :options="acquiring"
                 optionLabel="identifier"
                 optionValue="id"
                 placeholder="Идентификатор эквайринга"
                 class="w-full"
             />
+            <span class="text-xs color-red">
+              {{ v$.acquiring_id.$errors.length }}
+            </span>
           </div>
         </MainCard>
       </div>

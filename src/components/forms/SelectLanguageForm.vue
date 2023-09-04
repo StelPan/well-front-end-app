@@ -85,9 +85,9 @@ export default defineComponent({
   </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 .p-inputtext {
-  border-width: 2px ;
+  border-width: 2px;
   border-radius: 17px !important;
 }
 

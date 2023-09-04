@@ -128,7 +128,8 @@ export default defineComponent({
                       <Calendar
                           v-model="formData.birth_date"
                           :class="{'p-invalid': errors.birth_date.$errors.length}"
-                          placeholder="Дата рождения *"
+                          date-format="d/m/yy"
+                          placeholder="Дата рожденияd *"
                           showIcon
                           class="w-full"
                       />
@@ -622,28 +623,28 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.account"
-                        :class="{'p-invalid': errors?.account}"
+                        :class="{'p-invalid': errors.account.$errors.length}"
                         id="checking_account"
                         class="w-full"
                     />
                     <label for="checking_account">Расчетный счет *</label>
                   </span>
-                  <span v-if="errors?.account" class="text-xs color-error">
-                    {{ errors.account[0] }}
+                  <span v-if="errors.account.$errors.length" class="text-xs color-error">
+                    {{ errors.account.$errors[0].$message }}
                   </span>
                 </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.bic"
-                        :class="{'p-invalid': errors?.bic}"
+                        :class="{'p-invalid': errors.bic.$errors.length}"
                         id="bik"
                         class="w-full"
                     />
                     <label for="bik">БИК *</label>
                   </span>
-                  <span v-if="errors?.bic" class="text-xs color-error">
-                    {{ errors.bic[0] }}
+                  <span v-if="errors.bic.$errors.length" class="text-xs color-error">
+                    {{ errors.bic.$errors[0].$message }}
                   </span>
                 </div>
               </div>
@@ -653,25 +654,25 @@ export default defineComponent({
                 <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.bank"
-                        :class="{'p-invalid': errors?.bank}"
+                        :class="{'p-invalid': errors.bank.$errors.length}"
                         id="bik"
                         class="w-full"
                     />
                     <label for="bik">Наименования банка *</label>
                 </span>
-                <span v-if="errors?.bank" class="text-xs color-error">
-                  {{ errors.bank[0] }}
+                <span v-if="errors.bank.$errors.length" class="text-xs color-error">
+                  {{ errors.bank.$errors[0].$message }}
                 </span>
                 <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.corr_account"
-                        :class="{'p-invalid': errors?.corr_account}"
+                        :class="{'p-invalid': errors.corr_account.$errors.length}"
                         id="correspondent_account"
                         class="w-full"
                     />
                     <label for="correspondent_account">Корр. счет *</label>
                 </span>
-                <span v-if="errors?.corr_account" class="text-xs color-error">
+                <span v-if="errors.bank.$errors.length" class="text-xs color-error">
                   {{ errors.corr_account[0] }}
                 </span>
               </div>

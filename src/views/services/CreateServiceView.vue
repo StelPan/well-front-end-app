@@ -346,9 +346,9 @@ export default defineComponent({
       <div class="col-12 md:col-6">
         <MainCard title="Период оказания услуги">
           <div class="flex w-100">
-            <InputText :disabled="form.has_intervals" v-model="intervalForm.start" placeholder="От" class="w-10rem"/>
-            <InputText :disabled="form.has_intervals" v-model="intervalForm.end" placeholder="До" class="ml-2 w-10rem"/>
-            <InputText :disabled="form.has_intervals" v-model="intervalForm.duration" placeholder="Продолжительность"
+            <InputText :disabled="!form.has_intervals" v-model="intervalForm.start" placeholder="От" class="w-10rem"/>
+            <InputText :disabled="!form.has_intervals" v-model="intervalForm.end" placeholder="До" class="ml-2 w-10rem"/>
+            <InputText :disabled="!form.has_intervals" v-model="intervalForm.duration" placeholder="Продолжительность"
                        class="ml-2 w-12rem"/>
           </div>
           <span

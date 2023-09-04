@@ -32,7 +32,9 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      await authenticate();
+      try {
+        await authenticate();
+      } catch (e) {}
 
       if (path.value === '/') {
         await router.push({name: 'users'});
