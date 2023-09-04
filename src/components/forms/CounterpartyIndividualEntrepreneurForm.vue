@@ -37,29 +37,7 @@ export default defineComponent({
     const legalForms = ref([{label: 'ООО'}, {label: 'ИП'}]);
 
     const formData = ref(props.form);
-    formData.type = 'fl';
-
-    const requiredMessage = 'Поле обязательно для заполнения';
-    const rules = {
-      inn: {required: helpers.withMessage(requiredMessage, required)},
-      data: {
-        full_name: {required: helpers.withMessage(requiredMessage, required)},
-        oktmo: {required: helpers.withMessage(requiredMessage, required)},
-        kpp: {required: helpers.withMessage(requiredMessage, required)},
-        ogrn_place: {required: helpers.withMessage(requiredMessage, required)},
-        ogrn: {required: helpers.withMessage(requiredMessage, required)},
-      },
-      postcode: {required: helpers.withMessage(requiredMessage, required)},
-      region: {required: helpers.withMessage(requiredMessage, required)},
-      region_fact: {required: helpers.withMessage(requiredMessage, required)},
-      city: {required: helpers.withMessage(requiredMessage, required)},
-      city_fact: {required: helpers.withMessage(requiredMessage, required)},
-      street: {required: helpers.withMessage(requiredMessage, required)},
-      street_fact: {required: helpers.withMessage(requiredMessage, required)},
-      house_fact: {required: helpers.withMessage(requiredMessage, required)},
-    };
-
-    const v$ = useVuelidate(rules, formData);
+    formData.value.type = 'fl';
 
     const isMatch = computed(() => {
       return (formData.value.postcode === formData.value.postcode_fact) &&
@@ -69,7 +47,8 @@ export default defineComponent({
           (formData.value.floor === formData.value.floor_fact) &&
           (formData.value.region === formData.value.region_fact) &&
           (formData.value.room === formData.value.room_fact) &&
-          (formData.value.street === formData.value.street_fact);
+          (formData.value.street === formData.value.street_fact) &&
+          (formData.value.house_fact === formData.value.house);
     });
 
     const mergeAddresses = () => {
@@ -80,12 +59,9 @@ export default defineComponent({
       formData.value.floor_fact = formData.value.floor
       formData.value.region_fact = formData.value.region
       formData.value.room_fact = formData.value.room
+      formData.value.house_fact = formData.value.house
       formData.value.street_fact = formData.value.street
     }
-
-    watch(formData, () => {
-      emit('formChange', formData.value);
-    });
 
     const changeVisible = (data) => {
       emit('changeVisible', data);
@@ -102,161 +78,240 @@ export default defineComponent({
       <div class="col-12">
         <MainCard title="Основные регистрационные сведения">
           <div class="grid mb-4">
-            <div class="col-12 md:col-4">
-              <div class="grid gap-4 m-0 flex-column">
-                <div class="w-full">
+            <div class="col-12 mb-3">
+              <div class="grid">
+                <div class="col-12 md:col-4">
+                  <div class="grid gap-4 m-0 flex-column">
+                    <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
-                        v-model="formData.data.last_name"
-                        :class="{'p-invalid': errors?.last_name}"
-                        id="last_name"
+                        v-model="formData.last_name"
+                        :class="{'p-invalid': errors.last_name.$errors.length}"
+                        id="full_name"
                         class="w-full"
                     />
-                    <label for="last_name">Полное наименование *</label>
+                    <label for="full_name">Фамилия *</label>
                   </span>
-                  <span v-if="errors?.last_name" class="text-xs color-error">
-                    {{ errors.last_name[0] }}
+                      <span v-if="errors.last_name.$errors.length" class="text-xs color-error">
+                    {{ errors.last_name.$errors[0].$message }}
                   </span>
-                </div>
-                <div class="w-full">
+                    </div>
+                    <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
-                        v-model="formData.data.first_name"
-                        :class="{'p-invalid': errors?.first_name}"
+                        v-model="formData.first_name"
+                        :class="{'p-invalid': errors.first_name.$errors.length}"
                         id="first_name"
                         class="w-full"
                     />
-                    <label for="first_name">Краткое наименова  *</label>
+                    <label for="first_name">Имя  *</label>
                   </span>
-                  <span v-if="errors?.first_name" class="text-xs color-error">
-                    {{ errors.first_name[0] }}
+                      <span v-if="errors.first_name.$errors.length" class="text-xs color-error">
+                    {{ errors.first_name.$errors[0].$message }}
                   </span>
+                    </div>
+                    <div class="w-full">
+                  <span class="p-float-label w-full">
+                    <InputText
+                        v-model="formData.patronymic"
+                        id="first_name"
+                        class="w-full"
+                    />
+                        <label for="first_name">Отчество  *</label>
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div class="w-full">
-                  <Dropdown
-                      v-model="formData.data.legal_form"
-                      :class="{'p-invalid': errors?.legal_form}"
-                      :options="legalForms"
-                      optionLabel="label"
-                      optionValue="label"
-                      placeholder="Организационно-правовая форма *"
-                      class="w-full"/>
+                <div class="col-12 md:col-4">
+                  <div class="grid m-0 gap-4">
+                    <div class="w-full">
+                      <Calendar
+                          v-model="formData.birth_date"
+                          :class="{'p-invalid': errors.birth_date.$errors.length}"
+                          placeholder="Дата рождения *"
+                          showIcon
+                          class="w-full"
+                      />
+                      <span v-if="errors.birth_date.$errors.length" class="text-xs color-error">
+                    {{ errors.birth_date.$errors[0].$message }}
+                  </span>
+                    </div>
+                    <div class="w-full">
+                       <span class="p-float-label w-full">
+                          <InputText
+                              v-model="formData.citizenship"
+                              :class="{'p-invalid': errors.citizenship.$errors.length}"
+                              id="ogrn"
+                              class="w-full"
+                          />
+                          <label for="ogrn">Гражданство *</label>
+                      </span>
+                      <span v-if="errors.citizenship.$errors.length" class="text-xs color-error">
+                        {{ errors.citizenship.$errors[0].$message }}
+                      </span>
+                   </div>
+                    <div class="w-full">
+                     <span class="p-float-label w-full">
+                        <InputText
+                            v-model="formData.snils"
+                            :class="{'p-invalid': errors.snils.$errors.length}"
+                            id="ogrn"
+                            class="w-full"
+                        />
+                        <label for="ogrn">СНИЛС *</label>
+                      </span>
+                      <span v-if="errors.snils.$errors.length" class="text-xs color-error">
+                        {{ errors.snils.$errors[0].$message }}
+                      </span>
+                    </div>
+                    <div class="w-full">
+                      <span class="p-float-label w-full">
+                          <InputText
+                              v-model="formData.inn"
+                              :class="{'p-invalid': errors.inn.$errors.length}"
+                              id="oktmo"
+                              class="w-full"
+                          />
+                          <label for="oktmo">ИНН *</label>
+                      </span>
+                          <span v-if="errors.inn.$errors.length" class="text-xs color-error">
+                        {{ errors.inn.$errors[0].$message }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 md:col-4">
+                  <div class="grid m-0 gap-4">
+                    <div class="w-full">
+                      <span class="p-float-label w-full">
+                        <InputText
+                            v-model="formData.oktmo"
+                            id="ogrn"
+                            class="w-full"
+                        />
+                          <label for="ogrn">ОКТМО *</label>
+                      </span>
+                    </div>
+                    <div class="w-full">
+                      <span class="p-float-label w-full">
+                          <InputText
+                              v-model="formData.birth_country"
+                              :class="{'p-invalid': errors.birth_country.$errors.length}"
+                              id="inn"
+                              class="w-full"
+                          />
+                          <label for="inn">Место рождения (страна) *</label>
+                      </span>
+                      <span v-if="errors.birth_country.$errors.length" class="text-xs color-error">
+                       {{ errors.birth_country.$errors[0].$message }}
+                      </span>
+                    </div>
+                    <div class="w-full">
+                      <span class="p-float-label w-full">
+                          <InputText
+                              v-model="formData.birth_city"
+                              :class="{'p-invalid': errors.birth_city.$errors.length}"
+                              id="inn"
+                              class="w-full"
+                          />
+                          <label for="inn">Место рождения (город) *</label>
+                      </span>
+                      <span v-if="errors.birth_city.$errors.length" class="text-xs color-error">
+                        {{ errors.birth_city.$errors[0].$message }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="col-12 md:col-4">
-              <div class="grid m-0 gap-4">
+              <div class="w-full flex flex-column gap-4">
+                <span class="p-float-label w-full">
+                    <InputText
+                        id="inn"
+                        class="w-full"
+                    />
+                    <label for="inn">Документ удостоверяющий личность</label>
+                </span>
+                <div class="grid">
+                  <div class="col-12 md:col-6">
+                    <span class="p-float-label w-full">
+                        <InputText
+                            v-model="formData.passport_series"
+                            :class="{'p-invalid': errors.passport_series.$errors.length}"
+                            id="inn"
+                            class="w-full"
+                        />
+                        <label for="inn">Серия *</label>
+                    </span>
+                    <span v-if="errors.passport_series.$errors.length" class="text-xs color-error">
+                      {{ errors.passport_series.$errors[0].$message }}
+                    </span>
+                  </div>
+                  <div class="col-12 md:col-6">
+                    <span class="p-float-label w-full">
+                        <InputText
+                            v-model="formData.passport_number"
+                            :class="{'p-invalid': errors.passport_number.$errors.length}"
+                            id="inn"
+                            class="w-full"
+                        />
+                        <label for="inn">Номер *</label>
+                    </span>
+                    <span v-if="errors.passport_number.$errors.length" class="text-xs color-error">
+                      {{ errors.passport_number.$errors[0].$message }}
+                    </span>
+                  </div>
+                </div>
+                <!--                <span v-if="errors.birth_city.$errors.length" class="text-xs color-error">-->
+                <!--                    {{ errors.birth_city.$errors[0].$message }}-->
+                <!--                  </span>-->
+              </div>
+            </div>
+            <div class="col-12 md:col-4">
+              <div class="grid gap-4 m-0">
+                <div class="w-full">
+                  <Calendar
+                      v-model="formData.passport_date"
+                      :class="{'p-invalid': errors.passport_date.$errors.length}"
+                      placeholder="Дата выдачи паспорта *"
+                      showIcon
+                      class="w-full"
+                  />
+                  <span v-if="errors.passport_date.$errors.length" class="text-xs color-error">
+                    {{ errors.passport_date.$errors[0].$message }}
+                  </span>
+                </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                       <InputText
-                          v-model="formData.inn"
-                          :class="{'p-invalid': errors?.inn}"
+                          v-model="formData.passport_issuer_code"
+                          :class="{'p-invalid': errors.passport_issuer_code.$errors.length}"
                           id="inn"
                           class="w-full"
                       />
-                      <label for="inn">ИНН *</label>
+                      <label for="inn">Код подразделенияя *</label>
                   </span>
-                  <span v-if="errors?.inn" class="text-xs color-error">
-                    {{ errors.inn[0] }}
-                  </span>
-                </div>
-                <div class="w-full">
-                  <span class="p-float-label w-full">
-                      <InputText
-                          v-model="formData.data.ogrnip"
-                          :class="{'p-invalid': errors?.ogrnip}"
-                          id="ogrnip"
-                          class="w-full"
-                      />
-                      <label for="ogrnip">ОГРН *</label>
-                  </span>
-                  <span v-if="errors?.ogrnip" class="text-xs color-error">
-                    {{ errors.ogrnip[0] }}
-                  </span>
-                </div>
-                <div class="w-full">
-                  <span class="p-float-label w-full">
-                    <InputText
-                        v-model="formData.data.ogrnip_place"
-                        :class="{'p-invalid': errors?.ogrnip_place}"
-                        id="ogrn"
-                        class="w-full"
-                    />
-                    <label for="ogrn">Место присвоения ОГРН *</label>
-                  </span>
-                  <span v-if="errors?.ogrnip_place" class="text-xs color-error">
-                    {{ errors.ogrnip_place[0] }}
-                  </span>
-                </div>
-                <div class="w-full">
-                  <Calendar
-                      v-model="formData.data.ogrnip_date"
-                      :class="{'p-invalid': errors?.ogrnip_date}"
-                      placeholder="Дата присвоения ОГРН (после 2002 года) *"
-                      showIcon
-                      class="w-full"
-                  />
-                  <span v-if="errors?.ogrnip_date" class="text-xs color-error">
-                    {{ errors.ogrnip_date[0] }}
+                  <span v-if="errors.passport_issuer_code.$errors.length" class="text-xs color-error">
+                    {{ errors.passport_issuer_code.$errors[0].$message }}
                   </span>
                 </div>
               </div>
             </div>
-
             <div class="col-12 md:col-4">
-              <div class="grid m-0 gap-4">
-                <div class="w-full">
-                  <span class="p-float-label w-full">
-                    <InputText
-                        v-model="formData.data.kpp"
-                        :class="{'p-invalid': errors?.kpp}"
-                        id="kpp"
-                        class="w-full"
-                    />
-                    <label for="kpp">КПП</label>
-                  </span>
-                  <span v-if="errors?.kpp" class="text-xs color-error">
-                    {{ errors.kpp[0] }}
-                  </span>
-                </div>
+              <div class="grid gap-4 m-0">
                 <div class="w-full">
                   <span class="p-float-label w-full">
                       <InputText
-                          v-model="formData.data.oktmo"
-                          :class="{'p-invalid': errors?.oktmo}"
-                          id="oktmo"
+                          v-model="formData.passport_issuer"
+                          :class="{'p-invalid': errors.passport_issuer.$errors.length}"
+                          id="inn"
                           class="w-full"
                       />
-                      <label for="oktmo">ОКТМО *</label>
+                      <label for="inn">Название организации выдвшей документ *</label>
                   </span>
-                  <span v-if="errors?.oktmo" class="text-xs color-error">
-                    {{ errors.oktmo[0] }}
-                  </span>
-                </div>
-                <div class="w-full">
-                  <span class="p-float-label w-full">
-                      <InputText
-                          v-model="formData.data.snils"
-                          :class="{'p-invalid': errors?.snils}"
-                          id="snils"
-                          class="w-full"
-                      />
-                      <label for="snils">СНИЛС *</label>
-                  </span>
-                  <span v-if="errors?.snils" class="text-xs color-error">
-                    {{ errors.snils[0] }}
-                  </span>
-                </div>
-                <div class="w-full">
-                  <Calendar
-                      v-model="formData.data.reg_date"
-                      :class="{'p-invalid': errors?.reg_date}"
-                      placeholder="Дата регистрации организации (до 2002 года) *"
-                      showIcon
-                      class="w-full"
-                  />
-                  <span v-if="errors?.reg_date" class="text-xs color-error">
-                    {{ errors.reg_date[0] }}
+                  <span v-if="errors.passport_issuer.$errors.length" class="text-xs color-error">
+                    {{ errors.passport_issuer.$errors[0].$message }}
                   </span>
                 </div>
               </div>
@@ -276,42 +331,42 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.postcode"
-                        :class="{'p-invalid': errors?.postcode}"
+                        :class="{'p-invalid': errors.postcode.$errors.length}"
                         id="postcode"
                         class="w-full"
                     />
                     <label for="postcode">Индекс</label>
                   </span>
-                  <span v-if="errors?.postcode" class="text-xs color-error">
-                    {{ errors.postcode[0] }}
+                  <span v-if="errors.postcode.$errors.length" class="text-xs color-error">
+                    {{ errors.postcode.$errors[0].$message }}
                   </span>
                 </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.region"
-                        :class="{'p-invalid': errors?.region}"
+                        :class="{'p-invalid': errors.region.$errors.length}"
                         id="region"
                         class="w-full"
                     />
                     <label for="region">Регион</label>
                   </span>
-                  <span v-if="errors?.region" class="text-xs color-error">
-                    {{ errors.region[0] }}
+                  <span v-if="errors.region.$errors.length" class="text-xs color-error">
+                    {{ errors.region.$errors[0].$message }}
                   </span>
                 </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.city"
-                        :class="{'p-invalid': errors?.city}"
+                        :class="{'p-invalid': errors.city.$errors.length}"
                         id="city"
                         class="w-full"
                     />
                     <label for="city">Город</label>
                   </span>
-                  <span v-if="errors?.city" class="text-xs color-error">
-                    {{ errors.city[0] }}
+                  <span v-if="errors.city.$errors.length" class="text-xs color-error">
+                    {{ errors.city.$errors[0].$message }}
                   </span>
                 </div>
               </div>
@@ -322,42 +377,38 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.street"
-                        :class="{'p-invalid': errors?.street}"
+                        :class="{'p-invalid': errors.street.$errors.length}"
                         id="street"
                         class="w-full"
                     />
                     <label for="street">Улица *</label>
                  </span>
-                  <span v-if="errors?.street" class="text-xs color-error">
-                    {{ errors.street[0] }}
+                  <span v-if="errors.street.$errors.length" class="text-xs color-error">
+                    {{ errors.street.$errors[0].$message }}
                   </span>
                 </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.house"
-                        :class="{'p-invalid': errors?.house}"
+                        :class="{'p-invalid': errors.house.$errors.length}"
                         id="house"
                         class="w-full"
                     />
                     <label for="house">Дом *</label>
                  </span>
-                  <span v-if="errors?.house" class="text-xs color-error">
-                    {{ errors.house[0] }}
+                  <span v-if="errors.house.$errors.length" class="text-xs color-error">
+                    {{ errors.house.$errors[0].$message }}
                   </span>
                 </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.building"
-                        :class="{'p-invalid': errors?.building}"
                         id="street"
                         class="w-full"
                     />
                     <label for="street">Номер здания, строение и т.д...</label>
-                  </span>
-                  <span v-if="errors?.building" class="text-xs color-error">
-                    {{ errors.building[0] }}
                   </span>
                 </div>
               </div>
@@ -368,42 +419,30 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                       <InputText
                           v-model="formData.corps"
-                          :class="{'p-invalid': errors?.corps}"
                           id="frame"
                           class="w-full"
                       />
                       <label for="frame">Корпус</label>
                   </span>
-                  <span v-if="errors?.corps" class="text-xs color-error">
-                    {{ errors.corps[0] }}
-                  </span>
                 </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.floor"
-                        :class="{'p-invalid': errors?.floor}"
                         id="floor"
                         class="w-full"
                     />
                     <label for="floor">Этаж</label>
                   </span>
-                  <span v-if="errors?.floor" class="text-xs color-error">
-                    {{ errors.floor[0] }}
-                  </span>
                 </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
-                        v-model="formData.floor"
-                        :class="{'p-invalid': errors?.floor}"
+                        v-model="formData.room"
                         id="number_office"
                         class="w-full"
                     />
                     <label for="number_office">Номер офиса</label>
-                  </span>
-                  <span v-if="errors?.floor" class="text-xs color-error">
-                    {{ errors.floor[0] }}
                   </span>
                 </div>
               </div>
@@ -436,42 +475,42 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                       <InputText
                           v-model="formData.postcode_fact"
-                          :class="{'p-invalid': errors?.postcode_fact}"
+                          :class="{'p-invalid': errors.postcode_fact.$errors.length}"
                           id="postcode"
                           class="w-full"
                       />
                       <label for="postcode">Индекс</label>
                   </span>
-                  <span v-if="errors?.postcode_fact" class="text-xs color-error">
-                    {{ errors.postcode_fact[0] }}
+                  <span v-if="errors.postcode_fact.$errors.length" class="text-xs color-error">
+                    {{ errors.postcode_fact.$errors[0].$message }}
                   </span>
                 </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                       <InputText
                           v-model="formData.region_fact"
-                          :class="{'p-invalid': errors?.region_fact}"
+                          :class="{'p-invalid': errors.region_fact.$errors.length}"
                           id="region"
                           class="w-full"
                       />
                       <label for="region">Регион</label>
                   </span>
-                  <span v-if="errors?.region_fact" class="text-xs color-error">
-                    {{ errors.region_fact[0] }}
+                  <span v-if="errors.region_fact.$errors.length" class="text-xs color-error">
+                    {{ errors.region_fact.$errors[0].$message }}
                   </span>
                 </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                       <InputText
                           v-model="formData.city_fact"
-                          :class="{'p-invalid': errors?.city_fact}"
+                          :class="{'p-invalid': errors.city_fact.$errors.length}"
                           id="city"
                           class="w-full"
                       />
                       <label for="city">Город</label>
                   </span>
-                  <span v-if="errors?.city_fact" class="text-xs color-error">
-                    {{ errors.city_fact[0] }}
+                  <span v-if="errors.city_fact.$errors.length" class="text-xs color-error">
+                    {{ errors.city_fact.$errors[0].$message }}
                   </span>
                 </div>
               </div>
@@ -482,28 +521,28 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.street_fact"
-                        :class="{'p-invalid': errors?.street_fact}"
+                        :class="{'p-invalid': errors.street_fact.$errors.length}"
                         id="street"
                         class="w-full"
                     />
                     <label for="street">Улица *</label>
                   </span>
-                  <span v-if="errors?.street_fact" class="text-xs color-error">
-                    {{ errors.street_fact[0] }}
+                  <span v-if="errors.street_fact.$errors.length" class="text-xs color-error">
+                    {{ errors.street_fact.$errors[0].$message }}
                   </span>
                 </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.house_fact"
-                        :class="{'p-invalid': errors?.house_fact}"
+                        :class="{'p-invalid': errors.house_fact.$errors.length}"
                         id="house"
                         class="w-full"
                     />
                     <label for="house">Дом *</label>
                   </span>
-                  <span v-if="errors?.house_fact" class="text-xs color-error">
-                    {{ errors.house_fact[0] }}
+                  <span v-if="errors.house_fact.$errors.length" class="text-xs color-error">
+                    {{ errors.house_fact.$errors[0].$message }}
                   </span>
                 </div>
                 <div class="w-full">
@@ -650,26 +689,26 @@ export default defineComponent({
                   <InputNumberPhone
                       v-model="formData.phone"
                       :country="selectCountry?.name"
-                      :classes="{'p-invalid': errors?.phone}"
+                      :classes="{'p-invalid': errors.phone.$errors.length}"
                       :phone-code="selectCountry?.phone_code ? selectCountry.phone_code : '+7'"
                       @toggleChangePhoneCode="changeVisible"
                   />
-                  <span v-if="errors?.phone" class="text-xs color-error">
-                    {{ errors.phone[0] }}
+                  <span v-if="errors.phone.$errors.length" class="text-xs color-error">
+                    {{ errors.phone.$errors[0].$message }}
                   </span>
                 </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.email"
-                        :class="{'p-invalid': errors?.email}"
+                        :class="{'p-invalid': errors.email.$errors.length}"
                         id="email"
                         class="w-full"
                     />
                     <label for="email">Электронная почта (для уведомлений бенефициару) *</label>
                   </span>
-                  <span v-if="errors?.email" class="text-xs color-error">
-                   {{ errors.email[0] }}
+                  <span v-if="errors.email.$errors.length" class="text-xs color-error">
+                   {{ errors.email.$errors[0].$message }}
                   </span>
                 </div>
               </div>

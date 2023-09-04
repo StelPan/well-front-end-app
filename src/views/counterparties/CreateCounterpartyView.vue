@@ -1,5 +1,5 @@
 <script>
-import {defineComponent, ref, reactive, computed} from "vue";
+import {defineComponent, ref, computed} from "vue";
 import {useCounterparties} from "@/hooks/counterparties";
 
 import Button from "primevue/button";

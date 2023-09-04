@@ -19,9 +19,16 @@ const actions = {
         const {data} = await CounterpartyService.createCounterparty(body);
         commit('updateCreateCounterparty', data);
     },
+    async fetchUpdateCounterparty({commit}, {id, body}) {
+        const {data} = await CounterpartyService.updateCounterparty(id, body);
+        commit('updateCreateCounterparty', data);
+    },
     async fetchUploadCounterpartyPhoto({commit}, {id, data}) {
         await CounterpartyService.uploadCounterpartyPhoto(id, data);
-    }
+    },
+    async fetchDestroyCounterpartyPhoto({commit}, {id, body}) {
+        await CounterpartyService.deleteCounterpartyPhoto(id, body);
+    },
 };
 
 const mutations = {
@@ -33,6 +40,9 @@ const mutations = {
     },
     updateCreateCounterparty(state, counterparty) {
         state.createCounterparty = counterparty;
+    },
+    clearCounterPartyPhoto(state, uuid) {
+        state.currentCounterparty.photos = state.currentCounterparty.photos.filter(photo => photo.uuid !== uuid);
     }
 };
 

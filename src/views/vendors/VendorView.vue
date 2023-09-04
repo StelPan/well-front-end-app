@@ -44,7 +44,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const route = useRoute();
-    const {vendor, formData, v$} = useVendor();
+    const {vendor, formData, v$, vip$} = useVendor();
     const {countries, selectCountry} = useCountries();
 
     const formVendorTypes = {
@@ -143,7 +143,8 @@ export default defineComponent({
       fileUpload,
       fileDestroy,
       formVendorTypes,
-      v$
+      v$,
+      vip$
     };
   }
 });
@@ -163,7 +164,7 @@ export default defineComponent({
 
   <template v-if="vendor?.type === 'ul'">
     <VendorJuridicalPersonForm
-        :v$="v$"
+        :errors="v$"
         :form="vendor"
         @changeVisible="changeVisible"
     />
@@ -171,6 +172,7 @@ export default defineComponent({
 
   <template v-if="vendor?.type === 'ip'">
     <VendorIndividualPersonForm
+        :errors="vip$"
         :form="vendor"
         @changeVisible="changeVisible"
     />

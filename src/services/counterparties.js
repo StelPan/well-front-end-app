@@ -15,9 +15,26 @@ const createCounterparty = async (data = {}) => {
     return response.data;
 };
 
+const updateCounterparty = async (id, body = {}) => {
+    const response = await http.post(`/api/company/v1/contractor/${id}`, body);
+    return response.data;
+};
+
 const uploadCounterpartyPhoto = async (id, body) => {
     const response = await http.post(`/api/company/v1/contractor/${id}/photo/upload`, body);
     return response.data;
 };
 
-export default { loadCounterparty, loadCounterparties, createCounterparty, uploadCounterpartyPhoto};
+const deleteCounterpartyPhoto = async (id, body = {}) => {
+    const response = await http.post(`/api/company/v1/contractor/${id}/photo/delete`, body);
+    return response.data;
+};
+
+export default {
+    loadCounterparty,
+    loadCounterparties,
+    createCounterparty,
+    updateCounterparty,
+    uploadCounterpartyPhoto,
+    deleteCounterpartyPhoto,
+};

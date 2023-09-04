@@ -168,6 +168,7 @@ export default defineComponent({
                 </div>
                 <div class="w-full">
                   <Calendar
+                      date-format="d.m.yy"
                       v-model="formData.ogrn_date"
                       :class="{'p-invalid': errors.ogrn_date.$errors.length}"
                       placeholder="Дата присвоения ОГРН (после 2002 года) *"
@@ -185,6 +186,7 @@ export default defineComponent({
               <div class="grid m-0 gap-4">
                 <div class="w-full">
                   <Calendar
+                      date-format="d.m.yy"
                       v-model="formData.reg_date"
                       :class="{'p-invalid': errors.reg_date.$errors.length}"
                       placeholder="Дата регистрации организации (до 2002 года) *"

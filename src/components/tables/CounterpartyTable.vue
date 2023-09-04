@@ -30,8 +30,11 @@ export default defineComponent({
       <template v-if="slotProps.data.type === 'ul'">
         Юр. лицо
       </template>
-      <template v-else>
+      <template v-else-if="slotProps.data.type === 'fl'">
         Физ. лицо
+      </template>
+      <template v-else-if="slotProps.data.type === 'ip'">
+        ИП
       </template>
     </template>
   </Column>

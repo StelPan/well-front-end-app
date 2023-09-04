@@ -1,5 +1,5 @@
-import {ref, computed} from "vue";
-import {required, email, minLength} from "@/utils/i18n-validators";
+import {computed, ref} from "vue";
+import {email, minLength, required} from "@/utils/i18n-validators";
 import {useStore} from "vuex";
 import {useVuelidate} from "@vuelidate/core";
 
@@ -94,6 +94,19 @@ export function useCounterparties() {
     const ulv$ = useVuelidate(ulRules, form);
 
     const flRules = {
+        last_name: {required},
+        first_name: {required},
+        birth_country: {required},
+        birth_date: {required},
+        citizenship: {required},
+        inn: {required, minLength: minLength(12)},
+        passport_issuer: {required},
+        passport_issuer_code: {required},
+        passport_date: {required},
+        passport_series: {required, minLength: minLength(4)},
+        passport_number: {required, minLength: minLength(6)},
+        birth_city: {required},
+        snils: {required, minLength: minLength(11)},
         ...mainRules
     };
 
@@ -124,7 +137,7 @@ export function useCounterparties() {
 
     const rulesFromType = {
         'ul': ulv$,
-        'fl': ulv$,
+        'fl': flv$,
         'ip': ipv$,
     };
 
@@ -154,6 +167,12 @@ export function useCounterparties() {
         await store.dispatch('fetchUploadCounterpartyPhoto', {id, data: body});
     };
 
+    const destroyPhoto = async (id, body = {}) => {
+        const {uuid} = body
+        await store.dispatch('fetchDestroyCounterpartyPhoto', {id, body: {uuid}});
+        store.commit('clearCounterPartyPhoto', uuid);
+    };
+
 
     const createCounterparty = async () => {
         const result = await rulesFromType[form.value.type].value.$validate();
@@ -171,6 +190,7 @@ export function useCounterparties() {
                 key === 'passport_date'
             ) {
                 const date = new Date(form.value[key]);
+
                 const formatDate = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + '.'
                     + ((date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '.'
                     + (date.getFullYear());
@@ -199,7 +219,49 @@ export function useCounterparties() {
         isCreate.value = true;
     };
 
-    const addFileMemory = ({files: requests }) => {
+    const updateCounterparty = async (id, form) => {
+        const result = await rulesFromType[form.value.type].value.$validate();
+        if (!result) {
+            return;
+        }
+
+        const sendFormData = {};
+        for (let key in form.value) {
+            if (
+                key === 'reg_date' ||
+                key === 'ogrn_date' ||
+                key === 'birth_date' ||
+                key === 'ogrnip_date' ||
+                key === 'passport_date'
+            ) {
+                const date = new Date(form.value[key]);
+                sendFormData[key] = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + '.'
+                    + ((date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '.'
+                    + (date.getFullYear());
+
+                continue;
+            }
+
+            sendFormData[key] = form.value[key];
+        }
+
+        await store.dispatch('fetchUpdateCounterparty', {id, body: sendFormData});
+
+        if (files.value) {
+            const requests = [];
+            for (let file of files.value) {
+                const data = new FormData();
+                data.set('photo', file);
+                requests.push(uploadPhoto(id, data));
+            }
+
+            await Promise.all(requests);
+        }
+
+        isUpdate.value = true;
+    };
+
+    const addFileMemory = ({files: requests}) => {
         files.value = requests;
     };
 
@@ -208,8 +270,22 @@ export function useCounterparties() {
     };
 
     return {
-        ulv$, ipv$, flv$,
-        isCreate, isUpdate, files, form, counterparty, counterparties, computedRules,
-        loadCounterparties, loadCounterparty, createCounterparty, addFileMemory, destroyFileMemory
+        ulv$,
+        ipv$,
+        flv$,
+        isCreate,
+        isUpdate,
+        files,
+        form,
+        counterparty,
+        counterparties,
+        computedRules,
+        loadCounterparties,
+        loadCounterparty,
+        createCounterparty,
+        addFileMemory,
+        destroyFileMemory,
+        destroyPhoto,
+        updateCounterparty
     };
 }
