@@ -1,5 +1,5 @@
 <script>
-import {defineComponent, ref, watch} from "vue";
+import {defineComponent, ref, watch, computed} from "vue";
 import Dialog from "primevue/dialog";
 import SelectLanguageForm from "@/components/forms/SelectLanguageForm.vue";
 
@@ -10,7 +10,7 @@ export default defineComponent({
     Dialog
   },
   props: {
-    visible: {
+    modelValue: {
       type: Boolean,
       required: true,
     },
@@ -21,29 +21,30 @@ export default defineComponent({
   },
   setup(props, { emit }) {
 
-    const closeModalEvent = () => emit('toggleCloseModal', true);
+    const value = computed({
+      get() {
+        return props.modelValue
+      },
+      set(value) {
+        emit('update:modelValue', value)
+      }
+    })
 
-    return {
-      closeModalEvent,
-    };
+    return {value};
   }
 });
 </script>
 
 <template>
   <Dialog
-      :visible="visible"
+      v-model:visible="value"
       modal
       :close-on-escape="true"
-      :closable="false"
       :style="{ 'max-width': '400px', 'border-radius': '25px' }"
   >
     <template #default>
-      <div class="flex justify-content-center py-2">
-        <SelectLanguageForm
-            @selectedCountry="closeModalEvent"
-            :countries="countries"
-        />
+      <div class="flex justify-content-center">
+        <SelectLanguageForm :countries="countries" />
       </div>
     </template>
 

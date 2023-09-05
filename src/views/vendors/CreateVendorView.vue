@@ -13,7 +13,6 @@ import ButtonFileUpload from "@/components/buttons/ButtonFileUpload.vue";
 import VendorIndividualPersonForm from "@/components/forms/VendorIndividualPersonForm";
 import VendorJuridicalPersonForm from "@/components/forms/VendorJuridicalPersonForm";
 
-
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {
@@ -63,8 +62,13 @@ export default defineComponent({
       }
     };
 
+    const validators = ref({
+      "ul": v$,
+      "ip": vip$
+    });
+
     const validator = computed(() => {
-      return currentStep.value === 'ul' ? v$ : vip$
+      return validators.value[currentStep.value]
     });
 
     watch([form, currentStep], () => {
@@ -151,10 +155,14 @@ export default defineComponent({
           <span class="p-float-label w-full">
             <InputText
                 v-model="form.discount"
+                :class="{'p-invalid': validator.discount.$errors.length}"
                 id="discount"
                 class="w-full"
             />
             <label for="discount">Скидка  *</label>
+          </span>
+          <span v-if="validator.discount.$errors.length" class="text-xs color-error">
+            {{ validator.discount.$errors[0].$message }}
           </span>
         </div>
       </div>

@@ -81,9 +81,6 @@ export default defineComponent({
       changeStep(STEP_SMS_CHECK);
     };
 
-    const showSelectPhoneModal = () => {
-      visible.value = true;
-    };
 
     onMounted(async () => {
       await store.dispatch('fetchCountries');
@@ -96,7 +93,6 @@ export default defineComponent({
       visible,
       countries,
       currentStep,
-      showSelectPhoneModal,
       toggleRetrySendCodeHandler,
       toggleChangeNumberHandler,
       toggleCheckCodeHandler,
@@ -110,9 +106,8 @@ export default defineComponent({
 
 <template>
   <SelectPhoneModal
-      v-model:visible="visible"
+      v-model:modelValue="visible"
       :countries="countries"
-      @toggleCloseModal="visible = false"
   />
 
   <div class="container">
@@ -130,7 +125,7 @@ export default defineComponent({
                 <AdminLoginForm
                     v-if="currentStep === STEP_SMS_CHECK"
                     :errors="errors"
-                    @toggleSelectPhone="showSelectPhoneModal"
+                    @toggleSelectPhone="visible = true"
                     @toggleLogin="toggleLoginHandler"
                 />
 

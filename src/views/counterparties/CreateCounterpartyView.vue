@@ -179,9 +179,6 @@ export default defineComponent({
                     />
                     <label for="correspondent_account">Корр. счет *</label>
                 </span>
-                <!--                <span v-if="validator.bank.$validator.length" class="text-xs color-error">-->
-                <!--                  {{ validator.corr_account[0] }}-->
-                <!--                </span>-->
               </div>
             </div>
           </div>

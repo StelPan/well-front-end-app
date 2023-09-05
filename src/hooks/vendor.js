@@ -3,7 +3,7 @@ import {useStore} from "vuex";
 
 import {useVuelidate} from '@vuelidate/core';
 import {
-    required, numeric, bik, checking_account,
+    required, numeric, bik, checking_account, oktmo, innfl,
     email, minLength, inn,
     ogrn, passport_series, passport_numbers
 } from "@/utils/i18n-validators";
@@ -89,12 +89,12 @@ export function useVendor() {
         ogrn_place: {required},
         reg_date: {required},
         oktmo: {required},
-        postcode: {required, minLength: minLength(6)},
+        postcode: {required, passport_numbers},
         region: {required},
         city: {required},
         street: {required},
         house: {required},
-        postcode_fact: {required, minLength: minLength(6)},
+        postcode_fact: {required, passport_numbers},
         region_fact: {required},
         city_fact: {required},
         street_fact: {required},
@@ -107,11 +107,7 @@ export function useVendor() {
     const mainRulesIP = {
         last_name: {required},
         first_name: {required},
-        birth_country: {required},
-        birth_city: {required},
-        birth_date: {required},
-        citizenship: {required},
-        inn: {required, inn},
+        inn: {required, innfl},
         oktmo: {required},
         ogrnip: {required, ogrn},
         ogrnip_date: {required},
@@ -122,12 +118,12 @@ export function useVendor() {
         passport_series: {required, passport_series},
         passport_number: {required, passport_numbers},
         snils: {required, minLength: minLength(11)},
-        postcode: {required, minLength: minLength(6)},
+        postcode: {required, passport_numbers},
         region: {required},
         city: {required},
         street: {required},
         house: {required},
-        postcode_fact: {required, minLength: minLength(6)},
+        postcode_fact: {required, passport_numbers},
         region_fact: {required},
         city_fact: {required},
         street_fact: {required},
@@ -152,7 +148,6 @@ export function useVendor() {
         if (type === 'ul') result = await v$.value.$validate();
         if (type === 'ip') result = await vip$.value.$validate();
 
-        console.log(result);
         if (!result) {
             return;
         }

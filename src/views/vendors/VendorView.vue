@@ -54,12 +54,13 @@ export default defineComponent({
       'ip': 'VendorIndividualPersonForm'
     };
 
-    const validators = {
+    const validators = ref({
       'ul' : v$,
       'ip': vip$,
-    };
+    });
 
-    const validator = computed(() => validators[vendor.value.type]);
+    const validator = computed(() => validators.value[vendor.value.type]);
+    console.log(validator.value)
 
     const breadcrumbs = ref([]);
     const visible = ref(false);
@@ -97,13 +98,13 @@ export default defineComponent({
 
     const updateVendor = async () => {
       try {
-        const result = await v$.value.$validate();
+        const result = await validator.value.$validate();
         if (!result) {
           return;
         }
 
         const flat = useFlat(form.value);
-        const flatData = new form();
+        const flatData = new formData();
 
         for (let key in flat) {
           if (key === 'payment_details')
@@ -261,26 +262,26 @@ export default defineComponent({
                   <InputNumberPhone
                       v-model="form.phone"
                       :country="selectCountry?.name"
-                      :classes="{'p-invalid': errors.phone.$errors.length}"
+                      :classes="{'p-invalid': validator.phone.$errors.length}"
                       :phone-code="selectCountry?.phone_code ? selectCountry.phone_code : '+7'"
                       @toggleChangePhoneCode="changeVisible"
                   />
-                  <span v-if="errors.phone.$errors.length" class="text-xs color-error">
-                    {{ errors.phone.$errors[0].$message }}
+                  <span v-if="validator.phone.$errors.length" class="text-xs color-error">
+                    {{ validator.phone.$errors[0].$message }}
                   </span>
                 </div>
                 <div class="w-full">
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="form.email"
-                        :class="{'p-invalid': errors.email.$errors.length}"
+                        :class="{'p-invalid': validator.email.$errors.length}"
                         id="email"
                         class="w-full"
                     />
                     <label for="email">Электронная почта (для уведомлений бенефициару) *</label>
                   </span>
-                  <span v-if="errors.email.$errors.length" class="text-xs color-error">
-                   {{ errors.email.$errors[0].$message }}
+                  <span v-if="validator.email.$errors.length" class="text-xs color-error">
+                   {{ validator.email.$errors[0].$message }}
                   </span>
                 </div>
               </div>
@@ -298,10 +299,14 @@ export default defineComponent({
           <span class="p-float-label w-full">
             <InputText
                 v-model="form.discount"
+                :class="{'p-invalid': validator.discount.$errors.length}"
                 id="discount"
                 class="w-full"
             />
             <label for="discount">Скидка  *</label>
+          </span>
+          <span v-if="validator.discount.$errors.length" class="text-xs color-error">
+            {{ validator.discount.$errors[0].$message }}
           </span>
         </div>
       </div>

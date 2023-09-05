@@ -117,9 +117,8 @@ export default defineComponent({
 
 <template>
   <SelectPhoneModal
-      @toggleCloseModal="visible = !visible"
+      v-model:modelValue="visible"
       :countries="countries"
-      :visible="visible"
   />
   <section class="py-2 mb-3">
     <div class="flex justify-content-between mb-3">
