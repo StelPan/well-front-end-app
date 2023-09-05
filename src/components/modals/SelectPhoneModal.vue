@@ -54,7 +54,7 @@ export default defineComponent({
   </Dialog>
 </template>
 
-<style scoped lang="scss">
+<style module lang="scss">
 .p-dialog-header-icons {
   display: none;
 }
