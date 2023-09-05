@@ -38,6 +38,16 @@ const createPartnerCategory = async (body) => {
     return response.data;
 };
 
+const uploadPartnerPhoto = async (id, body) => {
+    const response = await http.post(`api/company/v1/partner/${id}/photo/upload`, body);
+    return response.data
+};
+
+const destroyPartnerPhoto = async (id, body) => {
+    const response = await http.post(`/api/company/v1/partner/${id}/photo/delete`, body);
+    return response.data;
+};
+
 export default {
     loadPartner,
     loadPartners,
@@ -46,4 +56,6 @@ export default {
     updatePartnerCategory,
     createPartnerCategory,
     updatePartner,
+    uploadPartnerPhoto,
+    destroyPartnerPhoto,
 };

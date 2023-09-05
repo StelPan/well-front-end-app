@@ -1,10 +1,8 @@
 <script>
-import {computed, defineComponent, onMounted, reactive, ref, watch} from "vue";
+import {computed, defineComponent, onMounted, ref, unref, watch} from "vue";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
-import {useCreateReactiveCopy} from "@/hooks/useCreateReactiveCopy";
-
-import {useError} from "@/hooks/useErrors";
+import {usePartners} from "@/hooks/partners";
 
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -13,29 +11,41 @@ import Editor from "primevue/editor";
 import MainCard from "@/components/cards/MainCard";
 import Breadcrumb from "@/components/Breadcrumb";
 import ButtonSuccess from "@/components/buttons/ButtonSuccess";
-
+import ButtonFileUpload from "@/components/buttons/ButtonFileUpload.vue";
+import ImageCard from "@/components/cards/ImageCard.vue";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {ButtonSuccess, Button, InputText, MainCard, Dropdown, Breadcrumb, Editor},
+  components: {ButtonSuccess, Button, InputText, MainCard, Dropdown, Breadcrumb, Editor, ButtonFileUpload, ImageCard},
+  async beforeRouteEnter(to, from, next) {
+    try {
+      const {loadPartner} = usePartners();
+      await loadPartner(to.params.id);
+    } catch (e) {
+      console.log(e);
+    }
+
+    next();
+  },
   setup() {
+    const {
+      partner,
+      form,
+      files,
+      updatePartner,
+      loadFileMemory,
+      isUpdate,
+      v$,
+      destroyFileMemory,
+      destroyFile,
+      loadPartner
+    } = usePartners();
+
     const store = useStore();
-    const route = useRoute();
-    const errors = useError();
 
-    const partner = computed(() => store.getters.getCurrentPartner);
+    form.value = unref(partner);
+
     const partnerCategories = computed(() => store.getters.getListPartnerCategories);
-
-    const form = reactive({
-      name: '',
-      promo_type: '',
-      partner_category_id: '',
-      description_ru: '',
-      description_en: '',
-      description_ch: ''
-    });
-
-    const photos = ref([]);
 
     const promoTypes = ref([
       {label: 'QR-code', promo: 'QR-code'},
@@ -43,55 +53,48 @@ export default defineComponent({
     ]);
 
     const breadcrumbs = ref([]);
-    const isUpdate = ref(false);
-
-    const loadPartner = async () => {
-      await store.dispatch('fetchPartner', route.params.id);
-    };
 
     const loadPartnerCategories = async () => {
       await store.dispatch('fetchPartnerCategories');
     };
 
-    const updatePartner = async () => {
+    const update = async () => {
       try {
-        await store.dispatch('fetchUpdatePartner', {
-          id: route.params.id,
-          body: form
-        });
-        isUpdate.value = true;
+        await updatePartner();
+        await loadPartner(partner.value.id);
+        files.value = [];
       } catch (e) {
-        errors.setErrors(e.response.data.errors);
+        console.error(e);
       }
     };
 
+    const deleteFile = async (uuid) => {
+      await destroyFile(partner.value.id, {uuid});
+    }
+
     watch(form, () => isUpdate.value = false);
 
-    watch(form, () => errors.clearErrors());
-
     onMounted(async () => {
-      await loadPartner();
       await loadPartnerCategories();
-
-      useCreateReactiveCopy(form, partner.value.data);
-      photos.value = partner.value.data.photos;
 
       breadcrumbs.value = [
         {label: 'Партнеры', router: {name: 'partners-list'}},
-        {label: partner.value.data.name}
+        {label: partner.value.name}
       ];
     });
 
     return {
-      partner,
+      partner, files,
       form,
       partnerCategories,
       promoTypes,
       breadcrumbs,
-      updatePartner,
+      update,
       isUpdate,
-      photos,
-      errors: errors.errors
+      destroyFileMemory,
+      loadFileMemory,
+      deleteFile,
+      v$,
     };
   }
 });
@@ -106,7 +109,7 @@ export default defineComponent({
         <Button label="Отклонить" class="btn-error-outlined font-light"/>
         <Button
             v-if="!isUpdate"
-            @click="updatePartner"
+            @click="update"
             label="Сохранить изменения"
             class="btn-primary font-light ml-3"
         />
@@ -121,10 +124,15 @@ export default defineComponent({
       <div class="col-12 md:col-4">
         <MainCard title="Название партнера">
             <span class="p-float-label mb-3 w-full">
-              <InputText id="name" class="w-full" :class="{'p-invalid': errors.name }" v-model="form.name"/>
+              <InputText
+                  :class="{'p-invalid': v$.name.$errors.length }"
+                  id="name"
+                  class="w-full"
+                  v-model="form.name"
+              />
               <label for="name">Название</label>
             </span>
-          <span v-if="errors.name" class="color-error">{{ errors.name[0] }}</span>
+          <span v-if="v$.name.$errors.length" class="color-error">{{ v$.name.$errors[0].$message }}</span>
         </MainCard>
       </div>
       <div class="col-12 md:col-4">
@@ -143,6 +151,7 @@ export default defineComponent({
           <Dropdown
               v-model="form.partner_category_id"
               :options="partnerCategories?.data?.data"
+              :class="{'p-invalid': v$.partner_category_id.$errors.length }"
               optionLabel="name_ru"
               option-value="id"
               placeholder="Категории"
@@ -157,6 +166,9 @@ export default defineComponent({
       <div class="grid">
         <div class="col-12">
           <Editor v-model="form.description_ru" class="w-full"></Editor>
+          <span v-if="v$.description_ru.$errors.length" class="text-xs color-error">
+            {{ v$.description_ru.$errors[0].$message }}
+          </span>
         </div>
       </div>
     </MainCard>
@@ -165,8 +177,20 @@ export default defineComponent({
   <section class="py-2 mb-3">
     <MainCard title="Изображения">
       <div class="grid">
-        <div v-for="(image, i) in photos" :key="i" class="col-12 md:col-2">
-          <img :src="image.preview_url" class="w-full border-round" alt="">
+        <div v-for="(image, i) in partner.photos" :key="i" class="col-12 md:col-2">
+          <ImageCard :src="image.preview_url" :handle="() => deleteFile(image.uuid)"/>
+        </div>
+
+        <template v-if="files.length">
+          <div v-for="(file, i) in files" :key="i" class="col-12 md:col-2">
+            <ImageCard :src="file.objectURL" :handle="() => destroyFileMemory(file)"/>
+          </div>
+        </template>
+
+
+        <div class="col-12">
+          <ButtonFileUpload @chooseFiles="loadFileMemory" label="Добавить изображение" :multiple="true"
+                            :clear-files-after-select="true"/>
         </div>
       </div>
     </MainCard>

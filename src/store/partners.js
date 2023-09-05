@@ -24,7 +24,7 @@ const actions = {
         await PartnerService.updatePartnerCategory(id, body);
     },
     async fetchPartner({commit}, id) {
-        const partner = await PartnerService.loadPartner(id);
+        const {data: partner} = await PartnerService.loadPartner(id);
         commit('updateCurrentPartner', partner);
     },
     async fetchUpdatePartner({commit}, {id, body}) {
@@ -32,6 +32,14 @@ const actions = {
     },
     async fetchCreatePartnerCategory({commit}, body) {
         await PartnerService.createPartnerCategory(body);
+    },
+    async fetchUploadPartnerPhoto({commit}, {id, body}) {
+        await PartnerService.uploadPartnerPhoto(id, body);
+    },
+    async fetchDestroyPartnerPhoto({commit}, {id, body}){
+        const {uuid} = body;
+        commit('deletePhotoCurrentPartner', uuid);
+        await PartnerService.destroyPartnerPhoto(id, body);
     }
 };
 
@@ -47,6 +55,9 @@ const mutations = {
     },
     updateCurrentPartnerCategory(state, category) {
         state.currentPartnerCategory = category;
+    },
+    deletePhotoCurrentPartner(state, uuid) {
+        state.currentPartner.photos = state.currentPartner.photos.filter(photo => photo.uuid !== uuid);
     }
 };
 
