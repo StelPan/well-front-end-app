@@ -53,9 +53,15 @@ export function usePartners(globalConfig) {
             return;
         }
 
+        const updateDataForm = {};
+        for (let key in form.value) {
+            if (key === 'photos') continue;
+            updateDataForm[key] = form.value[key];
+        }
+
         await store.dispatch('fetchUpdatePartner', {
             id: partner.value.id,
-            body: form.value
+            body: updateDataForm
         });
 
         if (files.value.length) {

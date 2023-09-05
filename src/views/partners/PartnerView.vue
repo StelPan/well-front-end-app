@@ -1,7 +1,6 @@
 <script>
 import {computed, defineComponent, onMounted, ref, unref, watch} from "vue";
 import {useStore} from "vuex";
-import {useRoute} from "vue-router";
 import {usePartners} from "@/hooks/partners";
 
 import Button from "primevue/button";
@@ -13,10 +12,22 @@ import Breadcrumb from "@/components/Breadcrumb";
 import ButtonSuccess from "@/components/buttons/ButtonSuccess";
 import ButtonFileUpload from "@/components/buttons/ButtonFileUpload.vue";
 import ImageCard from "@/components/cards/ImageCard.vue";
+import ConfirmationModal from "@/components/modals/ConfirmationModal.vue";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
-  components: {ButtonSuccess, Button, InputText, MainCard, Dropdown, Breadcrumb, Editor, ButtonFileUpload, ImageCard},
+  components: {
+    ButtonSuccess,
+    Button,
+    InputText,
+    MainCard,
+    Dropdown,
+    Breadcrumb,
+    Editor,
+    ButtonFileUpload,
+    ImageCard,
+    ConfirmationModal,
+  },
   async beforeRouteEnter(to, from, next) {
     try {
       const {loadPartner} = usePartners();
@@ -44,6 +55,8 @@ export default defineComponent({
     const store = useStore();
 
     form.value = unref(partner);
+
+    const visibleModal = ref(false);
 
     const partnerCategories = computed(() => store.getters.getListPartnerCategories);
 
@@ -94,6 +107,7 @@ export default defineComponent({
       destroyFileMemory,
       loadFileMemory,
       deleteFile,
+      visibleModal,
       v$,
     };
   }
@@ -101,12 +115,29 @@ export default defineComponent({
 </script>
 
 <template>
+  <ConfirmationModal v-model:visible="visibleModal">
+    <template #header>
+      Отклонить предложение
+    </template>
+
+    <template #default>
+      <span>Вы уверенны, что хотите отклонить предложение партнера?</span>
+    </template>
+
+    <template #footer>
+      <div class="flex justify-content-between">
+        <Button label="Отменить" @click="visibleModal = false" class="btn-black-20-outlined font-light w-12" />
+        <Button label="Отклонить" @click="visibleModal = false" class="btn-primary font-light ml-3 w-12" />
+      </div>
+    </template>
+  </ConfirmationModal>
+
   <section class="py-2 mb-3">
     <div class="flex justify-content-between">
       <Breadcrumb :data="breadcrumbs" separator="/"/>
 
       <div class="flex">
-        <Button label="Отклонить" class="btn-error-outlined font-light"/>
+        <Button @click="visibleModal = !visibleModal" label="Отклонить" class="btn-error-outlined font-light"/>
         <Button
             v-if="!isUpdate"
             @click="update"
