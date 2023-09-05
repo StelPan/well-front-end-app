@@ -12,10 +12,12 @@ import CounterpartyIndividualPersonForm from "@/components/forms/CounterpartyInd
 import CounterpartyJuridicalPersonForm from "@/components/forms/CounterpartyJuridicalPersonForm.vue";
 import ButtonFileUpload from "@/components/buttons/ButtonFileUpload.vue";
 import MainCard from "@/components/cards/MainCard.vue";
+import InputNumberPhone from "@/components/inputs/InputNumberPhone.vue";
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {
+    InputNumberPhone,
     MainCard, ButtonFileUpload, Breadcrumb,
     Button,
     ButtonSuccess,
@@ -116,7 +118,8 @@ export default defineComponent({
       destroyFileMemory,
       updateCounterparty,
       addFileMemory,
-      isUpdate
+      isUpdate,
+      ulv$, flv$, ipv$,
     };
   }
 });
@@ -131,11 +134,130 @@ export default defineComponent({
     </div>
   </section>
 
-  <component
-      :is="tabSteps.get(counterparty.type)"
-      :errors="validator"
-      :form="form"
-  />
+  <template v-if="counterparty.type === 'ul'">
+    <CounterpartyJuridicalPersonForm
+        :errors="ulv$"
+        :form="form"
+    />
+  </template>
+
+  <template v-if="counterparty.type === 'ip'">
+    <CounterpartyIndividualPersonForm
+        :errors="ipv$"
+        :form="form"
+    />
+  </template>
+
+  <template v-if="counterparty.type === 'fl'">
+    <CounterpartyIndividualEntrepreneurForm
+        :errors="flv$"
+        :form="form"
+    />
+  </template>
+
+  <section class="py-2 mb-3">
+    <div class="grid mb-2">
+      <div class="col-12 md:col-8">
+        <MainCard title="Банковские реквизиты">
+          <div class="grid">
+            <div class="col-12 md:col-6">
+              <div class="grid gap-4 m-0 flex-column">
+                <div class="w-full">
+                  <span class="p-float-label w-full">
+                    <InputText
+                        v-model="form.account"
+                        id="checking_account"
+                        class="w-full"
+                    />
+                    <label for="checking_account">Расчетный счет *</label>
+                  </span>
+<!--                  <span v-if="validator.account.$validator.length" class="text-xs color-error">-->
+<!--                    {{ validator.account.$validator[0].$message }}-->
+<!--                  </span>-->
+                </div>
+                <div class="w-full">
+                  <span class="p-float-label w-full">
+                    <InputText
+                        v-model="form.bic"
+                        id="bik"
+                        class="w-full"
+                    />
+                    <label for="bik">БИК *</label>
+                  </span>
+<!--                  <span v-if="validator.bic.$validator.length" class="text-xs color-error">-->
+<!--                    {{ validator.bic.$validator[0].$message }}-->
+<!--                  </span>-->
+                </div>
+              </div>
+            </div>
+            <div class="col-12 md:col-6">
+              <div class="grid gap-4 m-0 flex-column">
+                <span class="p-float-label w-full">
+                    <InputText
+                        v-model="form.bank"
+                        id="bik"
+                        class="w-full"
+                    />
+                    <label for="bik">Наименования банка *</label>
+                </span>
+<!--                <span v-if="validator.bank.$validator.length" class="text-xs color-error">-->
+<!--                  {{ validator.bank.$validator[0].$message }}-->
+<!--                </span>-->
+                <span class="p-float-label w-full">
+                    <InputText
+                        v-model="form.corr_account"
+                        id="correspondent_account"
+                        class="w-full"
+                    />
+                    <label for="correspondent_account">Корр. счет *</label>
+                </span>
+<!--                <span v-if="validator.bank.$validator.length" class="text-xs color-error">-->
+<!--                  {{ validator.corr_account[0] }}-->
+<!--                </span>-->
+              </div>
+            </div>
+          </div>
+        </MainCard>
+      </div>
+
+      <div class="col-12 md:col-4">
+        <MainCard title="Контактные данные">
+          <div class="grid">
+            <div class="col-12">
+              <div class="grid gap-4 m-0 flex-column">
+                <div>
+                  <InputNumberPhone
+                      v-model="form.phone"
+                      :country="selectCountry?.name"
+                      :classes="{'p-invalid': validator.phone.$errors.length}"
+                      :phone-code="selectCountry?.phone_code ? selectCountry.phone_code : '+7'"
+                      @toggleChangePhoneCode="changeVisible"
+                  />
+                  <span v-if="validator.phone.$errors.length" class="text-xs color-error">
+                    {{ validator.phone.$errors[0].$message }}
+                  </span>
+                </div>
+                <div class="w-full">
+                  <span class="p-float-label w-full">
+                    <InputText
+                        v-model="form.email"
+                        :class="{'p-invalid': validator.email.$errors.length}"
+                        id="email"
+                        class="w-full"
+                    />
+                    <label for="email">Электронная почта (для уведомлений бенефициару) *</label>
+                  </span>
+                  <span v-if="validator.email.$errors.length" class="text-xs color-error">
+                   {{ validator.email.$errors[0].$message }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </MainCard>
+      </div>
+    </div>
+  </section>
 
   <section class="py-2 mb-3">
     <div class="grid">

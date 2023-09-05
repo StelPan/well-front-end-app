@@ -1,7 +1,8 @@
 import {computed, ref} from "vue";
 import {
     email, passport_series, passport_numbers,
-    inn, bik, ogrn, numeric, checking_account,
+    inn, innfl, bik, ogrn, numeric, checking_account,
+    correctDate,
     oktmo, minLength, required
 } from "@/utils/i18n-validators";
 import {useStore} from "vuex";
@@ -65,7 +66,6 @@ export function useCounterparties() {
 
     const mainRules = {
         postcode: {required, minLength: passport_numbers},
-        bank: {required},
         region: {required},
         city: {required},
         street: {required},
@@ -101,9 +101,9 @@ export function useCounterparties() {
         last_name: {required},
         first_name: {required},
         birth_country: {required},
-        birth_date: {required},
+        birth_date: {required, correctDate,},
         citizenship: {required},
-        inn: {required, minLength: inn},
+        inn: {required, innfl},
         passport_issuer: {required},
         passport_issuer_code: {required},
         passport_date: {required},
@@ -121,9 +121,9 @@ export function useCounterparties() {
         first_name: {required},
         birth_country: {required},
         birth_city: {required},
-        birth_date: {required},
+        birth_date: {required, correctDate},
         citizenship: {required},
-        inn: {required, inn},
+        inn: {required, innfl},
         oktmo: {required, oktmo},
         ogrnip: {required, ogrn},
         ogrnip_date: {required},

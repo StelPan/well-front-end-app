@@ -1,7 +1,7 @@
 import {computed, ref, unref} from "vue";
 import {useStore} from "vuex";
 import {useVuelidate} from "@vuelidate/core";
-import {required, numeric} from "@/utils/i18n-validators";
+import {required, numeric, timehour, correctDate} from "@/utils/i18n-validators";
 
 export function useServices () {
     const store = useStore();
@@ -45,6 +45,14 @@ export function useServices () {
         duration: ''
     });
 
+    const intervalRules = {
+        start: {correctDate},
+        end: {correctDate},
+        duration: {numeric},
+    };
+
+    const iv$ = useVuelidate(intervalRules, intervalForm);
+
     const selectFiles = ({files: photos}) => {
         for(let photo of photos) {
             files.value.photos.push(photo);
@@ -69,9 +77,18 @@ export function useServices () {
 
     const createService = async () => {
         const result = await v$.value.$validate();
+
         if (!result) {
             return;
         }
+
+        if (form.value.has_intervals) {
+            const resultIntervals = await iv$.value.$validate();
+            if (!resultIntervals) {
+                return;
+            }
+        }
+
 
         const formData = {};
         for (let key in form.value) {
@@ -224,6 +241,6 @@ export function useServices () {
         services, service, form, subServiceForm, files, intervalForm, isCreate, isUpdate,
         updateService, loadService, loadServices, createService, destroyFileLocal, changeDays,
         destroyService, selectFiles, destroySubService, addSubService,
-        v$, sv$,
+        v$, sv$, iv$,
     };
 }

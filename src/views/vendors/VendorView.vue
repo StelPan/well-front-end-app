@@ -1,5 +1,5 @@
 <script>
-import {defineComponent, onMounted, ref, watch} from "vue";
+import {computed, defineComponent, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {useFlat} from "@/hooks/flat";
@@ -15,11 +15,13 @@ import Breadcrumb from "@/components/Breadcrumb";
 import ButtonFileUpload from "@/components/buttons/ButtonFileUpload.vue";
 import MainCard from "@/components/cards/MainCard.vue";
 import ButtonSuccess from "@/components/buttons/ButtonSuccess.vue";
+import InputNumberPhone from "@/components/inputs/InputNumberPhone.vue";
 
 
 export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {
+    InputNumberPhone,
     ButtonSuccess,
     MainCard,
     InputText,
@@ -50,7 +52,14 @@ export default defineComponent({
     const formVendorTypes = {
       'ul': 'VendorJuridicalPersonForm',
       'ip': 'VendorIndividualPersonForm'
-    }
+    };
+
+    const validators = {
+      'ul' : v$,
+      'ip': vip$,
+    };
+
+    const validator = computed(() => validators[vendor.value.type]);
 
     const breadcrumbs = ref([]);
     const visible = ref(false);
@@ -63,12 +72,12 @@ export default defineComponent({
 
     const fileUpload = async ({ files }) => {
       try {
-        const formData = new FormData();
-        formData.set('payment_details', files[0]);
+        const form = new form();
+        form.set('payment_details', files[0]);
 
         await store.dispatch('fetchUploadVendorPayment', {
           id: vendor.value.id,
-          body: formData
+          body: form
         });
 
         await store.dispatch('fetchVendor', route.params.id);
@@ -93,8 +102,8 @@ export default defineComponent({
           return;
         }
 
-        const flat = useFlat(formData.value);
-        const flatData = new FormData();
+        const flat = useFlat(form.value);
+        const flatData = new form();
 
         for (let key in flat) {
           if (key === 'payment_details')
@@ -139,7 +148,8 @@ export default defineComponent({
       formVendorTypes,
       form,
       v$,
-      vip$
+      vip$,
+      validator
     };
   }
 });
@@ -172,6 +182,114 @@ export default defineComponent({
         @changeVisible="changeVisible"
     />
   </template>
+
+  <section class="py-2 mb-3">
+    <div class="grid mb-2">
+      <div class="col-12 md:col-8">
+        <MainCard title="Банковские реквизиты">
+          <div class="grid">
+            <div class="col-12 md:col-6">
+              <div class="grid gap-4 m-0 flex-column">
+                <div class="w-full">
+                  <span class="p-float-label w-full">
+                    <InputText
+                        v-model="form.account"
+                        :class="{'p-invalid': errors?.account}"
+                        id="checking_account"
+                        class="w-full"
+                    />
+                    <label for="checking_account">Расчетный счет *</label>
+                  </span>
+                  <span v-if="errors?.account" class="text-xs color-error">
+                    {{ errors.account[0] }}
+                  </span>
+                </div>
+                <div class="w-full">
+                  <span class="p-float-label w-full">
+                    <InputText
+                        v-model="form.bic"
+                        :class="{'p-invalid': errors?.bic}"
+                        id="bik"
+                        class="w-full"
+                    />
+                    <label for="bik">БИК *</label>
+                  </span>
+                  <span v-if="errors?.bic" class="text-xs color-error">
+                    {{ errors.bic[0] }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 md:col-6">
+              <div class="grid gap-4 m-0 flex-column">
+                <span class="p-float-label w-full">
+                    <InputText
+                        v-model="form.bank"
+                        :class="{'p-invalid': errors?.bank}"
+                        id="bik"
+                        class="w-full"
+                    />
+                    <label for="bik">Наименования банка *</label>
+                </span>
+                <span v-if="errors?.bank" class="text-xs color-error">
+                  {{ errors.bank[0] }}
+                </span>
+                <span class="p-float-label w-full">
+                    <InputText
+                        v-model="form.corr_account"
+                        :class="{'p-invalid': errors?.corr_account}"
+                        id="correspondent_account"
+                        class="w-full"
+                    />
+                    <label for="correspondent_account">Корр. счет *</label>
+                </span>
+                <span v-if="errors?.corr_account" class="text-xs color-error">
+                  {{ errors.corr_account[0] }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </MainCard>
+      </div>
+
+      <div class="col-12 md:col-4">
+        <MainCard title="Контактные данные">
+          <div class="grid">
+            <div class="col-12">
+              <div class="grid gap-4 m-0 flex-column">
+                <div>
+                  <InputNumberPhone
+                      v-model="form.phone"
+                      :country="selectCountry?.name"
+                      :classes="{'p-invalid': errors.phone.$errors.length}"
+                      :phone-code="selectCountry?.phone_code ? selectCountry.phone_code : '+7'"
+                      @toggleChangePhoneCode="changeVisible"
+                  />
+                  <span v-if="errors.phone.$errors.length" class="text-xs color-error">
+                    {{ errors.phone.$errors[0].$message }}
+                  </span>
+                </div>
+                <div class="w-full">
+                  <span class="p-float-label w-full">
+                    <InputText
+                        v-model="form.email"
+                        :class="{'p-invalid': errors.email.$errors.length}"
+                        id="email"
+                        class="w-full"
+                    />
+                    <label for="email">Электронная почта (для уведомлений бенефициару) *</label>
+                  </span>
+                  <span v-if="errors.email.$errors.length" class="text-xs color-error">
+                   {{ errors.email.$errors[0].$message }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </MainCard>
+      </div>
+    </div>
+  </section>
 
   <section class="py-2 mb-3">
     <MainCard title="Персональная скидка">

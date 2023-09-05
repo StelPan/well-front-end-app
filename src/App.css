@@ -141,3 +141,9 @@
 /*    background-repeat: no-repeat;*/
 /*    background-position: center;*/
 /*}*/
+
+/* Fix rounded input */
+input[role="combobox"] {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}

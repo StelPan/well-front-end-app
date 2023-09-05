@@ -1,6 +1,5 @@
 <script>
-import {computed, defineComponent, onMounted, reactive, ref, watch, toRaw, unref} from "vue";
-import {useStore} from "vuex";
+import {defineComponent, ref, watch, unref} from "vue";
 
 import Dropdown from "primevue/dropdown";
 import InputText from "primevue/inputtext";
@@ -14,6 +13,7 @@ import ButtonSuccess from "@/components/buttons/ButtonSuccess";
 import ButtonFileUpload from "@/components/buttons/ButtonFileUpload";
 import DatePicker from "@/components/DatePicker";
 import Checkbox from "primevue/checkbox";
+import Calendar from "primevue/calendar";
 
 import {useServices} from "@/hooks/services";
 import {useBanks} from "@/hooks/banks";
@@ -23,7 +23,7 @@ export default defineComponent({
   layout: {name: 'AdminLayout'},
   components: {
     Breadcrumb, MainCard, Dropdown, InputText, Editor, Button, FileUpload, ImageCard,
-    ButtonSuccess, ButtonFileUpload, DatePicker, Checkbox,
+    ButtonSuccess, ButtonFileUpload, DatePicker, Checkbox, Calendar
   },
   async beforeRouteEnter(to, from, next) {
     try {
@@ -65,15 +65,26 @@ export default defineComponent({
       form.value.service_category_id = service.value.category.id;
     }
 
+    const normalizeTime = (time) => {
+      const regex = /^\b[0-2]?\d:[0-5]\d\b$/;
+      let date = '';
+      if (regex.test(time)) {
+        const [h, m] = time.split(':');
+        date = new Date();
+        date.setHours(h);
+        date.setMinutes(m);
+      }
+
+      return date;
+    }
+
     if (service.value.intervals) {
-      console.log(service.value.intervals);
       let {end, start, duration} = service.value.intervals;
       if (!(end && start && duration)) {
         intervalForm.value = {end: '', start: '', duration: ''};
       } else {
-        const [e,s] = [end.split(':'), start.split(':')];
-        if (e.length < 2) end = '';
-        if (s.length < 2) start = '';
+        end = normalizeTime(end);
+        start = normalizeTime(start);
         if (isNaN(Number(duration))) duration = '';
         intervalForm.value = {end, start, duration};
       }
@@ -112,10 +123,18 @@ export default defineComponent({
 
     watch(selectBank, async () => await loadAcquiring());
 
+    const update = async () => {
+      try {
+        await updateService();
+      } catch(e) {
+        console.error(e);
+      }
+    };
+
     return {
       isUpdate, categories, banks, breadcrumbs, form, service,
       intervalForm, subServiceForm, serviceTypes, costTypes, acquiring, selectBank,
-      addSubService, destroySubService, destroyService, updateService, destroyFileLocal, selectFiles, changeDays,
+      addSubService, destroySubService, destroyService, update, destroyFileLocal, selectFiles, changeDays,
       files, datePickers,
       v$, sv$
     };
@@ -129,7 +148,7 @@ export default defineComponent({
       <Breadcrumb :data="breadcrumbs" separator="/"/>
 
       <ButtonSuccess v-if="isUpdate" label="Услуга обновлена" />
-      <Button v-else @click="updateService" label="Обновить услугу" class="btn-primary font-light"/>
+      <Button v-else @click="update" label="Обновить услугу" class="btn-primary font-light"/>
     </div>
   </section>
 
@@ -371,8 +390,8 @@ export default defineComponent({
       <div class="col-12 md:col-6">
         <MainCard title="Период оказания услуги">
           <div class="flex w-100">
-            <InputText :disabled="!form.has_intervals" v-model="intervalForm.start" placeholder="От" class="w-10rem"/>
-            <InputText :disabled="!form.has_intervals" v-model="intervalForm.end" placeholder="До" class="ml-2 w-10rem"/>
+            <Calendar :disabled="!form.has_intervals" v-model="intervalForm.start" placeholder="От" timeOnly class="w-10rem"/>
+            <Calendar :disabled="!form.has_intervals" v-model="intervalForm.end" placeholder="До" timeOnly class="ml-2 w-10rem"/>
             <InputText :disabled="!form.has_intervals" v-model="intervalForm.duration" placeholder="Продолжительность"
                        class="ml-2 w-12rem"/>
           </div>

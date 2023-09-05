@@ -14,12 +14,21 @@ export const numeric = withI18nMessage(validator.numeric);
 export const minLength = withI18nMessage(validator.minLength, {withArguments: true});
 
 export const inn = withI18nMessage({
-    $validator: (value) => value.length === 12,
+    $validator: (value) => value.length === 10,
     $message: 'Длина символов ИНН равна 10',
     $params: {
         type: 'inn'
     }
 });
+
+export const innfl = withI18nMessage({
+    $validator: (value) => value.length === 12,
+    $message: 'Длина символов ИНН равна 12',
+    $params: {
+        type: 'inn'
+    }
+});
+
 
 export const ogrn = withI18nMessage({
     $validator: (value) => value.length === 13,
@@ -68,4 +77,22 @@ export const bik = withI18nMessage({
     $params: {
         type: 'bik'
     }
+});
+
+export const correctDate = withI18nMessage({
+    $validator(value) {
+        const date = new Date(value);
+        return !isNaN(date.getDate());
+    },
+    $message: 'Некорректная дата',
+    $params: {type: 'correctDate'}
+});
+
+export const timehour = withI18nMessage({
+    $validator(value) {
+        const regexp = /^\b[0-2]?\d:[0-5]\d\b$/
+        return regexp.test(value);
+    },
+    $message: 'Некорректное время',
+    $params: {type: 'timehour'}
 });

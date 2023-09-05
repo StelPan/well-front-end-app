@@ -1,4 +1,4 @@
-import {passport_series} from "@/utils/i18n-validators";
+import {correctDate, passport_series} from "@/utils/i18n-validators";
 
 export default {
     "empty-data": 'Данные для отображения отсутствуют',
@@ -7,13 +7,16 @@ export default {
         "required": 'Поле обязательно для заполнения',
         "numeric": 'Поле должно содержать только числа',
         'minLength': 'Длина поля должна быть равна {min} символов',
-        'inn': 'Длина символов должна равняться 12',
+        'inn': 'Длина символов должна равняться 10',
+        'innfl': 'Длина символов должна равняться 12',
         'ogrn': 'Длина символов должна равняться 13',
         'passport_series': 'Длина символов должна равняться 4',
         'passport_numbers': 'Длина символов должна равняться 6',
         'checking_account': 'Длина символов расчетного счета равна 20',
         'bik': 'Длина символов БИК равна 9',
         'oktmo': 'Длина символов ОКТМО равна 11',
+        'correctDate': 'Некорректная дата',
+        'timehour': 'Некорректное время'
     },
     headers: {
         'tariff-create': 'Создание тарифа',

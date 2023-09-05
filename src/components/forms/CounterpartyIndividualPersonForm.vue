@@ -84,7 +84,7 @@ export default defineComponent({
                   <span class="p-float-label w-full">
                     <InputText
                         v-model="formData.last_name"
-                        :class="{'p-invalid': errors.last_name.$errors.length}"
+                        :class="{'p-invalid': errors?.last_name?.$errors?.length}"
                         id="full_name"
                         class="w-full"
                     />
@@ -318,9 +318,6 @@ export default defineComponent({
                     </span>
                   </div>
                 </div>
-                <!--                <span v-if="errors.birth_city.$errors.length" class="text-xs color-error">-->
-                <!--                    {{ errors.birth_city.$errors[0].$message }}-->
-                <!--                  </span>-->
               </div>
             </div>
             <div class="col-12 md:col-4">
@@ -658,112 +655,6 @@ export default defineComponent({
                   </span>
                   <span v-if="errors?.floor_fact" class="text-xs color-error">
                     {{ errors.floor_fact[0] }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </MainCard>
-      </div>
-    </div>
-
-    <div class="grid mb-2">
-      <div class="col-12 md:col-8">
-        <MainCard title="Банковские реквизиты">
-          <div class="grid">
-            <div class="col-12 md:col-6">
-              <div class="grid gap-4 m-0 flex-column">
-                <div class="w-full">
-                  <span class="p-float-label w-full">
-                    <InputText
-                        v-model="formData.account"
-                        :class="{'p-invalid': errors?.account}"
-                        id="checking_account"
-                        class="w-full"
-                    />
-                    <label for="checking_account">Расчетный счет *</label>
-                  </span>
-                  <span v-if="errors?.account" class="text-xs color-error">
-                    {{ errors.account[0] }}
-                  </span>
-                </div>
-                <div class="w-full">
-                  <span class="p-float-label w-full">
-                    <InputText
-                        v-model="formData.bic"
-                        :class="{'p-invalid': errors?.bic}"
-                        id="bik"
-                        class="w-full"
-                    />
-                    <label for="bik">БИК *</label>
-                  </span>
-                  <span v-if="errors?.bic" class="text-xs color-error">
-                    {{ errors.bic[0] }}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="col-12 md:col-6">
-              <div class="grid gap-4 m-0 flex-column">
-                <span class="p-float-label w-full">
-                    <InputText
-                        v-model="formData.bank"
-                        :class="{'p-invalid': errors?.bank}"
-                        id="bik"
-                        class="w-full"
-                    />
-                    <label for="bik">Наименования банка *</label>
-                </span>
-                <span v-if="errors?.bank" class="text-xs color-error">
-                  {{ errors.bank[0] }}
-                </span>
-                <span class="p-float-label w-full">
-                    <InputText
-                        v-model="formData.corr_account"
-                        :class="{'p-invalid': errors?.corr_account}"
-                        id="correspondent_account"
-                        class="w-full"
-                    />
-                    <label for="correspondent_account">Корр. счет *</label>
-                </span>
-                <span v-if="errors?.corr_account" class="text-xs color-error">
-                  {{ errors.corr_account[0] }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </MainCard>
-      </div>
-
-      <div class="col-12 md:col-4">
-        <MainCard title="Контактные данные">
-          <div class="grid">
-            <div class="col-12">
-              <div class="grid gap-4 m-0 flex-column">
-                <div>
-                  <InputNumberPhone
-                      v-model="formData.phone"
-                      :country="selectCountry?.name"
-                      :classes="{'p-invalid': errors.phone.$errors.length}"
-                      :phone-code="selectCountry?.phone_code ? selectCountry.phone_code : '+7'"
-                      @toggleChangePhoneCode="changeVisible"
-                  />
-                  <span v-if="errors.phone.$errors.length" class="text-xs color-error">
-                    {{ errors.phone.$errors[0].$message }}
-                  </span>
-                </div>
-                <div class="w-full">
-                  <span class="p-float-label w-full">
-                    <InputText
-                        v-model="formData.email"
-                        :class="{'p-invalid': errors.email.$errors.length}"
-                        id="email"
-                        class="w-full"
-                    />
-                    <label for="email">Электронная почта (для уведомлений бенефициару) *</label>
-                  </span>
-                  <span v-if="errors.email.$errors.length" class="text-xs color-error">
-                   {{ errors.email.$errors[0].$message }}
                   </span>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 <script>
-import {computed, defineComponent, reactive, ref, watch} from "vue";
+import {computed, defineComponent, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {useServices} from "@/hooks/services";
 
@@ -9,6 +9,7 @@ import Editor from "primevue/editor";
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import FileUpload from "primevue/fileupload";
+import Calendar from "primevue/calendar";
 import DatePicker from "@/components/DatePicker.vue";
 import Breadcrumb from "@/components/Breadcrumb.vue";
 import MainCard from "@/components/cards/MainCard.vue";
@@ -23,6 +24,7 @@ export default defineComponent({
     InputText, Editor, Button,
     FileUpload, ImageCard, Checkbox,
     DatePicker, ButtonFileUpload, ButtonSuccess,
+    Calendar
   },
   async beforeRouteEnter(to, from, next) {
     try {
@@ -45,7 +47,7 @@ export default defineComponent({
       destroyFileLocal,
       selectFiles,
       files,
-      v$, sv$,
+      v$, sv$, iv$
     } = useServices();
 
     const store = useStore();
@@ -95,7 +97,7 @@ export default defineComponent({
       form, intervalForm, subServiceForm, serviceTypes, costTypes, acquiring, selectBank,
       addSubService, destroySubService, destroyService, createService, destroyFileLocal, selectFiles, changeDays,
       files, datePickers,
-      v$, sv$
+      v$, sv$, iv$
     };
   }
 });
@@ -346,10 +348,24 @@ export default defineComponent({
       <div class="col-12 md:col-6">
         <MainCard title="Период оказания услуги">
           <div class="flex w-100">
-            <InputText :disabled="!form.has_intervals" v-model="intervalForm.start" placeholder="От" class="w-10rem"/>
-            <InputText :disabled="!form.has_intervals" v-model="intervalForm.end" placeholder="До" class="ml-2 w-10rem"/>
-            <InputText :disabled="!form.has_intervals" v-model="intervalForm.duration" placeholder="Продолжительность"
-                       class="ml-2 w-12rem"/>
+            <div class="w-10rem">
+              <Calendar :disabled="!form.has_intervals" v-model="intervalForm.start" placeholder="От" timeOnly/>
+              <span v-if="iv$.start.$errors.length" class="color-error text-xs">
+                {{ iv$.start.$errors[0].$message }}
+              </span>
+            </div>
+            <div class="w-10rem ml-2">
+              <Calendar :disabled="!form.has_intervals" v-model="intervalForm.end" placeholder="До" timeOnly />
+              <span v-if="iv$.end.$errors.length" class="color-error text-xs">
+                {{ iv$.end.$errors[0].$message }}
+              </span>
+            </div>
+            <div class="w-10rem ml-2">
+              <InputText :disabled="!form.has_intervals" v-model="intervalForm.duration" placeholder="Продолжительность"/>
+              <span v-if="iv$.duration.$errors.length" class="color-error text-xs">
+                {{ iv$.duration.$errors[0].$message }}
+              </span>
+            </div>
           </div>
           <span
               class="text-xs color-black-20 mb-1">Доступные интервалы: 08:00, 08:30, 09:00, 09:30, ... 18:30</span><br>
