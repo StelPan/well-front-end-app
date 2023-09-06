@@ -72,7 +72,7 @@ export default defineComponent({
                 <div class="col-4 flex justify-content-start align-items-center">
                   <span class="font-bold">{{ slotProps.data.phone_code }}</span>
                 </div>
-                <div class="col-4 flex justify-content-start align-items-center">
+                <div class="col-4 flex justify-content-start align-items-center" style="word-wrap:anywhere">
                   <span class="font-bold">{{ slotProps.data.name }}</span>
                 </div>
               </div>
