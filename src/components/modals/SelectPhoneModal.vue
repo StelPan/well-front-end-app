@@ -44,7 +44,7 @@ export default defineComponent({
   >
     <template #default>
       <div class="flex justify-content-center">
-        <SelectLanguageForm :countries="countries" />
+        <SelectLanguageForm @selectedCountry="value = false" :countries="countries" />
       </div>
     </template>
 

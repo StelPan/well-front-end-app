@@ -64,19 +64,30 @@ export default defineComponent({
       <div>
         <DataView :value="countries">
           <template #list="slotProps">
-            <div class="col-12 hover:bg-neutral cursor-pointer px-4" @click="toSelectedCountry(slotProps.data.id)">
-              <div class="flex justify-content-start xl:flex-row xl:align-items-start py-3 gap-4">
-                <div class="w-9 sm:w-4rem xl:w-2rem border-round flex align-items-center">
+            <div class="col-12 hover:bg-neutral cursor-pointer px-4 py-3" @click="toSelectedCountry(slotProps.data.id)">
+              <div class="grid">
+                <div class="col-4 flex justify-content-start align-items-center">
                   <img style="width: 25px" :src="CountryFlagsImage(slotProps.data.name)" alt="">
                 </div>
-                <div class="w-9 sm:w-4rem xl:w-3rem border-round flex justify-content-start align-items-center">
+                <div class="col-4 flex justify-content-start align-items-center">
                   <span class="font-bold">{{ slotProps.data.phone_code }}</span>
                 </div>
-
-                <div class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
+                <div class="col-4 flex justify-content-start align-items-center">
                   <span class="font-bold">{{ slotProps.data.name }}</span>
                 </div>
               </div>
+<!--              <div class="flex justify-content-start xl:flex-row xl:align-items-start py-3 gap-4">-->
+<!--                <div class="w-9 sm:w-4rem xl:w-2rem border-round flex align-items-center">-->
+<!--                  <img style="width: 25px" :src="CountryFlagsImage(slotProps.data.name)" alt="">-->
+<!--                </div>-->
+<!--                <div class="w-9 sm:w-4rem xl:w-2rem border-round flex justify-content-start align-items-center">-->
+<!--                  <span class="font-bold">{{ slotProps.data.phone_code }}</span>-->
+<!--                </div>-->
+
+<!--                <div class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">-->
+<!--                  <span class="font-bold">{{ slotProps.data.name }}</span>-->
+<!--                </div>-->
+<!--              </div>-->
             </div>
           </template>
         </DataView>
